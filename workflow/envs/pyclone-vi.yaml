@@ -1,0 +1,4 @@
+channels:
+  - bioconda
+dependencies:
+  - bioconda::pyclone-vi = 0.1.2
