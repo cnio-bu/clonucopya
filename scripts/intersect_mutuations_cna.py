@@ -1,0 +1,75 @@
+import pandas as pd
+import argpars
+import pybedtools
+
+
+# i.e.
+# mutations_file = 'mutation_B2237D1M1_formatted_111124.tsv'
+# cnv_file = 'TCGA-LAML_allele_cnv_formatted_SAMPLEid.tsv'
+# output_file = 'TCGA-LAML_allele_cnv_formatted_SAMPLEid.tsv'
+
+
+def create_pyclone_vi_input(mutations_file, cnv_file, output_file):
+    """
+    Intersect the dataframes in the rows where a cna contains a mutation.
+    
+    Args:
+        mutations_file (int): Path to input tsv file, 
+        cnv_file (str): Path to input tsv file,
+        output_file (str): Path to input tsv file
+    
+    Returns:
+        pandas.DataFrame: Intersected mutation-cnv data as pyclone-vi input
+    """
+    
+    # Load mutations
+    mutations = pd.read_csv(mutations_file, sep='\t')
+    
+    # Load CNV data
+    cnv = pd.read_csv(cnv_file, sep='\t')
+    
+    # Create BedTool objects with required columns
+    mut_bed = pybedtools.BedTool.from_dataframe(
+        mutations[['CHROM', 'POS', 'POS', 'mutation_id', 'REF', 'ALT']]
+        .rename(columns={'POS': 'start', 'CHROM': 'chrom'})
+    )
+    
+    cnv_bed = pybedtools.BedTool.from_dataframe(
+        cnv[['Chrom', 'Start', 'End', 'major_cn', 'minor_cn', 'normal_cn', 'sample']]
+        .rename(columns={'Chrom': 'chrom'})
+    )
+    
+    # Intersect mutations with CNV regions
+    intersect = mut_bed.intersect(cnv_bed, wa=True, wb=True)
+    intersect.saveas('intersect_results_sampleidcna.tsv')
+    # Process intersected data preserving mutation_id
+    result = []
+    for item in intersect:
+        mutation_id = item[3]  # mutation_id está en la posición 3
+        result.append({
+            'mutation_id': mutation_id,
+            'sample_id': item[12],
+            'ref_counts': mutations.loc[mutations['mutation_id'] == mutation_id, 'ref_counts'].values[0],
+            'alt_counts': mutations.loc[mutations['mutation_id'] == mutation_id, 'alt_counts'].values[0],
+            'major_cn': int(item[9]),
+            'minor_cn': int(item[10]),
+            'normal_cn': int(item[11])  # Ahora usamos el valor de normal_cn del archivo CNV
+        })
+    
+    # Create DataFrame and save to file
+    output = pd.DataFrame(result)
+    output.to_csv(output_file, sep='\t', index=False)
+
+
+
+if __name__ == '__main__':
+    # get the script input params
+    input_parser = argparse.ArgumentParser()
+    input_parser.add_argument("--mutations", action='store', required=True)
+    input_parser.add_argument("--cnvs", action='store', required=True)
+    input_parser.add_argument("--output_file", action='store', required=True)
+
+    args = input_parser.parse_args() 
+
+    # Process the data
+    create_pyclone_vi_input(args.mutations, args.cnvs, args.output_file)
