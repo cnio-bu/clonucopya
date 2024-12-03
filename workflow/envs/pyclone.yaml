@@ -1,4 +1,0 @@
-channels:
-  - bioconda
-dependencies:
-  - bioconda::pyclone = 0.13.1

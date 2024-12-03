@@ -1,7 +1,0 @@
-channels:
-  - conda-forge
-  - bioconda
-  - dranew
-dependencies:
-  - conda-forge::python >=2.7
-  - dranew::citup =0.1.2
