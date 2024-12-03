@@ -1,10 +1,14 @@
 samples:
-    case_001:
-        id: ""
-        patient: ""
-        purity: 
-        type: ""
-        mutations:
+    patient_01:
+        id: ""   
+        alterations:
+            - mutations: ""
+            - cna: ""
+    patient_02:
+        id: ""   
+        alterations:
+            - mutations: ""
+            - cna: ""
 
 
 params:
@@ -13,6 +17,7 @@ params:
         density: "beta-binomial"
         num-grid-points: 100
         num-restarts: 10
+        seed: 570655569
 
 
 

@@ -1,0 +1,41 @@
+samples:   
+        mutations: "data/mutations" # path to vcf mutation file
+        cnvs: "data/cnvs" # path to cnvs count tsv file
+
+# file name structure case_sample.mut.vcf, case_sample.cnv.csv
+
+# samples
+# |
+# |--mutations
+# |         |
+# |         |--{case}_{sample}.mut.vcf
+# |
+# |--cnvs
+#      |
+#      |--{case}_{sample}.cnv.tsv
+
+
+
+params:
+    pyclone-vi:
+        num-clusters: 40
+        density: "beta-binomial"
+        num-grid-points: 100
+        num-restarts: 10
+        seed: 570655569
+
+
+
+resources:
+    default:
+        threads: 1
+        mem: 4000
+        walltime: 480
+    pyclone-vi:
+        threads: 2
+        mem: 4000
+        walltime: 480
+    pandrugs:
+        threads: 2
+        mem: 4000
+        walltime: 480
