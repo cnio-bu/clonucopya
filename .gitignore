@@ -1,1 +1,8 @@
 *.txt
+test/
+logs/
+data/*
+.ipynb_checkpoints
+lab_notebook.md
+.snakemake
+results
