@@ -1,6 +1,7 @@
 samples:   
-        mutations: "data/mutations" # path to vcf mutation file
-        cnvs: "data/cnvs" # path to cnvs count tsv file
+    mutations: "../data/mutations" # path to vcf mutation file
+    cnvs: "../data/cnvs" # path to cnvs count tsv file
+    sex: "female" 
 
 # file name structure case_sample.mut.vcf, case_sample.cnv.csv
 

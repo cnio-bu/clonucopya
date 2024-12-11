@@ -1,23 +1,19 @@
-rule pre_pyclone-vi:
+rule pyclone_vi_prep:
     input:
-        SNVs = "????/annotated/snv_{CASES}.vcf",
-        CNVs = "????/annotated/cnv_{CASES}.tsv",
+        mutations = "results/mutation_prep/{sample}_prep.mut.tsv",
+        cnvs = "results/cnv_prep/{sample}_prep.cnv.tsv"
     output:
-        "results/pre_pvi/{PATIENT}/input_{CASES}.tsv",
+        "results/pyclone-vi_prep/{sample}_intersect_pvi.tsv"
     log:
-        "logs/pre_pvi/{PATIENT}_{CASES}.log",
+        "logs/pyclone-vi_prep/{sample}.log"
     benchmark:
-        "logs/pre_pvi/{PATIENT}_{CASES}.smk",
+        "logs/pyclone-vi_prep/{sample}.bmk"
     conda:
-        "envs/commons.yaml",
-    threads:
-         config["resources"]["pyclone-vi"]["threads"],
-    resources:
-        mem = config["resources"]["pyclone-vi"]["mem"],
-        walltime=config["resources"]["pyclone-vi"]["walltime"],
-    params:
-        sample = "{CASES}" # Arreglarlo en config,revisar con el Snakefile original
+        "../envs/intersect_mutuations_cnv.yaml"
     shell:
         """
-        python scripts/cross_snv_cnv.py {params.sample} {input.SNVs} {input.CNVs} {output} > {log} 2>&1
+        python scripts/intersect_mutuations_cnv.py --mutations {input.mutations} --cnvs {input.cnvs} 
+        --output_file {output} > {log} 2>&1
     """
+
+# sustituir pybedtools

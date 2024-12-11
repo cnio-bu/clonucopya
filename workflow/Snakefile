@@ -18,7 +18,8 @@ SAMPLES = glob_wildcards(os.path.join(config["samples"]["mutations"],
 rule all:
     input:
         expand("results/mutation_prep/{sample}_prep.mut.tsv", sample=SAMPLES),
-        expand("results/cnv_prep/{sample}_prep.cnv.tsv", sample=SAMPLES)
+        expand("results/cnv_prep/{sample}_prep.cnv.tsv", sample=SAMPLES),
+        expand("results/pyclone-vi_prep/{sample}_intersect_pvi.tsv", sample=SAMPLES)
 
 
 # FORMAT MUTATION VCF
@@ -29,3 +30,8 @@ include: "rules/01_mutation_prep.smk"
 # CALCULATE CN AND FORMAT CNVs
 
 include: "rules/02_cnv_prep.smk"
+
+
+# INTERSECT MUTATIONS AND CNVs
+
+include: "rules/03_pyclone-vi_prep.smk"
