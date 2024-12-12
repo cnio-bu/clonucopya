@@ -12,8 +12,5 @@ rule pyclone_vi_prep:
         "../envs/intersect_mutuations_cnv.yaml"
     shell:
         """
-        python scripts/intersect_mutuations_cnv.py --mutations {input.mutations} --cnvs {input.cnvs} 
-        --output_file {output} > {log} 2>&1
+        python scripts/intersect_mutuations_cnv.py --mutations {input.mutations} --cnvs {input.cnvs} --output_file {output} > {log} 2>&1
     """
-
-# sustituir pybedtools

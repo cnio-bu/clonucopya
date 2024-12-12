@@ -19,10 +19,10 @@ samples:
 
 params:
     pyclone-vi:
-        num-clusters: 40
+        num_clusters: 40
         density: "beta-binomial"
-        num-grid-points: 100
-        num-restarts: 10
+        num_grid_points: 100
+        num_restarts: 10
         seed: 570655569
 
 
@@ -33,7 +33,7 @@ resources:
         mem: 4000
         walltime: 480
     pyclone-vi:
-        threads: 2
+        threads: 1
         mem: 4000
         walltime: 480
     pandrugs:

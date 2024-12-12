@@ -3,6 +3,4 @@ channels:
   - bioconda
 dependencies:
   - conda-forge::pandas =2.2.2
-  - bioconda::pybedtools =2.31.1
-  - matplotlib
-  - python>=3.6
+
