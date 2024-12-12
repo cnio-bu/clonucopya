@@ -6,3 +6,4 @@ data/*
 lab_notebook.md
 .snakemake
 results
+workflow/slurm*
