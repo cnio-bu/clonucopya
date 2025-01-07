@@ -21,7 +21,7 @@ rule all:
         expand("results/cnv_prep/{sample}_prep.cnv.tsv", sample=SAMPLES),
         expand("results/pyclone-vi_prep/{sample}_intersect_pvi.tsv", sample=SAMPLES),
         expand("results/pyclone-vi/{sample}_pvi_out.tsv", sample=SAMPLES),
-#        expand("results/pyclone-vi/{sample}_pvi_out.tsv", sample=SAMPLES),
+        expand("results/pvi_vcf_prep/{sample}_cluster_0.tsv", sample=SAMPLES),
 
 # FORMAT MUTATION VCF
 
