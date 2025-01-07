@@ -51,7 +51,7 @@ def process_vcf_mutations(input_vcf, output_file):
     
     # Save to file if output_file is specified
     if output_file:
-        mut_vcf_filt.to_csv(output_file, sep='\t', index=True)
+        mut_vcf_filt.to_csv(output_file, sep='\t', index=False)
     
     return mut_vcf_filt
 

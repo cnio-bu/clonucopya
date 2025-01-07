@@ -9,8 +9,8 @@ rule pyclone_vi_prep:
     benchmark:
         "logs/pyclone-vi_prep/{sample}.bmk"
     conda:
-        "../envs/intersect_mutuations_cnv.yaml"
+        "../envs/intersect_mutations_cnv.yaml"
     shell:
         """
-        python scripts/intersect_mutuations_cnv.py --mutations {input.mutations} --cnvs {input.cnvs} --output_file {output} > {log} 2>&1
+        python scripts/intersect_mutations_cnv.py --mutations {input.mutations} --cnvs {input.cnvs} --output_file {output} > {log} 2>&1
     """

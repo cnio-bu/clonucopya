@@ -13,8 +13,8 @@ rule pyclone_vi:
     threads: 
         config["resources"]["pyclone-vi"]["threads"]
     resources:
-        mem = config["resources"]["pyclone-vi"]["mem"],
-        walltime = config["resources"]["pyclone-vi"]["walltime"]
+        mem_mb = config["resources"]["pyclone-vi"]["mem"],
+        runtime = config["resources"]["pyclone-vi"]["walltime"]
     params:
         nclusters = config["params"]["pyclone-vi"]["num_clusters"],
         density = config["params"]["pyclone-vi"]["density"],

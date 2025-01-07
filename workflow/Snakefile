@@ -1,6 +1,6 @@
 import pandas as pd
 from snakemake.io import expand, touch
-from glob import glob 
+from glob import glob
 import os
 
 ###### Config file and sample sheets #####
@@ -21,7 +21,7 @@ rule all:
         expand("results/cnv_prep/{sample}_prep.cnv.tsv", sample=SAMPLES),
         expand("results/pyclone-vi_prep/{sample}_intersect_pvi.tsv", sample=SAMPLES),
         expand("results/pyclone-vi/{sample}_pvi_out.tsv", sample=SAMPLES),
-
+#        expand("results/pyclone-vi/{sample}_pvi_out.tsv", sample=SAMPLES),
 
 # FORMAT MUTATION VCF
 
@@ -41,3 +41,8 @@ include: "rules/03_pyclone-vi_prep.smk"
 # RUN PYCLONE-VI SUBCLONAL INFERENCE
 
 include: "rules/04_pyclone-vi.smk"
+
+
+# FORMAT PYCLONE-VI OUTPUT FOR ENSEMBL-VEP
+
+include: "rules/05_pvi_vcf_prep.smk"
