@@ -1,9 +1,7 @@
 import pandas as pd
 import argparse
+import os
 
-
-import pandas as pd
-import argparse
 
 
 def prep_pvi_to_vep(mutations, pvi_file, sample_id, out_dir):
@@ -18,6 +16,13 @@ def prep_pvi_to_vep(mutations, pvi_file, sample_id, out_dir):
     Returns:
         dict: Dictionary containing DataFrames for each cluster
     """
+    # Check if output directory exists and create it if not
+    try:
+        if not os.path.exists(out_dir):
+            os.makedirs(out_dir)
+    except Exception as e:
+        raise ValueError(f"Error finding directory: {e}")
+
     # Load mutation's vcf file and pyclone-vi output
     try:
         mutation_vcf = pd.read_csv(mutations,
@@ -74,7 +79,7 @@ def prep_pvi_to_vep(mutations, pvi_file, sample_id, out_dir):
                     mut_vcf_vep = pd.concat([mut_vcf_vep, new_row], ignore_index=True)
             
             # Save the cluster DataFrame
-            mut_vcf_vep.to_csv(f'{out_dir}/{sample}_cluster_{cluster}.tsv', sep='\t', index=False)
+            mut_vcf_vep.to_csv(f"{out_dir}/{sample}_cluster_{cluster}.tsv", sep='\t', index=False)
             cluster_dataframes[cluster] = mut_vcf_vep
 
         return cluster_dataframes
