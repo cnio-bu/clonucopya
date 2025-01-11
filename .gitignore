@@ -1,9 +1,11 @@
 *.txt
 test/
-logs/
+workflow/logs/
 data/*
 .ipynb_checkpoints
 lab_notebook.md
 .snakemake
-results
+workflow/results
 workflow/slurm*
+workflow/resources/*
+workflow/logs
