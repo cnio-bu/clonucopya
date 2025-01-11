@@ -79,7 +79,7 @@ def prep_pvi_to_vep(mutations, pvi_file, sample_id, out_dir):
                     mut_vcf_vep = pd.concat([mut_vcf_vep, new_row], ignore_index=True)
             
             # Save the cluster DataFrame
-            mut_vcf_vep.to_csv(f"{out_dir}/{sample}_cluster_{cluster}.tsv", sep='\t', index=False)
+            mut_vcf_vep.to_csv(f"{out_dir}/{sample}_cluster_{cluster}.vcf", sep='\t', index=False)
             cluster_dataframes[cluster] = mut_vcf_vep
 
         return cluster_dataframes
