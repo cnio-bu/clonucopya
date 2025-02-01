@@ -1,12 +1,10 @@
 rule vep_annotation:
     input:
-        pvi_prep="results/pvi_vep_prep/{sample}_cluster_0.tsv"
+        pvi_prep="results/pvi_vep_prep/{sample}"
     output:
-#        vep_vcf="results/vep_annotation/{sample}/{sample}_{cluster}.vcf",
-#        summary="results/vep_annotation/{sample}/{sample}_{cluster}.vcf_summary.html"
-#results/vep_annotation/{sample}/{sample}_cluster_0.vcf
-        vep_vcf="results/vep_annotation/{sample}_cluster_0.vcf",
-        summary="results/vep_annotation/{sample}_cluster_0.vcf_summary.html"
+        dir=directory("results/vep_annotation/{sample}")
+    params:
+        cache_dir="resources"
     log:
         "logs/vep_annotation/{sample}.log"
     benchmark:
@@ -16,10 +14,12 @@ rule vep_annotation:
     resources:
         mem_mb=config["resources"]["default"]["mem"],
         runtime=config["resources"]["default"]["walltime"]
-    params:
-        cache_dir="resources"
     shell:
         """
+        for clone in {input.pvi_prep}/*; do
+        out_vcf=$(echo $clone | sed 's/\.tsv$/.vcf/')
+        vcf_name=$(basename $out_vcf)
+        mkdir -p {output.dir}
         vep --cache \
         --cache_version 113 \
         --offline \
@@ -28,9 +28,10 @@ rule vep_annotation:
         --force_overwrite \
         --dir_cache {params.cache_dir} \
         --species homo_sapiens \
-        --input_file {input.pvi_prep} \
-        --output_file {output.vep_vcf} \
+        --input_file $clone \
+        --output_file {output.dir}/$vcf_name \
+        --no_stats \
         --assembly GRCh38 \
         --verbose > {log} 2>&1
-
+        done
         """
