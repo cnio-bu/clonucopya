@@ -34,20 +34,27 @@ def process_pyclone_snps_clones(pvi_file, sample_id, out_dir):
         try:
             # Clean chromosome prefix and split mutation components
             chrom, pos, ref, alt = mut.split(':')
-            
-            # Process only SNPs (single nucleotide variants)
-            if len(ref) == 1 and len(alt) == 1:
-                clone_id = pvi_data.loc[pvi_data['mutation_id'] == mut, 'cluster_id'].iloc[0]
+            if ref == '-':
+                # Insertion
+                end = int(pos) - 1
+            elif alt == '-':
+                # Deletion
+                end = int(pos) + len(ref) - 1
+            else:
+                # Substitution
+                end = int(pos) + len(ref) - 1
+
+            clone_id = pvi_data.loc[pvi_data['mutation_id'] == mut, 'cluster_id'].iloc[0]
+
+            if clone_id not in clone_dataframes:
+                clone_dataframes[clone_id] = []
                 
-                if clone_id not in clone_dataframes:
-                    clone_dataframes[clone_id] = []
-                
-                clone_dataframes[clone_id].append({
-                    'chr': chrom,
-                    'start': pos,
-                    'end': pos,
-                    'allele': f"{ref}/{alt}"
-                })
+            clone_dataframes[clone_id].append({
+                  'chr': chrom,
+                  'start': pos,
+                  'end': end,
+                  'allele': f"{ref}/{alt}"
+              })
         except Exception as e:
             raise ValueError(f"Error processing mutation {mut}: {e}")
     
