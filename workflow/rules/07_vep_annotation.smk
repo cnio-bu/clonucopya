@@ -16,10 +16,13 @@ rule vep_annotation:
         runtime=config["resources"]["default"]["walltime"]
     shell:
         """
+        mkdir -p {output.dir}/{{annotations,stats}}
+
         for clone in {input.pvi_prep}/*; do
-        out_vcf=$(echo $clone | sed 's/\.tsv$/.vcf/')
-        vcf_name=$(basename $out_vcf)
-        mkdir -p {output.dir}
+
+        vcf_file=$(echo $clone | sed 's/\.tsv$/.vcf/' | xargs basename -a)
+        stat_file=$(echo $clone | sed 's/\.tsv$/_summary.html/' | xargs basename -a)
+
         vep --cache \
         --cache_version 113 \
         --offline \
@@ -29,8 +32,8 @@ rule vep_annotation:
         --dir_cache {params.cache_dir} \
         --species homo_sapiens \
         --input_file $clone \
-        --output_file {output.dir}/$vcf_name \
-        --no_stats \
+        --output_file {output.dir}/annotations/"$vcf_file" \
+        --stats_file {output.dir}/stats/"$stat_file" \
         --assembly GRCh38 \
         --verbose > {log} 2>&1
         done
