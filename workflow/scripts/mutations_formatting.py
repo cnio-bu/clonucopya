@@ -1,9 +1,6 @@
 import pandas as pd
 import argparse
 
-# i.e.
-# input_vcf = '01_B2237D1M1.final.vcf'
-# output_file = 'Mutation_CLEAN_TEST.tsv'
 
 
     
