@@ -2,10 +2,8 @@ rule pvi_vep_prep:
     input:
         pvi_df="results/pyclone-vi/{sample}_pvi_out.tsv",
     output:
-        vep_input="results/pvi_vep_prep/{sample}_cluster_0.tsv"
-#        dir=directory("results/pvi_vep_prep/{sample}")
+        dir=directory("results/pvi_vep_prep/{sample}")
     params:
-        dir=directory("results/pvi_vep_prep"),
         sample_id=lambda wildcards: wildcards.sample
     log:
         "logs/pvi_vep_prep/{sample}.log"
@@ -22,5 +20,5 @@ rule pvi_vep_prep:
         """
         python scripts/vep_formatting.py --pvi_data {input.pvi_df} \
                                          --sample_id {params.sample_id} \
-                                         --out_dir {params.dir} 2> {log}
+                                         --out_dir {output.dir} 2> {log}
         """
