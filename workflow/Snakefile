@@ -14,6 +14,8 @@ configfile: "../config/config_multi_vcf.yaml"
 SAMPLES = glob_wildcards(os.path.join(config["samples"]["mutations"], 
                         "{sample}.mut.vcf")).sample
 
+
+
 # Define target rule
 rule all:
     input:
@@ -21,7 +23,12 @@ rule all:
         expand("results/cnv_prep/{sample}_prep.cnv.tsv", sample=SAMPLES),
         expand("results/pyclone-vi_prep/{sample}_intersect_pvi.tsv", sample=SAMPLES),
         expand("results/pyclone-vi/{sample}_pvi_out.tsv", sample=SAMPLES),
-        expand("results/pvi_vcf_prep/{sample}_cluster_0.tsv", sample=SAMPLES),
+#        expand("results/pvi_vep_prep/{sample}", sample=SAMPLES),
+        expand("results/pvi_vep_prep/{sample}_cluster_0.tsv", sample=SAMPLES),
+        expand("results/vep_annotation/{sample}_cluster_0.vcf", sample=SAMPLES),
+#        expand("results/vep_annotation/{sample}/{sample}_{cluster}.vcf", sample=SAMPLES,  cluster=get_cluster_numbers),
+
+
 
 # FORMAT MUTATION VCF
 
@@ -45,4 +52,13 @@ include: "rules/04_pyclone-vi.smk"
 
 # FORMAT PYCLONE-VI OUTPUT FOR ENSEMBL-VEP
 
-include: "rules/05_pvi_vcf_prep.smk"
+include: "rules/05_pvi_vep_prep.smk"
+
+# DOWNLOAD ENSEMBL-VEP CACHE
+
+#include: "rules/06_get_vep_cache.smk"
+
+# VEP ANNOTATION PER CLUSTER
+
+include: "rules/07_vep_annotation.smk"
+

@@ -1,104 +1,75 @@
+import os
 import pandas as pd
 import argparse
-import os
+from typing import Dict, List
+from pathlib import Path
 
-
-
-def prep_pvi_to_vep(mutations, pvi_file, sample_id, out_dir):
+def process_pyclone_snps_clones(pvi_file, sample_id, out_dir):
     """
-    Format output from PyClone-VI to vcf standard as input 
-    for ensembl-vep
+    Format output from PyClone-VI to VEP standard as input for ensembl-vep.
+    
     Args:
-        mutations (str): Path to input TSV file
-        pvi_file (str): Path to input TSV file 
-        sample_id (str): Name of the sample 
-        out_dir (str): Path to output directory
+        pvi_file: Path to input TSV file containing PyClone-VI results
+        sample_id: Name of the sample
+        out_dir: Path to output directory
+    
     Returns:
-        dict: Dictionary containing DataFrames for each cluster
+        Dictionary mapping cluster IDs to DataFrames containing SNP information
     """
-    # Check if output directory exists and create it if not
-    try:
-        if not os.path.exists(out_dir):
-            os.makedirs(out_dir)
-    except Exception as e:
-        raise ValueError(f"Error finding directory: {e}")
-
-    # Load mutation's vcf file and pyclone-vi output
-    try:
-        mutation_vcf = pd.read_csv(mutations,
-                     sep='\t', comment='#', header=None)
-    except Exception as e:
-        raise ValueError(f"Error reading VCF file: {e}")
-
+    # Create output directory if it doesn't exist
+    out_path = Path(out_dir)
+    out_path.mkdir(parents=True, exist_ok=True)
+    
+    # Read PyClone-VI data
     try:
         pvi_data = pd.read_csv(pvi_file, sep='\t')
     except Exception as e:
-        raise ValueError(f"Error reading TSV file: {e}")
+        raise ValueError(f"Failed to read PyClone-VI file: {e}")
 
-    sample = sample_id
+    # Initialize storage for cluster data
+    clone_dataframes: Dict[int, List[Dict]] = {}
     
-    # List clone clusters 
-    unique_clusters = pvi_data['cluster_id'].unique()
-    
-    # Dictionary to store DataFrames for each cluster
-    cluster_dataframes = {}
-
-    try:
-        # Process each cluster
-        for cluster in unique_clusters:
-            # Create empty dataframe for this cluster
-            mut_vcf_vep = pd.DataFrame(columns=['#CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER', 'INFO', 'FORMAT'])
+    # Process mutations
+    for mut in pvi_data['mutation_id'].unique():
+        try:
+            # Clean chromosome prefix and split mutation components
+            chrom, pos, ref, alt = mut.split(':')
             
-            # Process each mutation in cluster
-            cluster_df = pvi_data[pvi_data['cluster_id'] == cluster]
-            
-            for _, row in cluster_df.iterrows():
-                mutation_parts = row['mutation_id'].split(':')
-                chrom = mutation_parts[0]
-                pos = int(mutation_parts[1])
+            # Process only SNPs (single nucleotide variants)
+            if len(ref) == 1 and len(alt) == 1:
+                clone_id = pvi_data.loc[pvi_data['mutation_id'] == mut, 'cluster_id'].iloc[0]
                 
-                matching_vcf_rows = mutation_vcf[
-                    (mutation_vcf[0] == chrom) & 
-                    (mutation_vcf[1] == pos)
-                ]
-                if not matching_vcf_rows.empty:
-                    vcf_row = matching_vcf_rows.iloc[0]
-                    
-                    new_row = pd.DataFrame({
-                        "#CHROM": [vcf_row[0]],
-                        "POS": [vcf_row[1]],
-                        "ID": [row['mutation_id']],
-                        "REF": [vcf_row[3]],
-                        "ALT": [vcf_row[4]],
-                        "QUAL": [vcf_row[5]],
-                        "FILTER": [vcf_row[6]],
-                        "INFO": [vcf_row[7]],
-                        "FORMAT": [vcf_row[8]]
-                    })
+                if clone_id not in clone_dataframes:
+                    clone_dataframes[clone_id] = []
                 
-                    mut_vcf_vep = pd.concat([mut_vcf_vep, new_row], ignore_index=True)
-            
-            # Save the cluster DataFrame
-            mut_vcf_vep.to_csv(f"{out_dir}/{sample}_cluster_{cluster}.vcf", sep='\t', index=False)
-            cluster_dataframes[cluster] = mut_vcf_vep
-
-        return cluster_dataframes
-
-    except Exception as e:
-        raise ValueError(f"Error creating formatting p-vi to vep format: {e}")
-
-
-
-
+                clone_dataframes[clone_id].append({
+                    'chr': chrom,
+                    'start': pos,
+                    'end': pos,
+                    'allele': f"{ref}/{alt}"
+                })
+        except Exception as e:
+            raise ValueError(f"Error processing mutation {mut}: {e}")
     
+    # Convert to DataFrames and save
+    result: Dict[int, pd.DataFrame] = {}
+    for clone_id, variants in clone_dataframes.items():
+        df = pd.DataFrame(variants)
+        output_file = out_path / f"{sample_id}_cluster_{clone_id}.tsv"
+        df.to_csv(output_file, sep='\t', index=False, header=False)
+        result[clone_id] = df
+    
+    return result
+
 if __name__ == '__main__':
-    # get the script input params
-    input_parser = argparse.ArgumentParser()
-    input_parser.add_argument("--mutations", action='store', required=True)
-    input_parser.add_argument("--pvi_output", action='store', required=True)
-    input_parser.add_argument("--sample_id", action='store', required=True)
-    input_parser.add_argument("--out_dir", action='store', required=True)
-    args = input_parser.parse_args() 
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--pvi_data",  action='store', required=True)
+    parser.add_argument("--sample_id", action='store', required=True)
+    parser.add_argument("--out_dir", action='store', required=True)
     
-    # Process the vcf file
-    prep_pvi_to_vep(args.mutations, args.pvi_output, args.sample_id, args.out_dir)
+    args = parser.parse_args()
+    process_pyclone_snps_clones(args.pvi_data, args.sample_id, args.out_dir)
+
+
+
+
