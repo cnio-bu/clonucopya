@@ -7,10 +7,11 @@ import json_to_csv
 
 
 def pandrugs_query(vep_vcf,output_dir):
-     dict_computations = {}
-     sample_id = os.path.splitext(vep_vcf)[0]
-
      if os.path.exists(vep_vcf):
+        os.makedirs(output_dir, exist_ok=True)
+        sample_id = os.path.splitext(os.path.basename(vep_vcf))[0]
+        dict_computations = {}
+
         # POST - computation
         ff = open(vep_vcf, 'r')
         data = ff.read()
@@ -119,21 +120,14 @@ def pandrugs_query(vep_vcf,output_dir):
                     # write 'geneDrugInfo' tags into a csv
                     json_to_csv.write(filename, filename.replace('json', 'csv'))
             df_computations = pd.DataFrame.from_dict(dict_computations, orient='index', columns=['url_computation'])
-            df_computations.to_csv(os.path.join(output_dir, f"{sample_id}_computation.tsv")),
-                                           sep='\t',
-                                           index=True)
-
+            df_computations.to_csv(os.path.join(output_dir, f"{sample_id}_computation.tsv"), sep='\t', index=True)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--vep_dir", action='store', required=True)
+    parser.add_argument("--vep_vcf", action='store', required=True)
     parser.add_argument("--out_dir", action='store', required=True)
 
     args = parser.parse_args()
 
-    # Iterate over VCF files in the directory ESTO VA EN LA REGLA
-    for clone in os.listdir(args.vep_dir):
-        if clone.endswith('.vcf'):
-            vcf_path = os.path.join(args.vep_dir, clone)
-            pandrugs_query(vcf_path, args.out_dir)
+    pandrugs_query(args.vep_vcf, args.out_dir)
