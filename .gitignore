@@ -9,3 +9,4 @@ workflow/results
 workflow/slurm*
 workflow/resources/*
 workflow/logs
+workflow/scripts/__pycache__/
