@@ -35,6 +35,6 @@ rule vep_annotation:
         --output_file {output.dir}/annotations/"$vcf_file" \
         --stats_file {output.dir}/stats/"$stat_file" \
         --assembly GRCh38 \
-        --verbose > {log} 2>&1
-        done
+        --verbose > {log}
+        done > {log} 2>&1
         """

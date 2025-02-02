@@ -15,7 +15,7 @@ rule pvi_vep_prep:
         config["resources"]["default"]["threads"]
     resources:
         mem_mb = config["resources"]["default"]["mem"],
-        runtime = config["resources"]["default"]["walltime"]
+        runtime=240
     shell:
         """
         python scripts/vep_formatting.py --pvi_data {input.pvi_df} \
