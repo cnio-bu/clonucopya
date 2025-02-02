@@ -20,32 +20,32 @@ def json_to_csv(json_origin, csv_destination):
         None
     """
 
-        # Opening JSON file and loading the data
-        with open(fr'{json_origin}') as json_file:
-                data = json.load(json_file)
+    # Opening JSON file and loading the data
+    with open(fr'{json_origin}') as json_file:
+        data = json.load(json_file)
 
-        geneDrugGroup = data['geneDrugGroup']
+    geneDrugGroup = data['geneDrugGroup']
 
-        data_file = open(fr'{csv_destination}', 'w')
+    data_file = open(fr'{csv_destination}', 'w')
 
-        csv_writer = csv.writer(data_file)
+    csv_writer = csv.writer(data_file)
 
-        count = 0
+    count = 0
 
-        for gdg in geneDrugGroup:
-                geneDrugInfo = gdg['geneDrugInfo']
+    for gdg in geneDrugGroup:
+        geneDrugInfo = gdg['geneDrugInfo']
 
-                for gdi in geneDrugInfo:
-                        if count == 0:
-                                # Writing headers of CSV file
-                                header = gdi.keys()
-                                csv_writer.writerow(header)
-                                count += 1
+        for gdi in geneDrugInfo:
+            if count == 0:
+                # Writing headers of CSV file
+                header = gdi.keys()
+                csv_writer.writerow(header)
+                count += 1
 
-                        # Writing data of CSV file
-                        csv_writer.writerow(gdi.values())
+                # Writing data of CSV file
+                csv_writer.writerow(gdi.values())
 
-        data_file.close()
+    data_file.close()
 
 
 
