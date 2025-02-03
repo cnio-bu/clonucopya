@@ -4,7 +4,7 @@ rule vep_annotation:
     output:
         dir=directory("results/vep_annotation/{sample}")
     params:
-        cache_dir="resources"
+        cache_dir="resources/vep/cache"
     log:
         "logs/vep_annotation/{sample}.log"
     benchmark:

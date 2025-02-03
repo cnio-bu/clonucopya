@@ -2,10 +2,11 @@ from snakemake.io import expand, touch
 from glob import glob
 import os
 
-###### Config file and sample sheets #####
+###### Config file, environment and sample sheet #####
 
 configfile: "../config/config_multi_vcf.yaml"
 
+os.environ["SNAKEMAKE_OUTPUT_CACHE"] = f"{os.getcwd()}/resources/vep/cache"
 
 ##### Target rules #####
 
@@ -23,9 +24,10 @@ rule all:
         expand("results/pyclone-vi_prep/{sample}_intersect_pvi.tsv", sample=SAMPLES),
         expand("results/pyclone-vi/{sample}_pvi_out.tsv", sample=SAMPLES),
         expand("results/pvi_vep_prep/{sample}", sample=SAMPLES),
+        "resources/vep/cache",
         expand("results/vep_annotation/{sample}", sample=SAMPLES),
         expand("results/query_pandrugs/{sample}", sample=SAMPLES),
-#        expand("resources/vep/cache")
+
 
 
 
@@ -56,7 +58,7 @@ include: "rules/05_pvi_vep_prep.smk"
 
 # DOWNLOAD ENSEMBL-VEP CACHE
 
-#include: "rules/06_get_vep_cache.smk"
+include: "rules/06_get_vep_cache.smk"
 
 
 # VEP ANNOTATION PER CLUSTER

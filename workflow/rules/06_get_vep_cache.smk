@@ -9,8 +9,10 @@ rule get_vep_cache:
     log:
         "logs/get_vep_cache/cache.log"
     resources:
-        mem_mb=4000
-    cache: "omit-software"
+        mem_mb=config["resources"]["default"]["mem"],
+        disk_mb=40000,
+        runtime=config["resources"]["default"]["walltime"]
+    cache: "omit-software" # True
     wrapper:
         "v5.5.0/bio/vep/cache"
 
