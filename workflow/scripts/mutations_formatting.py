@@ -26,6 +26,10 @@ def process_vcf_mutations(input_vcf, output_file):
     mut_vcf_filt = mut_vcf.iloc[:,[0,1,3,4]].copy()
     mut_vcf_filt.columns = ['CHROM', 'POS', 'REF', 'ALT']
     
+    # Change format to VEP Standard
+    mut_vcf_filt['REF'] = mut_vcf_filt['REF'].apply(lambda x: x.replace('.', '-') if '.' in x else x)
+    mut_vcf_filt['ALT'] = mut_vcf_filt['ALT'].apply(lambda x: x.replace('.', '-') if '.' in x else x)
+
     # Extract genotype information
     genotype_column = mut_vcf.iloc[:,[9]].squeeze().copy()
     
