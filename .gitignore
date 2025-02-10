@@ -1,7 +1,7 @@
 *.txt
 test/
 workflow/logs/
-data/*
+data/
 .ipynb_checkpoints
 lab_notebook.md
 .snakemake
