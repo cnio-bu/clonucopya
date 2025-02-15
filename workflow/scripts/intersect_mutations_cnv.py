@@ -26,7 +26,7 @@ def create_pyclone_vi_input(mutations_file, cnv_file, output_file):
     # Process intersected data preserving mutation_id
     result = []
     for item in intersect:
-        mutation_id = item[3]  # mutation_id está en la posición 3
+        mutation_id = item[3]
         result.append({
             'mutation_id': mutation_id,
             'sample_id': item[12],
@@ -34,7 +34,7 @@ def create_pyclone_vi_input(mutations_file, cnv_file, output_file):
             'alt_counts': mutations.loc[mutations['mutation_id'] == mutation_id, 'alt_counts'].values[0],
             'major_cn': int(item[9]),
             'minor_cn': int(item[10]),
-            'normal_cn': int(item[11])  # Ahora usamos el valor de normal_cn del archivo CNV
+            'normal_cn': int(item[11])
         })
     
     # Create DataFrame and save to file
