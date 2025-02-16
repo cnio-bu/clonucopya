@@ -1,16 +1,19 @@
 rule pyclone_vi_prep:
     input:
-        mutations = "results/mutation_prep/{sample}_prep.mut.tsv",
-        cnvs = "results/cnv_prep/{sample}_prep.cnv.tsv"
+#        sample_id = lambda wildcards: samples.loc[wildcards.sample, "sample_id"],
+        mutations = f"results/{experiment}/mutation_prep/{{sample}}_prep.mut.tsv",
+        cnvs = f"results/{experiment}/cnv_prep/{{sample}}_prep.cnv.tsv"
     output:
-        "results/pyclone-vi_prep/{sample}_intersect_pvi.tsv"
+        f"results/{experiment}/pyclone-vi_prep/{{sample}}_intersect_pvi.tsv"
     log:
-        "logs/pyclone-vi_prep/{sample}.log"
+        f"logs/{experiment}/pyclone-vi_prep/{{sample}}.log"
     benchmark:
-        "logs/pyclone-vi_prep/{sample}.bmk"
+        f"logs/{experiment}/pyclone-vi_prep/{{sample}}.bmk"
     conda:
-        "../envs/intersect_mutations_cnv.yaml"
+        "../envs/intersect_mutations_cnv.yaml",
+    params:
+        sample_id = lambda wildcards: samples.loc[wildcards.sample, "sample_id"]
     shell:
         """
-        python scripts/intersect_mutations_cnv.py --mutations {input.mutations} --cnvs {input.cnvs} --output_file {output} > {log} 2>&1
+        python scripts/intersect_mutations_cnv.py --sample_id {params.sample_id} --mutations {input.mutations} --cnvs {input.cnvs} --output_file {output} > {log} 2>&1
     """
