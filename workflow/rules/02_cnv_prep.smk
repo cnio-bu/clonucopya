@@ -4,15 +4,13 @@ import os
 
 rule cnv_prep:
     input:
-#        cnvs = os.path.join(config["samples"]["cnvs"],"{sample}.cnv.tsv")
         cnvs = lambda wildcards: samples.loc[wildcards.sample, "cnvs"]
     output:
-#        "results/cnv_prep/{sample}_prep.cnv.tsv"
         f"results/{experiment}/cnv_prep/{{sample}}_prep.cnv.tsv"
     log:
-        f"logs/cnv_prep/{experiment}/{{sample}}.log"
+        f"logs/{experiment}/cnv_prep//{{sample}}.log"
     benchmark:
-        f"logs/cnv_prep/{experiment}/{{sample}}.bmk"
+        f"logs/{experiment}/cnv_prep/{{sample}}.bmk"
     conda:
         "../envs/cnv_prep.yaml"
     params:

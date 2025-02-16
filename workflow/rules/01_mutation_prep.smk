@@ -8,9 +8,9 @@ rule mutation_prep:
     output:
         f"results/{experiment}/mutation_prep/{{sample}}_prep.mut.tsv"
     log:
-        f"logs/mutation_prep/{{sample}}.log"
+        f"logs/{experiment}/mutation_prep/{{sample}}.log"
     benchmark:
-        f"logs/mutation_prep/{{sample}}.bmk"
+        f"logs/{experiment}/mutation_prep/{{sample}}.bmk"
     conda:
         "../envs/mutation_prep.yaml"
     shell:
