@@ -4,13 +4,14 @@ import os
 
 rule mutation_prep:
     input:
-        mutations = os.path.join(config["samples"]["mutations"],"{sample}.mut.vcf")
+#        mutations = os.path.join(config["samples"]["mutations"],"{sample}.mut.vcf")
+        mutations = lambda wildcards: samples.loc[wildcards.sample, "mutations"]
     output:
-        "results/mutation_prep/{sample}_prep.mut.tsv"
+        f"results/{experiment}/mutation_prep/{{sample}}_prep.mut.tsv"
     log:
-        "logs/mutation_prep/{sample}.log"
+        f"logs/mutation_prep/{{sample}}.log"
     benchmark:
-        "logs/mutation_prep/{sample}.bmk"
+        f"logs/mutation_prep/{{sample}}.bmk"
     conda:
         "../envs/mutation_prep.yaml"
     shell:
