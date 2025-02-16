@@ -4,7 +4,6 @@ import os
 
 rule mutation_prep:
     input:
-#        mutations = os.path.join(config["samples"]["mutations"],"{sample}.mut.vcf")
         mutations = lambda wildcards: samples.loc[wildcards.sample, "mutations"]
     output:
         f"results/{experiment}/mutation_prep/{{sample}}_prep.mut.tsv"
