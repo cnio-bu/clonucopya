@@ -8,7 +8,7 @@ rule cnv_prep:
     output:
         f"results/{experiment}/cnv_prep/{{sample}}_prep.cnv.tsv"
     log:
-        f"logs/{experiment}/cnv_prep//{{sample}}.log"
+        f"logs/{experiment}/cnv_prep/{{sample}}.log"
     benchmark:
         f"logs/{experiment}/cnv_prep/{{sample}}.bmk"
     conda:
