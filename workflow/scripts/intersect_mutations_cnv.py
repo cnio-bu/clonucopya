@@ -2,7 +2,7 @@ import pandas as pd
 import pybedtools
 import argparse
 
-def create_pyclone_vi_input(mutations_file, cnv_file, output_file):
+def create_pyclone_vi_input(sample_id, mutations_file, cnv_file, output_file):
     # Load mutations
     mutations = pd.read_csv(mutations_file, sep='\t')
     
@@ -16,7 +16,7 @@ def create_pyclone_vi_input(mutations_file, cnv_file, output_file):
     )
     
     cnv_bed = pybedtools.BedTool.from_dataframe(
-        cnv[['Chrom', 'Start', 'End', 'major_cn', 'minor_cn', 'normal_cn', 'sample']]
+        cnv[['Chrom', 'Start', 'End', 'major_cn', 'minor_cn', 'normal_cn']]
         .rename(columns={'Chrom': 'chrom'})
     )
     
@@ -29,7 +29,7 @@ def create_pyclone_vi_input(mutations_file, cnv_file, output_file):
         mutation_id = item[3]
         result.append({
             'mutation_id': mutation_id,
-            'sample_id': item[12],
+            'sample_id': sample_id,
             'ref_counts': mutations.loc[mutations['mutation_id'] == mutation_id, 'ref_counts'].values[0],
             'alt_counts': mutations.loc[mutations['mutation_id'] == mutation_id, 'alt_counts'].values[0],
             'major_cn': int(item[9]),
@@ -45,6 +45,7 @@ def create_pyclone_vi_input(mutations_file, cnv_file, output_file):
 if __name__ == '__main__':
     # get the script input params
     input_parser = argparse.ArgumentParser()
+    input_parser.add_argument("--sample_id", action='store', required=True)
     input_parser.add_argument("--mutations", action='store', required=True)
     input_parser.add_argument("--cnvs", action='store', required=True)
     input_parser.add_argument("--output_file", action='store', required=True)
@@ -52,4 +53,4 @@ if __name__ == '__main__':
     args = input_parser.parse_args()
 
     # Process the data
-    create_pyclone_vi_input(args.mutations, args.cnvs, args.output_file)
+    create_pyclone_vi_input(args.sample_id,args.mutations, args.cnvs, args.output_file)
