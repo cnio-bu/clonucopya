@@ -30,12 +30,13 @@ def create_pyclone_vi_input(sample_id, mutations_file, cnv_file, output_file):
         result.append({
             'mutation_id': mutation_id,
             'sample_id': sample_id,
-            'ref_counts': mutations.loc[mutations['mutation_id'] == mutation_id, 'ref_counts'].values[0],
-            'alt_counts': mutations.loc[mutations['mutation_id'] == mutation_id, 'alt_counts'].values[0],
+            'ref_counts': mutations.loc[mutations['mutation_id'] == mutation_id, 'ref_counts'].iloc[0],
+            'alt_counts': mutations.loc[mutations['mutation_id'] == mutation_id, 'alt_counts'].iloc[0],
             'major_cn': int(item[9]),
             'minor_cn': int(item[10]),
             'normal_cn': int(item[11])
         })
+# substitue iloc in place on values alt and ref
     
     # Create DataFrame and save to file
     output = pd.DataFrame(result)
