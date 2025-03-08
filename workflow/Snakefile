@@ -1,45 +1,39 @@
 from snakemake.io import expand, touch
 from glob import glob
 import os
+import pandas as pd
 
 ###### Config file, environment and sample sheet #####
 
-configfile: "../config/config_multi_vcf.yaml"
+configfile: "../config/config.yaml"
 
 os.environ["SNAKEMAKE_OUTPUT_CACHE"] = f"{os.getcwd()}/resources/vep/cache"
 
 ##### Target rules #####
 
-# Get sample names from mutation files
-SAMPLES = glob_wildcards(os.path.join(config["samples"]["mutations"], 
-                        "{sample}.mut.vcf")).sample
+projects = pd.read_csv(config["samplesheet"]).set_index("project", drop=False)
+
+samples = pd.read_csv(config["samplesheet"]).set_index("sample_id", drop=False)
 
 
 
 # Define target rule
 rule all:
     input:
-        expand("results/mutation_prep/{sample}_prep.mut.tsv", sample=SAMPLES),
-        expand("results/cnv_prep/{sample}_prep.cnv.tsv", sample=SAMPLES),
-        expand("results/pyclone-vi_prep/{sample}_intersect_pvi.tsv", sample=SAMPLES),
-        expand("results/pyclone-vi/{sample}_pvi_out.tsv", sample=SAMPLES),
-        expand("results/pvi_vep_prep/{sample}", sample=SAMPLES),
+        expand("results/mutation_prep/{project}/{sample}_prep.mut.tsv", project=projects.index, sample=samples.index),
+        expand("results/pyclone-vi_prep/{project}/{sample}_intersect_pvi.tsv", project=projects.index, sample=samples.index),
+        expand("results/pyclone-vi_prep/{project}/combined_intersect_pvi.tsv", project=projects.index),
+        expand("results/pyclone-vi/{project}/pvi_out.tsv", project=projects.index),
+        expand("results/pvi_vep_prep/{project}", project=projects.index),
         "resources/vep/cache",
-        expand("results/vep_annotation/{sample}", sample=SAMPLES),
-        expand("results/query_pandrugs/{sample}", sample=SAMPLES),
-
+        expand("results/vep_annotation/{project}/annotations", project=projects.index),
+        expand("results/query_pandrugs/{project}", project=projects.index)
 
 
 
 # FORMAT MUTATION VCF
 
 include: "rules/01_mutation_prep.smk"
-
-
-# CALCULATE CN AND FORMAT CNVs
-
-include: "rules/02_cnv_prep.smk"
-
 
 # INTERSECT MUTATIONS AND CNVs
 
