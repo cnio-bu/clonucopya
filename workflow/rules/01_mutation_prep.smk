@@ -4,13 +4,13 @@ import os
 
 rule mutation_prep:
     input:
-        mutations = lambda wildcards: samples.loc[wildcards.sample, "mutations"]
+        mutations = lambda wildcards: samples.loc[(samples['project'] == wildcards.project) & (samples['sample_id'] == wildcards.sample), "mutations"].iloc[0]
     output:
-        f"results/{experiment}/mutation_prep/{{sample}}_prep.mut.tsv"
+        "results/mutation_prep/{project}/{sample}_prep.mut.tsv"
     log:
-        f"logs/{experiment}/mutation_prep/{{sample}}.log"
+        "logs/mutation_prep/{project}/{sample}.log"
     benchmark:
-        f"logs/{experiment}/mutation_prep/{{sample}}.bmk"
+        "logs/mutation_prep/{project}/{sample}.bmk"
     conda:
         "../envs/mutation_prep.yaml"
     shell:
