@@ -1,19 +1,54 @@
 rule pyclone_vi_prep:
     input:
-#        sample_id = lambda wildcards: samples.loc[wildcards.sample, "sample_id"],
-        mutations = f"results/{experiment}/mutation_prep/{{sample}}_prep.mut.tsv",
-        cnvs = f"results/{experiment}/cnv_prep/{{sample}}_prep.cnv.tsv"
+        mutations = "results/mutation_prep/{project}/{sample}_prep.mut.tsv",
+        cnvs = lambda wildcards: samples.loc[(samples['project'] == wildcards.project) & (samples['sample_id'] == wildcards.sample), "cnvs"].iloc[0]
     output:
-        f"results/{experiment}/pyclone-vi_prep/{{sample}}_intersect_pvi.tsv"
+        "results/pyclone-vi_prep/{project}/{sample}_intersect_pvi.tsv"
     log:
-        f"logs/{experiment}/pyclone-vi_prep/{{sample}}.log"
+        "logs/pyclone-vi_prep/{project}/{sample}.log"
     benchmark:
-        f"logs/{experiment}/pyclone-vi_prep/{{sample}}.bmk"
+        "logs/pyclone-vi_prep/{project}/{sample}.bmk"
     conda:
         "../envs/intersect_mutations_cnv.yaml",
     params:
-        sample_id = lambda wildcards: samples.loc[wildcards.sample, "sample_id"]
+        sample_id = lambda wildcards: samples.loc[(samples['project'] == wildcards.project) & (samples['sample_id'] == wildcards.sample), "sample_id"].iloc[0]
     shell:
         """
-        python scripts/intersect_mutations_cnv.py --sample_id {params.sample_id} --mutations {input.mutations} --cnvs {input.cnvs} --output_file {output} > {log} 2>&1
+        python scripts/intersect_mutations_cnv.py \
+              --sample_id {params.sample_id} \
+              --mutations {input.mutations} \
+              --cnvs {input.cnvs} \
+              --output_file {output} > {log} 2>&1
     """
+
+
+rule concat_pyclone_outputs:
+    input:
+        expand("results/pyclone-vi_prep/{project}/{sample}_intersect_pvi.tsv", project=projects.index.unique(), sample=samples.index)
+    output:
+        "results/pyclone-vi_prep/{project}/combined_intersect_pvi.tsv"
+    log:
+        "logs/pyclone-vi_prep/{project}/concat.log"
+    conda:
+        "../envs/intersect_mutations_cnv.yaml"
+    shell:
+        """
+        python -c "
+import pandas as pd
+import sys
+
+# List of pvi prep samples
+input_files = {input!r}
+pvi_preps = [pd.read_csv(file, sep='\t') for file in input_files]
+
+# Concatenate all DataFrames
+combined_pvi = pd.concat(pvi_preps, ignore_index=True)
+
+# Drop duplicates
+
+combined_pvi_dedup = combined_pvi.drop_duplicates()
+
+# Save the combined DataFrame to the output file
+combined_pvi_dedup.to_csv('{output}', sep='\t', index=False)
+" > {log} 2>&1
+        """
