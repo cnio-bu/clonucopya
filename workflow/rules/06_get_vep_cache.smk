@@ -12,7 +12,6 @@ rule get_vep_cache:
         mem_mb=config["resources"]["default"]["mem"],
         disk_mb=40000,
         runtime=config["resources"]["default"]["walltime"]
-    cache: "omit-software"
     wrapper:
         "v5.5.0/bio/vep/cache"
 
