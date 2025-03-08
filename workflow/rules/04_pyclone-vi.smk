@@ -1,13 +1,13 @@
 rule pyclone_vi:
     input:
-        "results/pyclone-vi_prep/{sample}_intersect_pvi.tsv"
+        "results/pyclone-vi_prep/{project}/combined_intersect_pvi.tsv"
     output:
-        fit = "results/pyclone-vi/{sample}_pvi_out.h5",
-        result = "results/pyclone-vi/{sample}_pvi_out.tsv"
+        fit = "results/pyclone-vi/{project}/pvi_out.h5",
+        result = "results/pyclone-vi/{project}/pvi_out.tsv"
     log:
-        "logs/pyclone-vi/{sample}_pvi.log"
+        "logs/pyclone-vi/{project}/pvi.log"
     benchmark:
-        "logs/pyclone-vi/{sample}_pvi.smk"
+        "logs/pyclone-vi/{project}/pvi.smk"
     conda:
         "../envs/pyclone-vi.yaml"
     threads: 
