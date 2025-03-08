@@ -31,8 +31,8 @@ def process_vcf_mutations(input_vcf, output_file):
     mut_vcf_filt['ALT'] = mut_vcf_filt['ALT'].apply(lambda x: x.replace('.', '-') if '.' in x else x)
 
     # Extract genotype information
-    genotype_column = mut_vcf.iloc[:,[9]].squeeze().copy()
-    
+    genotype_column = mut_vcf.iloc[:,[-1]].squeeze().copy()
+
     # Parse read counts
     try:
         mut_vcf_filt['ref_counts'] = genotype_column.str.split(':').str[1].str.split(',').str[0]
