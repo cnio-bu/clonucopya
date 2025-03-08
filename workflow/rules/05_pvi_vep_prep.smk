@@ -1,14 +1,14 @@
 rule pvi_vep_prep:
     input:
-        pvi_df="results/pyclone-vi/{sample}_pvi_out.tsv",
+        pvi_df="results/pyclone-vi/{project}/pvi_out.tsv",
     output:
-        dir=directory("results/pvi_vep_prep/{sample}")
+        dir=directory("results/pvi_vep_prep/{project}")
     params:
-        sample_id=lambda wildcards: wildcards.sample
+        sample_id=lambda wildcards: wildcards.project
     log:
-        "logs/pvi_vep_prep/{sample}.log"
+        "logs/pvi_vep_prep/{project}/pvi_vep_prep.log"
     benchmark:
-        "logs/pvi_vep_prep/{sample}.smk"
+        "logs/pvi_vep_prep/{project}/pvi_vep_prep.smk"
     conda:
         "../envs/pvi_vep_prep.yaml"
     threads: 
@@ -22,3 +22,4 @@ rule pvi_vep_prep:
                                          --sample_id {params.sample_id} \
                                          --out_dir {output.dir} 2> {log}
         """
+
