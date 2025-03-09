@@ -33,33 +33,33 @@ rule all:
 
 # FORMAT MUTATION VCF
 
-include: "rules/01_mutation_prep.smk"
+include: "rules/mutation_prep.smk"
 
 # INTERSECT MUTATIONS AND CNVs
 
-include: "rules/03_pyclone-vi_prep.smk"
+include: "rules/pyclone-vi_prep.smk"
 
 
 # RUN PYCLONE-VI SUBCLONAL INFERENCE
 
-include: "rules/04_pyclone-vi.smk"
+include: "rules/pyclone-vi.smk"
 
 
 # FORMAT PYCLONE-VI OUTPUT FOR ENSEMBL-VEP
 
-include: "rules/05_pvi_vep_prep.smk"
+include: "rules/pvi_vep_prep.smk"
 
 
 # DOWNLOAD ENSEMBL-VEP CACHE
 
-include: "rules/06_get_vep_cache.smk"
+include: "rules/get_vep_cache.smk"
 
 
 # VEP ANNOTATION PER CLUSTER
 
-include: "rules/07_vep_annotation.smk"
+include: "rules/vep_annotation.smk"
 
 
 # VEP ANNOTATION PER CLUSTER
 
-include: "rules/08_query_pandrugs.smk"
+include: "rules/query_pandrugs.smk"
