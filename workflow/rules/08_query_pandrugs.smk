@@ -1,13 +1,13 @@
 rule query_pandrugs:
     input:
-        vep_dir="results/vep_annotation/{sample}/annotations"
+        vep_dir="results/vep_annotation/{project}/annotations"
     output:
-        pandrugs_dir=directory("results/query_pandrugs/{sample}")
+        pandrugs_dir=directory("results/query_pandrugs/{project}")
     params:
     log:
-        "logs/query_pandrugs/{sample}.log"
+        "logs/query_pandrugs/{project}.log"
     benchmark:
-        "logs/query_pandrugs/{sample}.smk"
+        "logs/query_pandrugs/{project}.smk"
     conda: "../envs/query_pandrugs.yaml"
     threads: config["resources"]["default"]["threads"]
     resources:
