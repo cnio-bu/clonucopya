@@ -8,6 +8,8 @@ rule get_vep_cache:
         type="merged"
     log:
         "logs/get_vep_cache/cache.log"
+    benchmark:
+        "logs/get_vep_cache/cache.bmk"
     resources:
         mem_mb=config["resources"]["default"]["mem"],
         disk_mb=40000,
