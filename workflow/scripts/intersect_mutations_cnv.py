@@ -36,7 +36,6 @@ def create_pyclone_vi_input(sample_id, mutations_file, cnv_file, output_file):
             'minor_cn': int(item[10]),
             'normal_cn': int(item[11])
         })
-# substitue iloc in place on values alt and ref
     
     # Create DataFrame and save to file
     output = pd.DataFrame(result)
