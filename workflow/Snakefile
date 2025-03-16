@@ -27,7 +27,8 @@ rule all:
         expand("results/pvi_vep_prep/{project}", project=projects.index),
         "resources/vep/cache",
         expand("results/vep_annotation/{project}/annotations", project=projects.index),
-        expand("results/query_pandrugs/{project}", project=projects.index)
+        expand("results/query_pandrugs/{project}", project=projects.index),
+        expand("results/phyclone/{project}/tree.nwk", project=projects.index)
 
 
 
@@ -60,6 +61,11 @@ include: "rules/get_vep_cache.smk"
 include: "rules/vep_annotation.smk"
 
 
-# VEP ANNOTATION PER CLUSTER
+# QUERY PANDRUGS SMALL VARIANTS
 
 include: "rules/query_pandrugs.smk"
+
+
+# BUILD SUBCLONAL TREE
+
+include: "rules/phyclone.smk"
