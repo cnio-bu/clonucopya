@@ -33,14 +33,15 @@ def process_vcf_mutations(input_vcf, output_file):
     # Extract genotype information
     genotype_column = mut_vcf.iloc[:,[-1]].squeeze().copy()
 
-    # Parse read counts
+    # Parse read counts and variant alelle frequencies
     try:
         mut_vcf_filt['ref_counts'] = genotype_column.str.split(':').str[1].str.split(',').str[0]
         mut_vcf_filt['alt_counts'] = genotype_column.str.split(':').str[1].str.split(',').str[1]
-        
+        mut_vcf_filt['VAF'] = genotype_column.str.split(':').str[2]
         # Convert counts to numeric
         mut_vcf_filt['ref_counts'] = pd.to_numeric(mut_vcf_filt['ref_counts'], errors='coerce')
         mut_vcf_filt['alt_counts'] = pd.to_numeric(mut_vcf_filt['alt_counts'], errors='coerce')
+        mut_vcf_filt['VAF'] = pd.to_numeric(mut_vcf_filt['VAF'], errors='coerce')
     except Exception as e:
         raise ValueError(f"Error parsing read counts: {e}")
     

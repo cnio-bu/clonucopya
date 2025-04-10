@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="Clonucopya" content="width=device-width, initial-scale=1.0">
+    <title>Clonucopya - Report</title>
+    <style>
+        .logo {
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+        }
+        
+        .grafica {
+            width: 100%;
+            height: 300px;
+        }
+        
+        table {
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            border: 1px solid black;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img class="logo" src="{{ logo_url }}" alt="Logo Clonucopya">
+        <h1>Clonucopya</h1>
+    </header>
+    
+    <!-- Sección para las gráficas -->
+    <section>
+        {% for grafica in graficas %}
+            <img class="grafica" src="{{ grafica.url }}" alt="Gráfica {{ loop.index }}">
+        {% endfor %}
+    </section>
+    
+    <!-- Tabla de resultados -->
+    <h2>Subclones Identificados</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Sample</th>
+                <th>Subclone</th>
+                <th>Mutations</th>
+                <th>Allele Frequency (VAF)</th>
+                <th>Affected Genes</th>
+                <th>Top Mutations</th>
+                <th>Top Drugs</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for subclon in subclones %}
+                <tr>
+                    <td>{{ subclon.sample }}</td>
+                    <td>{{ subclon.subclone }}</td>
+                    <td>{{ subclon.mutations }}</td>
+                    <td>{{ subclon.vaf }}%</td>
+                    <td>{{ subclon.affected_genes }}</td>
+                    <td>{{ subclon.top_mutations }}</td>
+                    <td>{{ subclon.top_drugs }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
+
