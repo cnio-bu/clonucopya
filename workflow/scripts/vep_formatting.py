@@ -20,13 +20,13 @@ def process_pyclone_snps_clones(pvi_file, sample_id, out_dir):
     out_path = Path(out_dir)
     out_path.mkdir(parents=True, exist_ok=True)
     
-    # Read PyClone-VI data
+    # Load PyClone-VI output
     try:
         pvi_data = pd.read_csv(pvi_file, sep='\t')
     except Exception as e:
         raise ValueError(f"Failed to read PyClone-VI file: {e}")
 
-    # Initialize storage for cluster data
+    # Initialize cluster dictionary
     clone_dataframes: Dict[int, List[Dict]] = {}
     
     # Process mutations
@@ -58,7 +58,6 @@ def process_pyclone_snps_clones(pvi_file, sample_id, out_dir):
         except Exception as e:
             raise ValueError(f"Error processing mutation {mut}: {e}")
     
-    # Convert to DataFrames and save
     result: Dict[int, pd.DataFrame] = {}
     for clone_id, variants in clone_dataframes.items():
         df = pd.DataFrame(variants)
