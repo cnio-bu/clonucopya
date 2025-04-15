@@ -3,13 +3,25 @@ import pybedtools
 import argparse
 
 def create_pyclone_vi_input(sample_id, mutations_file, cnv_file, output_file):
-    # Load mutations
+    """
+    Intersect mutations with copy number regions. Copy number must contain mutation to be valid.
+
+    Args:
+        sample_id (str): Sample ID of the pair mutation-cnv files
+        mutations_file (str): Path to mutation file of the processed sample
+        cnv_file (str): Path to copy number file of the processed sample
+        output_file (str, optional): Path to output TSV file.
+
+    Returns:
+        pandas.DataFrame: Intersected sample's mutations-cnvs pair
+    """
+
+    # Load mutations and copy number files
     mutations = pd.read_csv(mutations_file, sep='\t')
     
-    # Load CNV data
     cnv = pd.read_csv(cnv_file, sep='\t')
     
-    # Create BedTool objects with required columns
+    # Create bedtool objects
     mut_bed = pybedtools.BedTool.from_dataframe(
         mutations[['CHROM', 'POS', 'POS', 'mutation_id', 'REF', 'ALT']]
         .rename(columns={'POS': 'start', 'CHROM': 'chrom'})
@@ -20,10 +32,10 @@ def create_pyclone_vi_input(sample_id, mutations_file, cnv_file, output_file):
         .rename(columns={'Chrom': 'chrom'})
     )
     
-    # Intersect mutations with CNV regions
+    # Intersect mutations with copy number regions
     intersect = mut_bed.intersect(cnv_bed, wa=True, wb=True)
 
-    # Process intersected data preserving mutation_id
+    # Format intersected object into a dictionary
     result = []
     for item in intersect:
         mutation_id = item[3]
@@ -37,13 +49,12 @@ def create_pyclone_vi_input(sample_id, mutations_file, cnv_file, output_file):
             'normal_cn': int(item[11])
         })
     
-    # Create DataFrame and save to file
+    # Convert dictionary to dataframe and save it
     output = pd.DataFrame(result)
     output.to_csv(output_file, sep='\t', index=False)
 
 
 if __name__ == '__main__':
-    # get the script input params
     input_parser = argparse.ArgumentParser()
     input_parser.add_argument("--sample_id", action='store', required=True)
     input_parser.add_argument("--mutations", action='store', required=True)
@@ -52,5 +63,5 @@ if __name__ == '__main__':
 
     args = input_parser.parse_args()
 
-    # Process the data
+
     create_pyclone_vi_input(args.sample_id,args.mutations, args.cnvs, args.output_file)
