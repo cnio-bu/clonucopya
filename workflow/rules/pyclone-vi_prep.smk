@@ -1,4 +1,4 @@
-rule pyclone_vi_prep:
+rule pvi_intesersect:
     input:
         mutations = "results/mutation_prep/{project}/{sample}_prep.mut.tsv",
         cnvs = lambda wildcards: samples.loc[(samples['project'] == wildcards.project) & (samples['sample_id'] == wildcards.sample), "cnvs"].iloc[0]
@@ -22,11 +22,14 @@ rule pyclone_vi_prep:
     """
 
 
-rule concat_pyclone_outputs:
+rule concat_and_purity_pvi:
     input:
         expand("results/pyclone-vi_prep/{project}/{sample}_intersect_pvi.tsv", project=projects.index.unique(), sample=samples.index)
     output:
-        "results/pyclone-vi_prep/{project}/combined_intersect_pvi.tsv"
+        pvi = "results/pyclone-vi_prep/{project}/combined_intersect_pvi.tsv",
+        phyclone_prep = "results/pyclone-vi_prep/{project}/pvi_input_phyclone_formatted.tsv"
+    params:
+        samplesheet = config["samplesheet"]
     log:
         "logs/pyclone-vi_prep/{project}/concat.log"
     conda:
@@ -41,14 +44,25 @@ import sys
 input_files = {input!r}
 pvi_preps = [pd.read_csv(file, sep='\t') for file in input_files]
 
-# Concatenate all DataFrames
+# Concatenate
 combined_pvi = pd.concat(pvi_preps, ignore_index=True)
 
 # Drop duplicates
 
 combined_pvi_dedup = combined_pvi.drop_duplicates()
 
-# Save the combined DataFrame to the output file
-combined_pvi_dedup.to_csv('{output}', sep='\t', index=False)
+combined_pvi_dedup.to_csv('{output.phyclone_prep}', sep='\t', index=False)
+
+samplesheet = pd.read_csv('{params.samplesheet}')
+
+tumour_content_dict = dict(zip(samplesheet['sample_id'], samplesheet['tumour_content']))
+
+combined_pvi_dedup['tumour_content'] = combined_pvi_dedup['sample_id'].map(tumour_content_dict)
+
+combined_pvi_dedup.to_csv('{output.pvi}', sep='\t', index=False)
 " > {log} 2>&1
         """
+
+
+
+
