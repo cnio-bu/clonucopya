@@ -1,4 +1,5 @@
 from snakemake.io import expand, touch
+from snakemake.utils import validate
 from glob import glob
 import os
 import pandas as pd
@@ -15,6 +16,7 @@ projects = pd.read_csv(config["samplesheet"]).set_index("project", drop=False)
 
 samples = pd.read_csv(config["samplesheet"]).set_index("sample_id", drop=False)
 
+validate(samples, "resources/schemas/samplesheet_schema.yaml")
 
 
 # Define target rule
