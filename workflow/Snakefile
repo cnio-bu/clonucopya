@@ -8,6 +8,8 @@ import pandas as pd
 
 configfile: "../config/config.yaml"
 
+validate(config, "resources/schemas/config_schema.yaml")
+
 os.environ["SNAKEMAKE_OUTPUT_CACHE"] = f"{os.getcwd()}/resources/vep/cache"
 
 ##### Target rules #####
