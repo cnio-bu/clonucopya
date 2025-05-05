@@ -1,0 +1,42 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+description: Samplesheet validation of Clonucopya
+csv:
+  delimiter: ','
+columns:
+  - name: project
+    type: string
+    rules:
+      not_empty: true
+    description: name of the group of samples
+  - name: sample_id
+    type: string
+    rules:
+      not_empty: true
+    description: sample name/identifier
+  - name: sex
+    type: string
+    rules:
+      not_empty: true
+      in_array: [male, female]
+    description: sex of the patient who belongs the sample
+  - name: mutations
+    type: string
+    rules:
+      not_empty: true
+      is_file: true
+    description: path to mutations' file of the sample
+  - name: cnvs
+    type: string
+    rules:
+      not_empty: true
+      is_file: true
+    description: path to copy number file of the sample
+  - name: tumour_content
+    type: float
+    rules:
+      not_empty: true
+      is_float: true
+      range_min: 0
+      range_max: 1
+    description: Tumor content fraction (0-1)
+
