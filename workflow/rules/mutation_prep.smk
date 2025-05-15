@@ -4,7 +4,8 @@ import os
 
 rule mutation_prep:
     input:
-        mutations = lambda wildcards: samples.loc[(samples['project'] == wildcards.project) & (samples['sample_id'] == wildcards.sample), "mutations"].iloc[0]
+#        mutations = lambda wildcards: samples.loc[(samples['project'] == wildcards.project) & (samples['sample_id'] == wildcards.sample), "mutations"].iloc[0]
+        mutations = lambda wildcards: samples.loc[wildcards.sample, "mutations"]
     output:
         "results/mutation_prep/{project}/{sample}_prep.mut.tsv"
     log:
