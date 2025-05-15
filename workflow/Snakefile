@@ -14,25 +14,36 @@ os.environ["SNAKEMAKE_OUTPUT_CACHE"] = f"{os.getcwd()}/resources/vep/cache"
 
 ##### Target rules #####
 
-projects = pd.read_csv(config["samplesheet"]).set_index("project", drop=False)
+samples_df = pd.read_csv(config["samplesheet"])
 
-samples = pd.read_csv(config["samplesheet"]).set_index("sample_id", drop=False)
+samples = samples_df.set_index("sample_id", drop=False)
 
 validate(samples, "resources/schemas/samplesheet_schema.yaml")
 
 
-# Define target rule
+sample_project_pairs = list(zip(samples_df["project"], samples_df["sample_id"]))
+
+print("Sample-Project pairs:", sample_project_pairs)
+
+
+# Check files exist
+missing_files = samples_df[~samples_df["mutations"].apply(os.path.exists) | 
+                          ~samples_df["cnvs"].apply(os.path.exists)]
+if not missing_files.empty:
+    raise FileNotFoundError(f"Missing input files:\n{missing_files}")
+
 rule all:
     input:
-        expand("results/mutation_prep/{project}/{sample}_prep.mut.tsv", project=projects.index, sample=samples.index),
-        expand("results/pyclone-vi_prep/{project}/{sample}_intersect_pvi.tsv", project=projects.index, sample=samples.index),
-        expand("results/pyclone-vi_prep/{project}/combined_intersect_pvi.tsv", project=projects.index),
-        expand("results/pyclone-vi/{project}/pvi_out.tsv", project=projects.index),
-        expand("results/pvi_vep_prep/{project}", project=projects.index),
+        expand("results/mutation_prep/{project}/{sample}_prep.mut.tsv", zip, project=samples_df["project"], sample=samples_df["sample_id"]),
+        expand("results/pyclone-vi_prep/{project}/{sample}_intersect_pvi.tsv", zip, project=samples_df["project"], sample=samples_df["sample_id"]),
+        expand("results/pyclone-vi_prep/{project}/combined_intersect_pvi.tsv", project=samples_df["project"].unique()),
+        expand("results/pyclone-vi/{project}/pvi_out.tsv", project=samples_df["project"].unique()),
+        expand("results/pvi_vep_prep/{project}", project=samples_df["project"].unique()),
         "resources/vep/cache",
-        expand("results/vep_annotation/{project}/annotations", project=projects.index),
-        expand("results/query_pandrugs/{project}", project=projects.index),
-        expand("results/phyclone/{project}/tree.nwk", project=projects.index)
+        expand("results/vep_annotation/{project}/annotations", project=samples_df["project"].unique()),
+        expand("results/query_pandrugs/{project}", project=samples_df["project"].unique()),
+        expand("results/phyclone/{project}/tree.nwk", project=samples_df["project"].unique())
+
 
 
 
