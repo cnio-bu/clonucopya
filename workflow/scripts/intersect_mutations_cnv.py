@@ -1,5 +1,4 @@
 import pandas as pd
-import pybedtools
 import argparse
 
 def create_pyclone_vi_input(sample_id, mutations_file, cnv_file, output_file):
@@ -18,36 +17,31 @@ def create_pyclone_vi_input(sample_id, mutations_file, cnv_file, output_file):
 
     # Load mutations and copy number files
     mutations = pd.read_csv(mutations_file, sep='\t')
-    
     cnv = pd.read_csv(cnv_file, sep='\t')
-    
-    # Create bedtool objects
-    mut_bed = pybedtools.BedTool.from_dataframe(
-        mutations[['CHROM', 'POS', 'POS', 'mutation_id', 'REF', 'ALT']]
-        .rename(columns={'POS': 'start', 'CHROM': 'chrom'})
-    )
-    
-    cnv_bed = pybedtools.BedTool.from_dataframe(
-        cnv[['Chrom', 'Start', 'End', 'major_cn', 'minor_cn', 'normal_cn']]
-        .rename(columns={'Chrom': 'chrom'})
-    )
-    
-    # Intersect mutations with copy number regions
-    intersect = mut_bed.intersect(cnv_bed, wa=True, wb=True)
 
-    # Format intersected object into a dictionary
     result = []
-    for item in intersect:
-        mutation_id = item[3]
-        result.append({
-            'mutation_id': mutation_id,
-            'sample_id': sample_id,
-            'ref_counts': mutations.loc[mutations['mutation_id'] == mutation_id, 'ref_counts'].iloc[0],
-            'alt_counts': mutations.loc[mutations['mutation_id'] == mutation_id, 'alt_counts'].iloc[0],
-            'major_cn': int(item[9]),
-            'minor_cn': int(item[10]),
-            'normal_cn': int(item[11])
-        })
+    # Iterate through mutations
+    for _, mut_row in mutations.iterrows(): 
+        chr_mut = mut_row['CHROM']  
+        pos_mut = mut_row['POS']
+        
+        # Iterate through CNV segments
+        for _, cnv_row in cnv.iterrows():
+            chr_cnv = cnv_row['Chrom']
+            start = cnv_row['Start']
+            end = cnv_row['End']
+            
+            if (chr_mut == chr_cnv) and (start <= pos_mut <= end):
+                result.append({
+                    'mutation_id': mut_row['mutation_id'],
+                    'sample_id': sample_id,
+                    'ref_counts': mut_row['ref_counts'], 
+                    'alt_counts': mut_row['alt_counts'],
+                    'major_cn': int(cnv_row['major_cn']),
+                    'minor_cn': int(cnv_row['minor_cn']),
+                    'normal_cn': int(cnv_row['normal_cn'])
+                })
+
     
     # Convert dictionary to dataframe and save it
     output = pd.DataFrame(result)
