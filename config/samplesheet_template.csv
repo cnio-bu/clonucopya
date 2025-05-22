@@ -1,0 +1,5 @@
+project,sample_id,sex,mutations,cnvs,tumour_content
+project_XY,XY_primary,male,/path/to/mutation/file.vcf,/path/to/cnv/file.tsv,0.8
+project_XY,XY_metastasis,male,/path/to/mutation/file.vcf,/path/to/cnv/file.tsv,0.7
+project_XX,XX_primary,female,/path/to/mutation/file.vcf,/path/to/cnv/file.tsv,0.65           
+project_XX,XX_metastasis,female,/path/to/mutation/file.vcf,/path/to/cnv/file.tsv,1

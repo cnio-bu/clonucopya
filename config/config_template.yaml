@@ -1,0 +1,39 @@
+# Remove '_template' from config_tempplate.yaml or change the path in Snakefile
+
+samplesheet: "/path/to/samplesheet/config/samplesheet.csv"
+
+
+params:
+    pyclone-vi:
+        num_clusters: 40
+        density: "beta-binomial"
+        num_grid_points: 100
+        num_restarts: 10
+        seed: 570655569
+    phyclone:
+        num_chains: 4
+        density: "beta-binomial"
+        proposal: "fully-adapted"
+        burnin: 100
+        num_iters: 5000
+        seed: 570655569
+        grid_size: 101
+
+
+resources:
+    default:
+        threads: 1
+        mem: 4000
+        walltime: 480
+    pyclone-vi:
+        threads: 2
+        mem: 4000
+        walltime: 480
+    pandrugs:
+        threads: 2
+        mem: 4000
+        walltime: 480
+    phyclone:
+        threads: 1
+        mem: 4000
+        walltime: 480
