@@ -10,4 +10,4 @@ workflow/slurm*
 workflow/resources/vep
 workflow/logs
 workflow/scripts/__pycache__/
-config/*
+config/config.yaml
