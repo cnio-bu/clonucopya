@@ -1,7 +1,7 @@
 rule pvi_intesersect:
     input:
         mutations = "results/mutation_prep/{project}/{sample}_prep.mut.tsv",
-        cnvs = lambda wildcards: samples.loc[(samples['project'] == wildcards.project) & (samples['sample_id'] == wildcards.sample), "cnvs"].iloc[0]
+        cnvs = lambda wildcards: samples.loc[wildcards.sample, "cnvs"]
     output:
         "results/pyclone-vi_prep/{project}/{sample}_intersect_pvi.tsv"
     log:
@@ -11,7 +11,7 @@ rule pvi_intesersect:
     conda:
         "../envs/intersect_mutations_cnv.yaml",
     params:
-        sample_id = lambda wildcards: samples.loc[(samples['project'] == wildcards.project) & (samples['sample_id'] == wildcards.sample), "sample_id"].iloc[0]
+        sample_id = lambda wildcards: wildcards.sample
     shell:
         """
         python scripts/intersect_mutations_cnv.py \
@@ -24,7 +24,9 @@ rule pvi_intesersect:
 
 rule concat_and_purity_pvi:
     input:
-        expand("results/pyclone-vi_prep/{project}/{sample}_intersect_pvi.tsv", project=projects.index.unique(), sample=samples.index)
+        lambda wildcards: expand("results/pyclone-vi_prep/{project}/{sample}_intersect_pvi.tsv", 
+                                 sample=samples_df[samples_df['project'] == wildcards.project]['sample_id'],
+                                 project=wildcards.project)
     output:
         pvi = "results/pyclone-vi_prep/{project}/combined_intersect_pvi.tsv",
         phyclone_prep = "results/pyclone-vi_prep/{project}/pvi_input_phyclone_formatted.tsv"
