@@ -4,7 +4,7 @@ import argparse
 from typing import Dict, List
 from pathlib import Path
 
-def process_pyclone_snps_clones(pvi_file, sample_id, out_dir):
+def process_pyclone_muts_clones(pvi_file, sample_id, out_dir):
     """
     Format output from PyClone-VI to VEP standard as input for ensembl-vep.
     
@@ -74,7 +74,7 @@ if __name__ == '__main__':
     parser.add_argument("--out_dir", action='store', required=True)
     
     args = parser.parse_args()
-    process_pyclone_snps_clones(args.pvi_data, args.sample_id, args.out_dir)
+    process_pyclone_muts_clones(args.pvi_data, args.sample_id, args.out_dir)
 
 
 
