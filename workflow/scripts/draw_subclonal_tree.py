@@ -4,6 +4,13 @@ import argparse
 
 
 def make_branches_thicker(node, new_size):
+    node.img_style["hz_line_width"] = new_size
+    node.img_style["vt_line_width"] = new_size
+    for c in node.children:
+        make_branches_thicker(c, new_size)
+
+
+def draw_subclonal_tree(project, nwk_file, palette, outpath):
     """
     Plot subclonal tree from Phyclone output.
 
@@ -14,14 +21,6 @@ def make_branches_thicker(node, new_size):
 
     """
 
-
-    node.img_style["hz_line_width"] = new_size
-    node.img_style["vt_line_width"] = new_size
-    for c in node.children:
-        make_branches_thicker(c, new_size)
-
-
-def draw_subclonal_tree(nwk_file, palette, outfile):
     with open(palette, 'r') as palette:
         colors = palette.readlines()
         color_palette = [color.strip() for color in colors]
@@ -35,15 +34,13 @@ def draw_subclonal_tree(nwk_file, palette, outfile):
 
     # Set root style
     root_style = NodeStyle()
-    root_style["size"] = 15
+    root_style["size"] = 25  
     root_style["fgcolor"] = color_palette[0]
     root_style["hz_line_type"] = 0
     root_style["hz_line_color"] = "#000"
     t.set_style(root_style)
-
-    # Remove root node and change root title
-    t.name = "parent_cell"
-
+    
+    # Remove root node and keep root title
     if t.name:
         root_label = faces.TextFace(t.name, fsize=12, fgcolor="black")
         t.add_face(root_label, column=0, position="branch-right")
@@ -78,15 +75,17 @@ def draw_subclonal_tree(nwk_file, palette, outfile):
     os.environ["QT_QPA_PLATFORM"] = "offscreen"
     
     # Save the tree as a PNG file
+    outfile = f"{output_path}/{project}_subclonal_tree.png"
     t.render(outfile, w=800, units="px", tree_style=ts)
 
 if __name__ == '__main__':
     input_parser = argparse.ArgumentParser()
+    input_parser.add_argument("--project", action='store', required=True)
     input_parser.add_argument("--nwk_file", action='store', required=True)
     input_parser.add_argument("--palette", action='store', required=True)
-    input_parser.add_argument("--output_file", action='store', required=True)
+    input_parser.add_argument("--output_path", action='store', required=True)
 
     args = input_parser.parse_args()
 
 
-    draw_subclonal_tree(args.nwk_file,args.palette, args.output_file)
+    draw_subclonal_tree(args.project,args.nwk_file,args.palette, args.output_file)
