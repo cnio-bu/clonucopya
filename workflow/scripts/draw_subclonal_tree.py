@@ -4,6 +4,17 @@ import argparse
 
 
 def make_branches_thicker(node, new_size):
+    """
+    Plot subclonal tree from Phyclone output.
+
+    Args:
+        nwk_file (str): Path to Phyclone's output nwk file 
+        palette (str): Path to the color palette file. One color per line in hex format
+        output_file (str, optional): Path to output png file.
+
+    """
+
+
     node.img_style["hz_line_width"] = new_size
     node.img_style["vt_line_width"] = new_size
     for c in node.children:
