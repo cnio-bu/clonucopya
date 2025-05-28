@@ -14,9 +14,9 @@ def process_pyclone_muts_clones(pvi_file, sample_id, out_dir):
         out_dir: Path to output directory
     
     Returns:
-        Dictionary mapping cluster IDs to DataFrames containing SNP information
+        Dictionary mapping cluster ids to dataframes containing mutation information
     """
-    # Create output directory if it doesn't exist
+    # Check and create output directory if it doesn't exist
     out_path = Path(out_dir)
     out_path.mkdir(parents=True, exist_ok=True)
     
@@ -32,7 +32,7 @@ def process_pyclone_muts_clones(pvi_file, sample_id, out_dir):
     # Process mutations
     for mut in pvi_data['mutation_id'].unique():
         try:
-            # Clean chromosome prefix and split mutation components
+            # Process chromosome prefix and split mutation components
             chrom, pos, ref, alt = mut.split(':')
             if ref == '-':
                 # Insertion
