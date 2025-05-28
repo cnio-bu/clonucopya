@@ -30,7 +30,7 @@ print("Sample-Project pairs:", sample_project_pairs)
 missing_files = samples_df[~samples_df["mutations"].apply(os.path.exists) | 
                           ~samples_df["cnvs"].apply(os.path.exists)]
 if not missing_files.empty:
-    raise FileNotFoundError(f"Missing input files:\n{missing_files}")
+    raise FileNotFoundError(f"Missing input files in the samplesheet:\n{missing_files}")
 
 rule all:
     input:
