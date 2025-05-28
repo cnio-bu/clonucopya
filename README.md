@@ -58,7 +58,7 @@ snakemake --software-deployment-method conda -j unlimited --cache
 snakemake --executor slurm --software-deployment-method conda -j unlimited --cache
 ```
 
-> First successful execution will last over 7-8 hours. Vep's reference needs to be cached. The following runs will be fully executed in a matter of 10-20 minutes on average.
+> First successful execution will last over 7-8 hours. VEP's reference needs to be cached. The following runs will be fully executed in a matter of 10-20 minutes on average.
 
 
 ## Results
