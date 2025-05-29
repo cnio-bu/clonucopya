@@ -10,6 +10,8 @@ Cancer heterogeneity presents significant challenges in developing effective tre
 
 Clonucopya is a snakemake workflow that combines the clone inference of Pyclone-VI with the power of drug discovery from Pandrugs.
 
+<img src="./.img/clonucopya-wf.png" width="900">
+
 
 ## Main applications
 
