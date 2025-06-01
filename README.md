@@ -23,7 +23,7 @@ Clonucopya is a snakemake workflow that combines the clone inference of Pyclone-
 
 ```bash
 # Clone Clonucopya repository
-git clone git@github.com:guillermoscb/clonucopya.git
+git clone https://github.com/guillermoscb/clonucopya.git
 
 # Create a conda environment
 conda create -n clonucopya
