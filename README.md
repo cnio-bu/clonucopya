@@ -56,7 +56,7 @@ Example:
 | chr1  	| 109367944 	| 109371874 	| 1        	| 0        	| 2         	|
 
 
-> Tip: to facilitate this step, there is a couple of scripts at `workflow/scripts` to carry out this task for facets and ascat3 output.
+> Tip: to facilitate this step, there are a couple of scripts at `workflow/scripts` to carry out this task for facets and ascat3 output.
 
 
 ### Configure workflow
