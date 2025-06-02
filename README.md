@@ -39,13 +39,13 @@ mamba install snakemake apptainer snakemake-executor-plugin-slurm
 
 ### CNV Preprocessing
 
-Due to the fact that there many CNV callers, there are as many output formats of called CNVs. So that, before running Clonucopya, you must make sure your CNVs has the propper format to use them as input. The expected format is a TSV file with the following columns:
+Due to the fact that there are many CNV callers, there are as many output formats of called CNVs. So that, before running Clonucopya, you must make sure your CNVs has the propper format to use them as input. The expected format is a TSV file with the following columns:
 
-1. Chrom: chromosome which contains the CNV, BED format (i.e chr1)
-2. Start: start position of the CNV (integer)   
-3. End: end position of the CNV (integer)
-4. major_cn: major copy number of segment overlapping mutation (integer)
-5. minor_cn: minor copy number of segment overlapping mutation (integer)
+1. Chrom: chromosome which contains the CNV, BED format (i.e chr1).
+2. Start: start position of the CNV (integer).   
+3. End: end position of the CNV (integer).
+4. major_cn: major copy number of segment overlapping mutation (integer).
+5. minor_cn: minor copy number of segment overlapping mutation (integer).
 6. normal_cn: total copy number of segment in healthy tissue. For autosome this will be two and male sex chromosomes one (integer).
 
 
