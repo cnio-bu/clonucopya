@@ -41,7 +41,7 @@ mamba install snakemake apptainer snakemake-executor-plugin-slurm
 
 Due to the fact that there many CNV callers, there are as many output formats of called CNVs. So that, before running Clonucopya, you must make sure your CNVs has the propper format to use them as input. The expected format is a TSV file with the following columns:
 
-1. Chrom: BED format (i.e chr1)
+1. Chrom: chromosome which contains the CNV, BED format (i.e chr1)
 2. Start: start position of the CNV (integer)   
 3. End: end position of the CNV (integer)
 4. major_cn: major copy number of segment overlapping mutation (integer)
