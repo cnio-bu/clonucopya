@@ -63,10 +63,10 @@ Example:
 
 Once the workflow has been downloaded, and the conda enviroment is ready, the parameters must be set.
 
-* sampleshet: there is a samplesheet_template.csv available at config directory. (The path to the samplesheet must be set in the config.yaml). 
+* sampleshet: there is a samplesheet_template.csv available at config directory. The path to the samplesheet must be set in the config.yaml. 
 * config.yaml: there is a config_template.yaml available at config directory. Please change the name to config.yaml or use the name you desire at workflow/Snakefile. 
 
-> Generate your own seed for config.yaml. Manually chosen seeds may be too low-complexity and more stochastically dependent. Further, pseudorandom number generators from standard libraries of software like numpy in python (used in Pyclone-VI and Phyclone),often do not meet quality checks for randomness. To minimize seed bias, we instead recommend using the terminal to read four bytes from the operating system (/dev/random) to generate unpredictable 32-bit random seed values. For example, it can be easily generated on linux with this command `head -c 4 /dev/urandom | od -An -tu4`.
+> Generate your own seed for config.yaml. Manually chosen seeds may be too low-complexity and more stochastically dependent. Further, pseudorandom number generators from standard libraries of software like numpy in python (used in Pyclone-VI and Phyclone), often do not meet quality checks for randomness. To minimize seed bias, we instead recommend using the terminal to read four bytes from the operating system (/dev/random) to generate unpredictable 32-bit random seed values. For example, it can be easily generated on linux with this command `head -c 4 /dev/urandom | od -An -tu4`.
 
 ### Run Clonucopya
 
