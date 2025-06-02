@@ -37,6 +37,28 @@ mamba install snakemake apptainer snakemake-executor-plugin-slurm
 
 ## Usage
 
+### CNV Preporcessing
+
+Due to the fact that there many CNV callers, there are as many output formats of called CNVs. So that, before running Clonucopya, you must make sure your CNVs has the propper format to use them as input. The expected format is a TSV file with the following columns:
+
+1. Chrom: BED format (i.e chr1)
+2. Start: start position of the CNV (integer)   
+3. End: end position of the CNV (integer)
+4. major_cn: major copy number of segment overlapping mutation (integer)
+5. minor_cn: minor copy number of segment overlapping mutation (integer)
+6. normal_cn: total copy number of segment in healthy tissue. For autosome this will be two and male sex chromosomes one (integer).
+
+
+Example:
+
+| Chrom 	| Start     	| End       	| major_cn 	| minor_cn 	| normal_cn 	|
+|-------	|-----------	|-----------	|----------	|----------	|-----------	|
+| chr1  	| 109367944 	| 109371874 	| 1        	| 0        	| 2         	|
+
+
+> Tip: to facilitate this step, there is a couple of scripts at `workflow/scripts` to carry out this task for facets and ascat3 output.
+
+
 ### Configure workflow
 
 Once the workflow has been downloaded, and the conda enviroment is ready, the parameters must be set.
