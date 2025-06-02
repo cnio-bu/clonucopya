@@ -39,7 +39,7 @@ mamba install snakemake apptainer snakemake-executor-plugin-slurm
 
 ### CNV Preprocessing
 
-Due to the fact that there are many CNV callers, there are as many output formats of called CNVs. So that, before running Clonucopya, you must make sure your CNVs has the propper format to use them as input. The expected format is a TSV file with the following columns:
+Due to the fact that there are many CNV callers, there are as many as output formats of called CNVs. So that, before running Clonucopya, you must make sure your CNVs has the propper format to use them as input. The expected format is a TSV file with the following columns:
 
 1. Chrom: chromosome which contains the CNV, BED format (i.e chr1).
 2. Start: start position of the CNV (integer).   
@@ -66,6 +66,7 @@ Once the workflow has been downloaded, and the conda enviroment is ready, the pa
 * sampleshet: there is a samplesheet_template.csv available at config directory. (The path to the samplesheet must be set in the config.yaml). 
 * config.yaml: there is a config_template.yaml available at config directory. Please change the name to config.yaml or use the name you desire at workflow/Snakefile. 
 
+> Generate your own seed for config.yaml. Manually chosen seeds may be too low-complexity and more stochastically dependent. Further, pseudorandom number generators from standard libraries of software like numpy in python (used in Pyclone-VI and Phyclone),often do not meet quality checks for randomness. To minimize seed bias, we instead recommend using the terminal to read four bytes from the operating system (/dev/random) to generate unpredictable 32-bit random seed values. For example, it can be easily generated on linux with this command `head -c 4 /dev/urandom | od -An -tu4`.
 
 ### Run Clonucopya
 
