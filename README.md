@@ -4,7 +4,7 @@
 
 Cancer heterogeneity presents significant challenges in developing effective treatments, as diverse subclonal populations can exhibit varied therapeutic responses. While advanced sequencing technologies enable detailed tumor characterization, translating subclonal inference analyses into clinical applications remains challenging. Here we present Clonucopya, a comprehensive workflow that bridges this gap by combining subclonal inference algorithms with automated drug recommendation. Using whole-genome or whole-exome sequencing data, Clonucopya reconstructs clonal and subclonal evolutionary trees of tumor cells also identifying FDA/EMA-approved drugs targeting the specific genomic alterations within each population. The software offers easy configuration, detailed tables, clear visualizations and intuitive reports. This integrated approach enables the design of therapeutic strategies that tries to address the most of  tumor cells subpopulations,  guiding the selection of personalized treatments. This tool provides an accessible tool that transforms complex subclonal data into actionable clinical insights for personalized cancer treatment.
 
-<img src="./.img/graphical_abstract.png" width="900">
+<img src="./.img/graphical_abstract_V2.png" width="900">
 
 ## Workflow overview
 
