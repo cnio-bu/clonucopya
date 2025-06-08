@@ -53,7 +53,9 @@ def process_pyclone_muts_clones(pvi_file, sample_id, out_dir):
                   'chr': chrom,
                   'start': pos,
                   'end': end,
-                  'allele': f"{ref}/{alt}"
+                  'allele': f"{ref}/{alt}",
+                  'strand': '+',
+                  'mutation_id': mut
               })
         except Exception as e:
             raise ValueError(f"Error processing mutation {mut}: {e}")
