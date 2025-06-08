@@ -31,7 +31,7 @@ columns:
       not_empty: true
       is_file: true
     description: path to copy number file of the sample
-  - name: tumour_content
+  - name: tumor_content
     type: float
     rules:
       not_empty: true
