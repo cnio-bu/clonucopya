@@ -15,9 +15,10 @@ Clonucopya is a snakemake workflow that combines the clone inference of Pyclone-
 
 ## Main applications
 
-* Parent tumor and its metastases
-* Sections in the same region of the tumor at different timepoints
-* Sections of different regions of the tumor (1 or more timepoints).
+* Compare clonal populations and potential treatments in primary tumors vs metastases
+* Propose treatments by considering temporal intratumor heterogeneity (ITH) through comparison of biopsies from the same tumor at different timepoints.
+* Suggest antitumor treatments addressing spatial ITH comparing different regions of the same tumor (1 or more timepoints).
+
 
 ## Instalation:
 
@@ -61,7 +62,7 @@ Example:
 
 ### Configure workflow
 
-Once the workflow has been downloaded, and the conda enviroment is ready, the parameters must be set.
+Once the workflow has been downloaded, and the conda environment is ready, the parameters must be set.
 
 * sampleshet: there is a samplesheet_template.csv available at config directory. The path to the samplesheet must be set in the config.yaml. 
 * config.yaml: there is a config_template.yaml available at config directory. Please change the name to config.yaml or use the name you desire at workflow/Snakefile. 
@@ -75,6 +76,9 @@ This workflow can be executed locally or in a cluster (best option).
 - **Local run:**
 
 ```bash
+# Go to workflow directory
+cd workflow/
+
 snakemake --software-deployment-method conda -j unlimited --cache
 ```
 
@@ -82,6 +86,9 @@ snakemake --software-deployment-method conda -j unlimited --cache
 - **Cluster run:**
 
 ```bash
+# Go to workflow directory
+cd workflow/
+
 sbatch -p long -e error.txt -c 8 --mem=32G -t600 --wrap "snakemake --executor slurm --software-deployment-method conda -j unlimited --cache"
 ```
 
