@@ -89,7 +89,7 @@ snakemake --software-deployment-method conda -j unlimited --cache
 # Go to workflow directory
 cd workflow/
 
-sbatch -p long -e error.txt -c 8 --mem=32G -t600 --wrap "snakemake --executor slurm --software-deployment-method conda -j unlimited --cache"
+sbatch -p long -e error.txt -c 8 --mem=32G -t1200 --wrap "snakemake --executor slurm --software-deployment-method conda -j unlimited --cache"
 ```
 
 > First successful execution will last over 7-8 hours. VEP's reference needs to be cached.
