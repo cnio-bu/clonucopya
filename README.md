@@ -92,7 +92,7 @@ cd workflow/
 sbatch -p long -e error.txt -c 8 --mem=32G -t600 --wrap "snakemake --executor slurm --software-deployment-method conda -j unlimited --cache"
 ```
 
-> First successful execution will last over 7-8 hours. VEP's reference needs to be cached. The following runs will be fully executed in a matter of 10-20 minutes on average.
+> First successful execution will last over 7-8 hours. VEP's reference needs to be cached.
 
 
 ## Results
