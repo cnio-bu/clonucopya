@@ -2,6 +2,8 @@
 
 samplesheet: "/path/to/samplesheet/config/samplesheet.csv"
 
+# True / False
+just_snv: "True"
 
 params:
     pyclone-vi:

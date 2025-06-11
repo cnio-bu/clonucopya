@@ -8,6 +8,11 @@ properties:
     pattern: ".+\\.csv$"
     description: Path to samplesheet CSV file
 
+  just_snv:
+    type: string
+    description: Whether to process only SNVs or keep Indels (True/False)
+
+
   params:
     type: object
     properties:
