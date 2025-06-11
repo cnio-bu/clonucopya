@@ -1,5 +1,4 @@
 test/
-workflow/logs/
 data/
 .ipynb_checkpoints
 lab_notebook.md
@@ -10,3 +9,4 @@ workflow/resources/vep
 workflow/logs
 workflow/scripts/__pycache__/
 config/config.yaml
+log.txt
