@@ -104,4 +104,5 @@ sbatch -p long -e error.txt -c 8 --mem=32G -t1200 --wrap "snakemake --executor s
 * Guillermo Sánchez-Cid
 * Gonzalo Gómez-López
 * Carlos León-Ramos
+* Ester Arroba
 * Fátima Al-Shahrour
