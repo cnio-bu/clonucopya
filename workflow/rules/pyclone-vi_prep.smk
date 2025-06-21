@@ -4,14 +4,19 @@ rule pvi_intesersect:
         cnvs = lambda wildcards: samples.loc[wildcards.sample, "cnvs"]
     output:
         "results/pyclone-vi_prep/{project}/{sample}_intersect_pvi.tsv"
+    params:
+        sample_id = lambda wildcards: wildcards.sample
     log:
         "logs/pyclone-vi_prep/{project}/{sample}.log"
     benchmark:
         "logs/pyclone-vi_prep/{project}/{sample}.bmk"
     conda:
-        "../envs/intersect_mutations_cnv.yaml",
-    params:
-        sample_id = lambda wildcards: wildcards.sample
+        "../envs/intersect_mutations_cnv.yaml"
+    threads:
+        config["resources"]["default"]["threads"]
+    resources:
+        mem_mb = config["resources"]["default"]["mem"],
+        runtime = config["resources"]["default"]["walltime"]
     shell:
         """
         python scripts/intersect_mutations_cnv.py \
@@ -36,6 +41,11 @@ rule concat_and_purity_pvi:
         "logs/pyclone-vi_prep/{project}/concat.log"
     conda:
         "../envs/intersect_mutations_cnv.yaml"
+    threads:
+        config["resources"]["default"]["threads"]
+    resources:
+        mem_mb = config["resources"]["default"]["mem"],
+        runtime = config["resources"]["default"]["walltime"]
     shell:
         """
         python -c "
