@@ -11,7 +11,7 @@ def get_project_panels(project, samplesheet, mut_dir, intersect_combined, out_fi
     Args:
         project (str): name of the project
         samplesheet (str): Path to the samplesheet (CSV)
-        mut_dir (str): Path to the mutation_prep project
+        mut_dir (str): Path to the files from mutation_prep project
         intersect_combined(str): Path to the intersect combined of the project
         out_file (str): Path to the output file (TSV)
 
