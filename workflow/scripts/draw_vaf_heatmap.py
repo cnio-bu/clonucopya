@@ -7,7 +7,7 @@ import seaborn as sns
 from matplotlib import pyplot as plt
 
 
-def build_heatmap_df(tree_df,pvi_out, mut_project):
+def build_heatmap_df(tree_df,pvi_out, mut_dir):
 
     """
     Build Daframe for VAF Heatmap, one per sample.
@@ -15,7 +15,7 @@ def build_heatmap_df(tree_df,pvi_out, mut_project):
     Args:
         tree_df (str): Path to the phyclone TSV output
         pvi_out (str): Path to the pyclone-vi TSV output
-        mut_project (str): Path to the mutation_prep project.
+        mut_dir (str): Path to the files from mutation_prep project.
 
     Return:
         Dictionary of samples' dataframes to plot the VAF Heatmap
@@ -42,7 +42,7 @@ def build_heatmap_df(tree_df,pvi_out, mut_project):
     
     # MUTATIONS INFO
     # Load samples' mutations
-    muts_path = f"{mut_project}/*.tsv"
+    muts_path = f"{mut_dir}/*.tsv"
     mut_files = glob.glob(muts_path)
     
     # Store all mutations dataframe in a dict
