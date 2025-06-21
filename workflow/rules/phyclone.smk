@@ -6,7 +6,7 @@ rule phyclone:
         clusters="results/phyclone/{project}/clusters.tsv",
         trace="results/phyclone/{project}/trace.pkl.gz",
         tree_nwk="results/phyclone/{project}/tree.nwk",
-        tree_table="results/phyclone/{project}/tree.tsv"
+        tree_table="results/phyclone/{project}/tree_table.tsv"
     params:
         num_chains = config["params"]["phyclone"]["num_chains"],
         density = config["params"]["phyclone"]["density"],
