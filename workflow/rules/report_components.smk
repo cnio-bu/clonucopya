@@ -1,18 +1,25 @@
+def get_mutation_files(wildcards):
+    samples = samples_df[samples_df['project'] == wildcards.project]['sample_id'].tolist()
+    return [f"results/mutation_prep/{wildcards.project}/{sample}_prep.mut.tsv" for sample in samples]
+
+
+
 rule report_panels:
     input:
         samplesheet = config["samplesheet"],
-        mut_dir = "results/mutation_prep/{project}",
-        intersect = "results/pyclone-vi_prep/{project}/combined_intersect_pvi.tsv"
+        intersect = "results/pyclone-vi_prep/{project}/combined_intersect_pvi.tsv",
+        mut_files = get_mutation_files
     output:
         "results/report/{project}/components/report_panel.tsv"
     params:
-        project = lambda wildcards: wildcards.project
+        project = lambda wildcards: wildcards.project,
+        mut_dir = lambda wildcards: f"results/mutation_prep/{wildcards.project}"
     log:
         "logs/report/{project}/report_panels.log"
     benchmark:
         "logs/report/{project}/report_panels.bmk"
     conda:
-        "../envs/report_componets.yaml"
+        "../envs/report_components.yaml"
     threads: 
         config["resources"]["default"]["threads"]
     resources:
@@ -23,7 +30,7 @@ rule report_panels:
         python scripts/build_panels.py \
              --project {params.project} \
              --samplesheet {input.samplesheet} \
-             --mut_dir {input.mut_dir} \
+             --mut_dir {params.mut_dir} \
              --intersect_combined {input.intersect} \
              --out_file {output} > {log} 2>&1
         """
@@ -42,7 +49,7 @@ rule plot_tree:
     benchmark:
         "logs/report/{project}/plot_tree.bmk"
     conda:
-        "../envs/report_componets.yaml"
+        "../envs/report_components.yaml"
     threads:
         config["resources"]["default"]["threads"]
     resources:
@@ -60,7 +67,7 @@ rule plot_tree:
 
 rule plot_sphere:
     input:
-        tree_df = "results/phyclone/{project}/tree.tsv"
+        tree_df = "results/phyclone/{project}/tree_table.tsv"
     output:
         directory("results/report/{project}/components/spheres_of_clones")
     params:
@@ -70,7 +77,7 @@ rule plot_sphere:
     benchmark:
         "logs/report/{project}/plot_sphere.bmk"
     conda:
-        "../envs/report_componets.yaml"
+        "../envs/report_components.yaml"
     threads:
         config["resources"]["default"]["threads"]
     resources:
@@ -88,17 +95,19 @@ rule plot_sphere:
 
 rule plot_vaf_heatmap:
     input:
-        tree_df = "results/phyclone/{project}/tree.tsv",
+        tree_df = "results/phyclone/{project}/tree_table.tsv",
         pvi_out = "results/pyclone-vi/{project}/pvi_out.tsv",
-        mut_dir = "results/mutation_prep/{project}"
+        mut_files = get_mutation_files
     output:
         directory("results/report/{project}/components/vaf_heatmaps")
+    params:
+        mut_dir = lambda wildcards: f"results/mutation_prep/{wildcards.project}"
     log:
         "logs/report/{project}/plot_vaf_heatmap.log"
     benchmark:
         "logs/report/{project}/plot_vaf_heatmap.bmk"
     conda:
-        "../envs/report_componets.yaml"
+        "../envs/report_components.yaml"
     threads:
         config["resources"]["default"]["threads"]
     resources:
@@ -109,7 +118,7 @@ rule plot_vaf_heatmap:
         python scripts/draw_vaf_heatmap.py \
             --tree_df {input.tree_df} \
             --pvi_out {input.pvi_out} \
-            --mut_dir {input.mut_dir} \
+            --mut_dir {params.mut_dir} \
             --out_dir {output} > {log} 2>&1
         """
 
@@ -117,20 +126,21 @@ rule plot_vaf_heatmap:
 
 rule report_tables:
     input:
-        tree_df = "results/phyclone/{project}/tree.tsv",
+        tree_df = "results/phyclone/{project}/tree_table.tsv",
         pandrugs_dir = "results/query_pandrugs/{project}",
-        mut_dir = "results/mutation_prep/{project}"
+        mut_files = get_mutation_files
     output:
         "results/report/{project}/components/gene_alterations.tsv",
         "results/report/{project}/components/drug_priorization.tsv"
     params:
-        out_dir = directory("results/report/{project}/components")
+        out_dir = directory("results/report/{project}/components"),
+        mut_dir = lambda wildcards: f"results/mutation_prep/{wildcards.project}"
     log:
         "logs/report/{project}/report_tables.log"
     benchmark:
         "logs/report/{project}/report_tables.bmk"
     conda:
-        "../envs/report_componets.yaml"
+        "../envs/report_components.yaml"
     threads:
         config["resources"]["default"]["threads"]
     resources:
@@ -141,7 +151,7 @@ rule report_tables:
         python scripts/build_report_tables.py \
             --tree_df {input.tree_df} \
             --pandrugs_dir {input.pandrugs_dir} \
-            --mut_dir {input.mut_dir} \
+            --mut_dir {params.mut_dir} \
             --out_dir {params.out_dir} > {log} 2>&1
         """
 
