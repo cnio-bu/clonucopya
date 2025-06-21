@@ -110,7 +110,7 @@ def draw_sphere_of_clones(tree_df, palette, out_dir):
                 color = sorted_colored_circles[i]
                 # Create and add circle
                 if color != 'white':
-                    circle = plt.Circle((x, y), radius=circle_radius*0.8, facecolor=color, edgecolor='black', linewidth=1)
+                    circle = plt.Circle((x, y), radius=circle_radius*0.8, facecolor=color, linewidth=1)
                     ax.add_patch(circle)
         
         # Add legend
