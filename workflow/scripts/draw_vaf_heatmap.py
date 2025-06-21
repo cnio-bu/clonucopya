@@ -7,7 +7,7 @@ import seaborn as sns
 from matplotlib import pyplot as plt
 
 
-def build_heatmap_df(tree_df,pvi_out, mut_project):
+def build_heatmap_df(tree_df,pvi_out, mut_dir):
 
     """
     Build Daframe for VAF Heatmap, one per sample.
@@ -15,7 +15,7 @@ def build_heatmap_df(tree_df,pvi_out, mut_project):
     Args:
         tree_df (str): Path to the phyclone TSV output
         pvi_out (str): Path to the pyclone-vi TSV output
-        mut_project (str, optional): Path to the mutation_prep project.
+        mut_dir (str): Path to the files from mutation_prep project.
 
     Return:
         Dictionary of samples' dataframes to plot the VAF Heatmap
@@ -42,7 +42,7 @@ def build_heatmap_df(tree_df,pvi_out, mut_project):
     
     # MUTATIONS INFO
     # Load samples' mutations
-    muts_path = f"{mut_project}/*.tsv"
+    muts_path = f"{mut_dir}/*.tsv"
     mut_files = glob.glob(muts_path)
     
     # Store all mutations dataframe in a dict
@@ -104,7 +104,7 @@ def plot_heatmaps(heatmap_dict, out_dir):
 
     Args:
         heatmap_dict (str): dictionary of samples' dataframes to plot the VAF Heatmap
-        out_dir (str, optional): Path to output directory of the project.
+        out_file (str, optional): Path to output file of the project.
         
     """
     for sample_id, df in heatmap_dict.items():
@@ -147,8 +147,9 @@ def plot_heatmaps(heatmap_dict, out_dir):
         plt.title(sample_id, fontsize=20, pad=25)
         plt.xlabel("Clones", fontsize=16, labelpad=15)
         plt.ylabel("Alterations", fontsize=16, labelpad=15)
-        
-        plt.savefig(f"{out_dir}/{sample_id}_VAF_heatmap.png", bbox_inches='tight')
+
+        os.makedirs(out_dir, exist_ok=True)
+        plt.savefig(f"{out_dir}/{sample_id}_vaf_heatmap.png", bbox_inches='tight')
         plt.close()
 
 

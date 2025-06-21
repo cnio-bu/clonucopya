@@ -1,7 +1,3 @@
-from glob import glob
-import os
-
-
 rule mutation_prep:
     input:
         mutations = lambda wildcards: samples.loc[wildcards.sample, "mutations"]
@@ -15,6 +11,11 @@ rule mutation_prep:
         "logs/mutation_prep/{project}/{sample}.bmk"
     conda:
         "../envs/mutation_prep.yaml"
+    threads:
+        config["resources"]["default"]["threads"]
+    resources:
+        mem_mb = config["resources"]["default"]["mem"],
+        runtime = config["resources"]["default"]["walltime"]
     shell:
         """
         python scripts/mutations_formatting.py --input_vcf {input} --just_snv {params.snv_filter} --output_file {output} > {log} 2>&1

@@ -1,6 +1,6 @@
 rule pvi_vep_prep:
     input:
-        pvi_df="results/pyclone-vi/{project}/pvi_out.tsv",
+        pvi_df="results/pyclone-vi/{project}/pvi_out.tsv"
     output:
         dir=directory("results/pvi_vep_prep/{project}")
     params:

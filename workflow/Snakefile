@@ -4,6 +4,7 @@ from glob import glob
 import os
 import pandas as pd
 
+
 ###### Config file, environment and sample sheet #####
 
 configfile: "../config/config.yaml"
@@ -42,21 +43,27 @@ rule all:
         "resources/vep/cache",
         expand("results/vep_annotation/{project}/annotations", project=samples_df["project"].unique()),
         expand("results/query_pandrugs/{project}", project=samples_df["project"].unique()),
-        expand("results/phyclone/{project}/tree.nwk", project=samples_df["project"].unique())
+        expand("results/phyclone/{project}/tree.nwk", project=samples_df["project"].unique()),
+        expand("results/report/{project}/components/report_panel.tsv", project=samples_df["project"].unique()),
+        expand("results/report/{project}/components/clonal_tree.png", project=samples_df["project"].unique()),
+        expand("results/report/{project}/components/spheres_of_clones", project=samples_df["project"].unique()),
+        expand("results/report/{project}/components/vaf_heatmaps", project=samples_df["project"].unique()),
+        expand("results/report/{project}/components/gene_alterations.tsv", project=samples_df["project"].unique())
 
 
-
+#        expand("results/report/{project}/components/{sample}_sphere_of_clones.png", zip, project=samples_df["project"], sample=samples_df["sample_id"]),
 
 # FORMAT MUTATION VCF
 
 include: "rules/mutation_prep.smk"
+
 
 # INTERSECT MUTATIONS AND CNVs
 
 include: "rules/pyclone-vi_prep.smk"
 
 
-# RUN PYCLONE-VI SUBCLONAL INFERENCE
+# RUN PYCLONE-VI CLONAL INFERENCE
 
 include: "rules/pyclone-vi.smk"
 
@@ -84,3 +91,8 @@ include: "rules/query_pandrugs.smk"
 # BUILD SUBCLONAL TREE
 
 include: "rules/phyclone.smk"
+
+
+# GENERATE REPORT COMPONENTS: PLOTS AND TABLES
+
+include: "rules/report_components.smk"

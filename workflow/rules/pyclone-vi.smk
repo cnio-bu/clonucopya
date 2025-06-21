@@ -4,6 +4,12 @@ rule pyclone_vi:
     output:
         fit = "results/pyclone-vi/{project}/pvi_out.h5",
         result = "results/pyclone-vi/{project}/pvi_out.tsv"
+    params:
+        nclusters = config["params"]["pyclone-vi"]["num_clusters"],
+        density = config["params"]["pyclone-vi"]["density"],
+        ngrid = config["params"]["pyclone-vi"]["num_grid_points"],
+        nrestarts = config["params"]["pyclone-vi"]["num_restarts"],
+        seed = config["params"]["pyclone-vi"]["seed"]
     log:
         "logs/pyclone-vi/{project}/pvi.log"
     benchmark:
@@ -15,12 +21,6 @@ rule pyclone_vi:
     resources:
         mem_mb = config["resources"]["pyclone-vi"]["mem"],
         runtime = config["resources"]["pyclone-vi"]["walltime"]
-    params:
-        nclusters = config["params"]["pyclone-vi"]["num_clusters"],
-        density = config["params"]["pyclone-vi"]["density"],
-        ngrid = config["params"]["pyclone-vi"]["num_grid_points"],
-        nrestarts = config["params"]["pyclone-vi"]["num_restarts"],
-        seed = config["params"]["pyclone-vi"]["seed"]
     shell:
         """
         pyclone-vi fit -i {input} -o {output.fit} \

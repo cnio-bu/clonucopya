@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import argparse
-
+import os
 
 
 def create_hex_grid(rows, cols, radius=1.0):
@@ -24,7 +24,7 @@ def create_hex_grid(rows, cols, radius=1.0):
     return positions
 
 
-def draw_sphere_of_clones(tree_df, palette, output_path):
+def draw_sphere_of_clones(tree_df, palette, out_dir):
     """
     Plot VAF Sphere of clones,  one per sample.
 
@@ -58,7 +58,6 @@ def draw_sphere_of_clones(tree_df, palette, output_path):
 
 
     for sample in tree_inference.keys():
-        sample_id = sample
         proportions = tree_inference[sample]
     
     
@@ -111,7 +110,7 @@ def draw_sphere_of_clones(tree_df, palette, output_path):
                 color = sorted_colored_circles[i]
                 # Create and add circle
                 if color != 'white':
-                    circle = plt.Circle((x, y), radius=circle_radius*0.8, color=color, edgecolor='black', linewidth=1)
+                    circle = plt.Circle((x, y), radius=circle_radius*0.8, facecolor=color, linewidth=1)
                     ax.add_patch(circle)
         
         # Add legend
@@ -126,21 +125,21 @@ def draw_sphere_of_clones(tree_df, palette, output_path):
         ax.set_ylim(0, rows * 1.5 * circle_radius)
         ax.axis('off')
         
-        plt.title(f"{sample_id}")
+        plt.title(f"{sample}")
         plt.tight_layout()
 
-        outfile = f"{output_path}/{sample_id}_sphere_of_clones.png"
-        plt.savefig(outfile)
-
+        os.makedirs(out_dir, exist_ok=True)
+        plt.savefig(f"{out_dir}/{sample}_sphere_of_clones.png", bbox_inches='tight')
+        plt.close()
 
 
 if __name__ == '__main__':
     input_parser = argparse.ArgumentParser()
     input_parser.add_argument("--tree_df", action='store', required=True)
     input_parser.add_argument("--palette", action='store', required=True)
-    input_parser.add_argument("--output_path", action='store', required=True)
+    input_parser.add_argument("--out_dir", action='store', required=True)
 
     args = input_parser.parse_args()
 
 
-    draw_sphere_of_clones(args.tree_df,args.palette, args.output_path)
+    draw_sphere_of_clones(args.tree_df,args.palette, args.out_dir)

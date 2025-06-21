@@ -10,14 +10,14 @@ def make_branches_thicker(node, new_size):
         make_branches_thicker(c, new_size)
 
 
-def draw_subclonal_tree(project, nwk_file, palette, outpath):
+def draw_subclonal_tree(nwk_file, palette, out_file):
     """
     Plot subclonal tree from Phyclone output.
 
     Args:
         nwk_file (str): Path to Phyclone's output nwk file 
         palette (str): Path to the color palette file. One color per line in hex format
-        output_file (str, optional): Path to output png file.
+        out_file (str): Path to output png file.
 
     """
 
@@ -75,17 +75,15 @@ def draw_subclonal_tree(project, nwk_file, palette, outpath):
     os.environ["QT_QPA_PLATFORM"] = "offscreen"
     
     # Save the tree as a PNG file
-    outfile = f"{output_path}/{project}_subclonal_tree.png"
-    t.render(outfile, w=800, units="px", tree_style=ts)
+    t.render(out_file, w=800, units="px", tree_style=ts)
 
 if __name__ == '__main__':
     input_parser = argparse.ArgumentParser()
-    input_parser.add_argument("--project", action='store', required=True)
     input_parser.add_argument("--nwk_file", action='store', required=True)
     input_parser.add_argument("--palette", action='store', required=True)
-    input_parser.add_argument("--output_path", action='store', required=True)
+    input_parser.add_argument("--out_file", action='store', required=True)
 
     args = input_parser.parse_args()
 
 
-    draw_subclonal_tree(args.project,args.nwk_file,args.palette, args.output_file)
+    draw_subclonal_tree(args.nwk_file,args.palette, args.out_file)
