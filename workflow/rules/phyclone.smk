@@ -7,6 +7,14 @@ rule phyclone:
         trace="results/phyclone/{project}/trace.pkl.gz",
         tree_nwk="results/phyclone/{project}/tree.nwk",
         tree_table="results/phyclone/{project}/tree.tsv"
+    params:
+        num_chains = config["params"]["phyclone"]["num_chains"],
+        density = config["params"]["phyclone"]["density"],
+        proposal = config["params"]["phyclone"]["proposal"],
+        burnin = config["params"]["phyclone"]["burnin"],
+        num_iters = config["params"]["phyclone"]["num_iters"],
+        seed = config["params"]["phyclone"]["seed"],
+        grid_size = config["params"]["phyclone"]["grid_size"]
     log:
         "logs/phyclone/{project}/phyclone.log"
     benchmark:
@@ -18,14 +26,6 @@ rule phyclone:
     resources:
         mem_mb = config["resources"]["phyclone"]["mem"],
         runtime = config["resources"]["phyclone"]["walltime"]
-    params: 
-        num_chains = config["params"]["phyclone"]["num_chains"], 
-        density = config["params"]["phyclone"]["density"], 
-        proposal = config["params"]["phyclone"]["proposal"],
-        burnin = config["params"]["phyclone"]["burnin"],
-        num_iters = config["params"]["phyclone"]["num_iters"], 
-        seed = config["params"]["phyclone"]["seed"],
-        grid_size = config["params"]["phyclone"]["grid_size"]
     shell:
         """
         python scripts/phyclone_cluster_formatting.py --input {input.pvi_output} --output {output.clusters} > {log}
