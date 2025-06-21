@@ -27,7 +27,7 @@ def vaf_string_for_mutation(mutation_id, vaf_dict):
 
 
 # Build Gene Alterations dataframe with annotated information
-def build_gene_alterations(tree_df, pandrugs_dir, mut_project, out_dir):
+def build_gene_alterations(tree_df, pandrugs_dir, mut_dir, out_dir):
 
     """
     Build Daframe for sample panels of the project.
@@ -35,7 +35,7 @@ def build_gene_alterations(tree_df, pandrugs_dir, mut_project, out_dir):
     Args:
         tree_df (str): Path to the dataframe of Phyclone results of the project
         pandrugs_dir (str): Path to the query_pandrugs project
-        mut_project (str): Path to the mutation_prep project
+        mut_dir (str): Path to the files from mutation_prep project
         out_dir (str): Path to the output directory
 
     Return:
@@ -80,7 +80,7 @@ def build_gene_alterations(tree_df, pandrugs_dir, mut_project, out_dir):
     
     
     # Search all files that match the vscore pattern
-    muts_path = f"{mut_project}/*.tsv"
+    muts_path = f"{mut_dir}/*.tsv"
     mut_files = glob.glob(muts_path)
     
     
