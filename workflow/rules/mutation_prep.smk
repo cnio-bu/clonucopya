@@ -1,7 +1,3 @@
-from glob import glob
-import os
-
-
 rule mutation_prep:
     input:
         mutations = lambda wildcards: samples.loc[wildcards.sample, "mutations"]
