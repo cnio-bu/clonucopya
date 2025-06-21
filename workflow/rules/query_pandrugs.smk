@@ -3,7 +3,6 @@ rule query_pandrugs:
         vep_dir="results/vep_annotation/{project}/annotations"
     output:
         pandrugs_dir=directory("results/query_pandrugs/{project}")
-    params:
     log:
         "logs/query_pandrugs/{project}.log"
     benchmark:
