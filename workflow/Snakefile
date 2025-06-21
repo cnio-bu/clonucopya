@@ -5,7 +5,6 @@ import os
 import pandas as pd
 
 
-
 ###### Config file, environment and sample sheet #####
 
 configfile: "../config/config.yaml"
