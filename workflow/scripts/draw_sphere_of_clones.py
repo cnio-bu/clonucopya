@@ -52,7 +52,7 @@ def draw_sphere_of_clones(tree_df, palette, out_dir):
     for sample, group in clonal_prev_df.groupby('sample_id'):
         clone_dict = group.set_index('clone_id')['clonal_prev'].to_dict()
         root_value = 1 - sum(clone_dict.values())
-        clone_dict['parent_cell'] = root_value
+        clone_dict['parent cell'] = root_value
         clone_dict_rounded = {k: round(v, 2) for k, v in clone_dict.items()}
         tree_inference[sample] = clone_dict_rounded
 
@@ -80,7 +80,7 @@ def draw_sphere_of_clones(tree_df, palette, out_dir):
         
         # Create a list of colors for each node
         
-        population_names = sorted(proportions, key=lambda x: (x != 'parent_cell', x))
+        population_names = sorted(proportions, key=lambda x: (x != 'parent cell', x))
         clone_color = {clone: colors[i] for i, clone in enumerate(population_names)}
         
         color_list = []
@@ -115,7 +115,7 @@ def draw_sphere_of_clones(tree_df, palette, out_dir):
         
         # Add legend
         legend_patches = [plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=color,markersize=10,
-                          label=f"{'' if clone == 'parent_cell' else 'clone_'}{clone} ({proportions[clone]*100:.0f}%)")
+                          label=f"{'' if clone == 'parent cell' else 'clone '}{clone} ({proportions[clone]*100:.0f}%)")
                           for clone, color in clone_color.items()]
         ax.legend(handles=legend_patches, loc='upper right', bbox_to_anchor=(1.4, 1), borderaxespad=2)
         

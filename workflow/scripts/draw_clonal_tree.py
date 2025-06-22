@@ -40,7 +40,7 @@ def draw_subclonal_tree(nwk_file, palette, out_file):
     root_style["hz_line_color"] = "#000"
     t.set_style(root_style)
 
-    t.name = "parent_cell"
+    t.name = "parent cell"
     
     # Remove root node and keep root title
     if t.name:
