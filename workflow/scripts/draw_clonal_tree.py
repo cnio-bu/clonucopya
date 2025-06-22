@@ -34,11 +34,13 @@ def draw_subclonal_tree(nwk_file, palette, out_file):
 
     # Set root style
     root_style = NodeStyle()
-    root_style["size"] = 25  
+    root_style["size"] = 15  
     root_style["fgcolor"] = color_palette[0]
     root_style["hz_line_type"] = 0
     root_style["hz_line_color"] = "#000"
     t.set_style(root_style)
+
+    t.name = "parent_cell"
     
     # Remove root node and keep root title
     if t.name:
@@ -46,10 +48,12 @@ def draw_subclonal_tree(nwk_file, palette, out_file):
         t.add_face(root_label, column=0, position="branch-right")
 
     # Set the nodes of the clones
-    color_index = 1
+    descendant_palette = color_palette[1:]
+    num_colors = len(descendant_palette)
+    color_index = 0
     
     for node in t.traverse():
-        # Pass root node because is has its own style
+        # Pass root node because it has its own style
         if node == t:
             continue
             
@@ -59,7 +63,7 @@ def draw_subclonal_tree(nwk_file, palette, out_file):
         custom_style["hz_line_color"] = "#000"
         
         # Asign a color to each color from the clonucopya's palette
-        custom_style["fgcolor"] = color_palette[color_index % len(color_palette)]
+        custom_style["fgcolor"] = descendant_palette[color_index % len(color_palette)]
         color_index += 1      
         node.set_style(custom_style)
         
