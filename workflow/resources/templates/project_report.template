@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ report_title }} - {{ system_name }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 0.8cm !important;
+            padding: 0;
+        }
+        
+        /* PDF Compatibility */
+        @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                box-sizing: border-box;
+            }
+            
+            body {
+                width: 100% !important;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                font-size: 12px !important;
+                line-height: 1.4 !important;
+            }
+        }
+
+        /* General Styles */
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            background-color: #ffffff;
+            color: #000;
+            font-size: 14px;
+            overflow-x: hidden;
+        }
+        
+        h1, h2, h3, h4 {
+            margin: 0 0 10px 0;
+            line-height: 1.3;
+        }
+        
+        p {
+            margin: 10px 0;
+            word-wrap: break-word;
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Header Styles */
+        header {
+            width: 100%;
+            padding: 15px;
+            background-color: #009879;
+            color: #fff;
+            display: table;
+            table-layout: fixed;
+        }
+        
+        .header-content {
+            display: table-row;
+        }
+        
+        .logo-container {
+            display: table-cell;
+            width: 120px;
+            vertical-align: middle;
+            text-align: center;
+        }
+        
+        .box-white {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            background-color: #fff;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .box-white img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+        }
+        
+        .system-name-container {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: center;
+            padding: 0 20px;
+        }
+        
+        .box-yellow {
+            background-color: #ffd700;
+            padding: 15px;
+            border-radius: 5px;
+            color: #000;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            display: inline-block;
+            min-width: 200px;
+        }
+        
+        .report-container {
+            display: table-cell;
+            width: 200px;
+            vertical-align: middle;
+            text-align: center;
+        }
+        
+        .box-report {
+            padding: 15px;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            word-wrap: break-word;
+        }
+
+        /* Panel Styles */
+        .panel {
+            margin: 20px auto;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 95%;
+            max-width: 1000px;
+            overflow: hidden;
+        }
+        
+        .panel h2 {
+            color: #000;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .panel h3 {
+            color: #333;
+            margin: 20px 0 10px 0;
+            font-size: 16px;
+        }
+
+        /* Stats Card Styles */
+        .stats-card {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin: 15px 0;
+            border: 1px solid #e0e0e0;
+            overflow: hidden;
+        }
+
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); 
+            grid-template-rows: repeat(2, 1fr);
+            gap: 15px;
+            width: 100%;
+        }
+
+        .stat-box {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .stat-box h3 {
+            margin: 0 0 8px 0;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .stat-box p {
+            font-size: 16px;
+            font-weight: bold;
+            color: #666;
+            margin: 0;
+            word-wrap: break-word;
+        }
+
+        /* Image Grid Styles */
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .image-container {
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .image-container h4 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+
+        /* Table Styles */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            min-width: 600px;
+            table-layout: auto;
+        }
+
+        .data-table th,
+        .data-table td {
+            border: 1px solid #ddd;
+            padding: 6px 8px;
+            text-align: left;
+            vertical-align: top;
+            word-wrap: break-word;
+            max-width: 120px;
+        }
+
+        .data-table th {
+            background-color: #009879;
+            color: white;
+            font-weight: bold;
+            font-size: 11px;
+        }
+
+        .data-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+
+        .drug-table {
+            font-size: 7px !important;
+            table-layout: fixed !important;
+}
+
+        .drug-table th,
+        .drug-table td {
+            padding: 1px 2px !important;
+            font-size: 7px !important;
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+        }
+        
+
+        .drug-table th:nth-child(1) { width: 5%; }   /* Clone */
+        .drug-table th:nth-child(2) { width: 10%; }  /* Mutation ID */
+        .drug-table th:nth-child(3) { width: 8%; }   /* Gene Symbol */
+        .drug-table th:nth-child(4) { width: 8%; }   /* VAF */
+        .drug-table th:nth-child(5) { width: 12%; }  /* Drug */
+        .drug-table th:nth-child(6) { width: 8%; }   /* Status */
+        .drug-table th:nth-child(7) { width: 10%; }  /* Interaction Type */
+        .drug-table th:nth-child(8) { width: 8%; }   /* Driver Gene */
+        .drug-table th:nth-child(9) { width: 7%; }   /* dScore */
+        .drug-table th:nth-child(10) { width: 7%; }  /* gScore */
+        .drug-table th:nth-child(11) { width: 17%; } /* Source */
+
+
+
+        .gene-table,
+        .drug-table {
+            font-size: 8px !important;
+            table-layout: fixed !important;
+        }
+        
+        .gene-table th,
+        .gene-table td,
+        .drug-table th,
+        .drug-table td {
+            font-size: 8px !important;
+            padding: 2px 3px !important;
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+            vertical-align: top !important;
+        }
+        
+        /* Prevenir cortes de fila */
+        .gene-table tr,
+        .drug-table tr {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+        }
+        
+        /* Centrado para clonal proportions */
+        .clonal-proportions-centered {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .clonal-proportions-centered img {
+            display: inline-block;
+            margin: 10px 20px;
+            max-width: 400px;
+            border-radius: 4px;
+        }
+
+
+        /* No Data Message */
+        .no-data-message {
+            background-color: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+            color: #6c757d;
+            font-size: 16px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-content">
+        <div class="logo-container">
+            <div class="box-white">
+                {% if logo_path %}
+                <img src="{{ logo_path }}" alt="Logo" style="width: 70px; height: 70px; object-fit: contain;">
+                {% else %}
+                <div style="font-weight: bold; font-size: 12px; color: #333;">LOGO</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="system-name-container">
+            <div class="box-yellow">
+                {{ system_name }}
+            </div>
+        </div>
+
+        <div class="report-container">
+            <div class="box-report">
+                {{ report_title }}
+            </div>
+        </div>
+    </div>
+</header>
+
+
+<div class="panel">
+    <h2>Project Statistics: {{ project_id }}</h2>
+    <p>{{ project_description }}</p>
+    
+    {% for sample in samples_df.itertuples() %}
+    <div class="stats-card">
+        <div class="stats-grid">
+            <div class="stat-box">
+                <h3>Sample Name</h3>
+                <p>{{ sample.sample_id }}</p>
+            </div>
+            <div class="stat-box">
+                <h3>Sex</h3>
+                <p>{{ sample.sex }}</p>
+            </div>
+            <div class="stat-box">
+                <h3>Tumor Content</h3>
+                <p>{{ sample.tumour_content|safe_float(2) }}</p>
+            </div>
+            <div class="stat-box">
+                <h3>Mutations</h3>
+                <p>{{ sample.mutations|safe_int }}</p>
+            </div>
+            <div class="stat-box">
+                <h3>CNVs</h3>
+                <p>{{ sample.cnvs|safe_int }}</p>
+            </div>
+            <div class="stat-box">
+                <h3>Intersect</h3>
+                <p>{{ sample.intersect|safe_int }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+
+<div class="panel">
+    <h2>{{ comparison_section.title }}</h2>
+    <p>{{ comparison_section.description }}</p>
+
+    <div>
+        <h3>{{ comparison_section.subclonal_tree.title }}</h3>
+        <p>{{ comparison_section.subclonal_tree.description }}</p>
+        <div style="text-align: center; margin: 20px 0;">
+            {% if comparison_section.subclonal_tree.image %}
+            <img src="file://{{ comparison_section.subclonal_tree.image }}" alt="Subclonal Tree" style="max-width:600px;">
+            {% else %}
+            <div style="border: 1px solid #ccc; padding: 20px; background-color: #f9f9f9;">
+                Subclonal Tree Image Not Available
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div>
+        <h3>{{ comparison_section.clonal_proportions.title }}</h3>
+        <p>{{ comparison_section.clonal_proportions.description }}</p>
+        <div style="text-align: center; margin: 20px 0;">
+            {% for sample in samples_df.itertuples() %}
+            {% if sample.sample_id in clonal_proportions_images %}
+            <div style="display: inline-block; margin: 10px 20px; text-align: center;">
+                <img src="file://{{ clonal_proportions_images[sample.sample_id] }}" alt="Clonal Proportions - {{ sample.sample_id }}" style="max-width: 400px; border-radius: 4px;">
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+
+        <h3>{{ comparison_section.clone_alterations.title }}</h3>
+        <p>{{ comparison_section.clone_alterations.description }}</p>
+        <div class="image-grid">
+            {% for sample in samples_df.itertuples() %}
+            {% if sample.sample_id in clone_alterations_images %}
+            <div class="image-container">
+                <img src="file://{{ clone_alterations_images[sample.sample_id] }}" alt="Clone Alterations - {{ sample.sample_id }}">
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+<div class="panel">
+    <h2>{{ alteration_section.title }}</h2>
+    <div>
+        <h3>{{ alteration_section.gene_alterations.title }}</h3>
+        <p>{{ alteration_section.gene_alterations.description }}</p>
+        {% if gene_alterations_df is not none and not gene_alterations_df.empty %}
+        <div class="table-container">
+            <table class="data-table gene-table">
+                <thead>
+                    <tr>
+                        <th style="width: 6%;">Clone</th>
+                        <th style="width: 12%;">Mutation ID</th>
+                        <th style="width: 8%;">Gene Symbol</th>
+                        <th style="width: 10%;">Ensembl ID</th>
+                        <th style="width: 12%;">VAF</th>
+                        <th style="width: 30%;">Consequence</th>
+                        <th style="width: 22%;">Impact</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in gene_alterations_df.to_dict('records') %}
+                    <tr>
+                        <td>{{ row['Clone'] }}</td>
+                        <td>{{ row['Mutation ID'] }}</td>
+                        <td>{{ row['Gene Symbol'] }}</td>
+                        <td>{{ row['Ensembl ID'] }}</td>
+                        <td>{{ row['VAF']|safe_float(3) }}</td>
+                        <td>{{ row['Consequence'] }}</td>
+                        <td>{{ row['Impact'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="no-data-message">
+            No Gene Alterations Available
+        </div>
+        {% endif %}
+    </div>
+
+    <div>
+        <h3>{{ alteration_section.drug_priorization.title }}</h3>
+        <p>{{ alteration_section.drug_priorization.description }}</p>
+        {% if drug_priorization_df is not none and not drug_priorization_df.empty %}
+        <div class="table-container">
+            <table class="data-table drug-table">
+                <thead>
+                    <tr>
+                        <th style="width: 6%;">Clone</th>
+                        <th style="width: 12%;">Mutation ID</th>
+                        <th style="width: 8%;">Gene Symbol</th>
+                        <th style="width: 10%;">VAF</th>
+                        <th style="width: 12%;">Drug</th>
+                        <th style="width: 8%;">Status</th>
+                        <th style="width: 10%;">Interaction Type</th>
+                        <th style="width: 8%;">Driver Gene</th>
+                        <th style="width: 6%;">dScore</th>
+                        <th style="width: 6%;">gScore</th>
+                        <th style="width: 14%;">Source</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in drug_priorization_df.to_dict('records') %}
+                    <tr>
+                        <td>{{ row['Clone'] }}</td>
+                        <td>{{ row['Mutation ID'] }}</td>
+                        <td>{{ row['Gene Symbol'] }}</td>
+                        <td>{{ row['VAF']|safe_float(3) }}</td>
+                        <td>{{ row['Drug'] }}</td>
+                        <td>{{ row['Status'] }}</td>
+                        <td>{{ row['Interaction Type'] }}</td>
+                        <td>{{ row['Driver Gene'] }}</td>
+                        <td>{{ row['dScore']|safe_float(3) }}</td>
+                        <td>{{ row['gScore']|safe_float(3) }}</td>
+                        <td>{{ row['Source'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="no-data-message">
+            NOT AVAILABLE TREATMENTS. No actionable therapies could be suggested for this case because no molecular alterations with sufficient clinical or biological evidence for drug prioritization were identified in the analyzed profile. This may occur when detected variants are of low or unknown functional impact, when no approved or clinical trial drugs currently target the altered genes, or when available evidence does not support a therapeutic recommendation for this specific context.
+
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+</body>
+</html>
