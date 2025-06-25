@@ -146,7 +146,7 @@ def plot_heatmaps(heatmap_dict, out_dir):
         # Set axis labels and title
         plt.title(sample_id, fontsize=20, pad=25)
         plt.xlabel("Clones", fontsize=16, labelpad=15)
-        plt.ylabel("Alterations", fontsize=16, labelpad=15)
+        plt.ylabel("Mutations", fontsize=16, labelpad=15)
 
         os.makedirs(out_dir, exist_ok=True)
         plt.savefig(f"{out_dir}/{sample_id}_vaf_heatmap.png", bbox_inches='tight')
