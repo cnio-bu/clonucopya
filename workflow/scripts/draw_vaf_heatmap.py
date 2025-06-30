@@ -7,6 +7,16 @@ import seaborn as sns
 from matplotlib import pyplot as plt
 
 
+def chr_to_num(chr_str):
+    """Convert sexual chromosomes to a number to order mutations"""
+    chr_str = chr_str.replace('chr', '')
+    if chr_str == 'X':
+        return 23
+    elif chr_str == 'Y':
+        return 24
+    else:
+        return int(chr_str)
+
 def build_heatmap_df(tree_df,pvi_out, mut_dir):
 
     """
@@ -81,8 +91,16 @@ def build_heatmap_df(tree_df,pvi_out, mut_dir):
         
         # Add mutations that are absent in each sample and reindex
         df_reindexed = pivoted.reindex(all_muts_list, fill_value=0)
-        # Sort mutations alpha-numerically
-        df_reindexed = df_reindexed.sort_index(ascending=False)
+    	# Sort mutations by clone, chr, and pos
+        temp_df = pd.DataFrame(index=df_reindexed.index)
+        temp_df['chr_num'] = temp_df.index.to_series().apply(lambda x: chr_to_num(x.split(':')[0]))
+        temp_df['pos'] = temp_df.index.to_series().apply(lambda x: int(x.split(':')[1]))
+    
+        # Ordenar por cromosoma y posición
+        temp_df_sorted = temp_df.sort_values(by=['chr_num', 'pos'])
+    
+        # Reordenar el DataFrame principal usando el índice ordenado
+        df_reindexed = df_reindexed.loc[temp_df_sorted.index]
     
         # Transform cluster to clones
         df_renamed = df_reindexed.rename(columns=cluster_to_clone)
@@ -114,10 +132,7 @@ def plot_heatmaps(heatmap_dict, out_dir):
         
         # Set color palette
         cmap = sns.light_palette("#009c8c", as_cmap=True)
-        
-        # plt.figure(figsize=(12, 9))  
-    
-        
+
         
         # Plot heatmap
         heatmap = sns.heatmap(
@@ -129,7 +144,6 @@ def plot_heatmaps(heatmap_dict, out_dir):
             vmax=0.6
         )
         
-        heatmap.invert_yaxis()
         heatmap.xaxis.tick_top()
         heatmap.tick_params(axis='x', which='both', pad=10, top=True, bottom=False, length=0)
         heatmap.tick_params(axis='y', which='both', left=False, right=False, length=0)
