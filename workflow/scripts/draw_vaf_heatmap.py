@@ -125,13 +125,14 @@ def plot_heatmaps(heatmap_dict, out_dir):
             annot=False,
             fmt=".3f",
             cmap=cmap,
-            linewidths=0.5
+            linewidths=0.5,
+            vmax=0.6
         )
         
         heatmap.invert_yaxis()
         heatmap.xaxis.tick_top()
         heatmap.tick_params(axis='x', which='both', pad=10, top=True, bottom=False, length=0)
-        
+        heatmap.tick_params(axis='y', which='both', left=False, right=False, length=0)
         heatmap.xaxis.set_label_position('top') 
         
         
