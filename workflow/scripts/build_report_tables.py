@@ -5,6 +5,18 @@ import ast
 import argparse
 
 
+# Translate chr format to sort mutation ids
+
+def chr_to_num(chr_str):
+    """Convierte el cromosoma a un número para ordenamiento"""
+    chr_str = chr_str.replace('chr', '')
+    if chr_str == 'X':
+        return 23
+    elif chr_str == 'Y':
+        return 24
+    else:
+        return int(chr_str)
+
 
 # Check if drug-gene output file is empty
 def is_file_empty(file):
@@ -103,10 +115,18 @@ def build_gene_alterations(tree_df, pandrugs_dir, mut_dir, out_dir):
     
     # Format Table: rename columns, sort rows and columns
     project_df.columns = ['Mutation ID', 'Gene Symbol', 'Ensembl ID', 'Consequence', 'Impact', 'Clone', 'VAF']
-    project_sorted = project_df.sort_values(by=['Clone', 'Mutation ID'], ascending=[True, True])
+    
+    
+    project_df  = project_df.set_index('Mutation ID')
+    temp_df = pd.DataFrame(index=project_df.index)
+    temp_df['Clone'] = project_df['Clone']
+    temp_df['chr_num'] = temp_df.index.to_series().apply(lambda x: chr_to_num(x.split(':')[0]))
+    temp_df['pos'] = temp_df.index.to_series().apply(lambda x: int(x.split(':')[1]))
+    temp_df_sorted = temp_df.sort_values(by=['Clone','chr_num', 'pos'])
+    project_sorted = project_df.loc[temp_df_sorted.index]
+    project_sorted = project_sorted.reset_index()
     project_sorted = project_sorted[['Clone', 'Mutation ID', 'Gene Symbol', 'Ensembl ID', 'VAF', 'Consequence', 'Impact']]
-    
-    
+
     # Save to TSV table
     project_sorted.to_csv(f"{out_dir}/gene_alterations.tsv", sep='\t', index=False)
 
