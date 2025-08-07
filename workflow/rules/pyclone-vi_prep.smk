@@ -27,16 +27,22 @@ rule pvi_intesersect:
     """
 
 
-rule concat_and_purity_pvi:
+
+
+
+
+rule format_pvi_intersect:
     input:
-        lambda wildcards: expand("results/pyclone-vi_prep/{project}/{sample}_intersect_pvi.tsv", 
-                                 sample=samples_df[samples_df['project'] == wildcards.project]['sample_id'],
-                                 project=wildcards.project)
+        lambda wildcards: expand(
+            "results/pyclone-vi_prep/{project}/{sample}_intersect_pvi.tsv",
+            sample=samples_df[samples_df['project'] == wildcards.project]['sample_id'],
+            project=wildcards.project
+        )
     output:
-        pvi = "results/pyclone-vi_prep/{project}/combined_intersect_pvi.tsv",
-        phyclone_prep = "results/pyclone-vi_prep/{project}/pvi_input_phyclone_formatted.tsv"
+        pvi="results/pyclone-vi_prep/{project}/combined_intersect_pvi.tsv",
+        phyclone_prep="results/pyclone-vi_prep/{project}/pvi_input_phyclone_formatted.tsv"
     params:
-        samplesheet = config["samplesheet"]
+        samplesheet=config["samplesheet"]
     log:
         "logs/pyclone-vi_prep/{project}/concat.log"
     conda:
@@ -44,37 +50,15 @@ rule concat_and_purity_pvi:
     threads:
         config["resources"]["default"]["threads"]
     resources:
-        mem_mb = config["resources"]["default"]["mem"],
-        runtime = config["resources"]["default"]["walltime"]
+        mem_mb=config["resources"]["default"]["mem"],
+        runtime=config["resources"]["default"]["walltime"]
     shell:
         """
-        python -c "
-import pandas as pd
-import sys
-
-# List of pvi prep samples
-input_files = {input!r}
-pvi_preps = [pd.read_csv(file, sep='\t') for file in input_files]
-
-# Concatenate
-combined_pvi = pd.concat(pvi_preps, ignore_index=True)
-
-# Drop duplicates
-
-combined_pvi_dedup = combined_pvi.drop_duplicates()
-
-combined_pvi_dedup.to_csv('{output.phyclone_prep}', sep='\t', index=False)
-
-samplesheet = pd.read_csv('{params.samplesheet}')
-
-tumour_content_dict = dict(zip(samplesheet['sample_id'], samplesheet['tumour_content']))
-
-combined_pvi_dedup['tumour_content'] = combined_pvi_dedup['sample_id'].map(tumour_content_dict)
-
-combined_pvi_dedup.to_csv('{output.pvi}', sep='\t', index=False)
-" > {log} 2>&1
+        python scripts/format_pvi_intersect.py \
+            --intersect_list {input} \
+            --samplesheet {params.samplesheet} \
+            --pvi_prep {output.pvi} \
+            --phyclone {output.phyclone_prep} \
+        > {log} 2>&1
         """
-
-
-
 
