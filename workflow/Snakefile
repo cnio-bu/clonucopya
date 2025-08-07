@@ -51,7 +51,6 @@ rule all:
         expand("results/report/{project}/components/gene_alterations.tsv", project=samples_df["project"].unique())
 
 
-#        expand("results/report/{project}/components/{sample}_sphere_of_clones.png", zip, project=samples_df["project"], sample=samples_df["sample_id"]),
 
 # FORMAT MUTATION VCF
 
