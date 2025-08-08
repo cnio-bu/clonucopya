@@ -1,9 +1,7 @@
 import pandas as pd
 import argparse
 
-
-
-    
+ 
     
 def process_vcf_mutations(input_vcf, just_snv, output_file):
     """

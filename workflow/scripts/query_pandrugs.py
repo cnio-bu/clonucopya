@@ -5,47 +5,7 @@ import time
 import pandas as pd
 import json
 import csv
-
-
-def json_to_csv(json_origin, csv_destination):
-
-    """
-    Convert PanDrugs JSON output  and extracts the geneDrugInfo data into a CSV format.
-
-    Args:
-        json_origin (str): Path to the input JSON file containing PanDrugs results
-        csv_destination (str): Path where the output CSV file will be written
-
-    Returns:
-        None
-    """
-
-    # Opening JSON file and loading the data
-    with open(fr'{json_origin}') as json_file:
-        data = json.load(json_file)
-
-    geneDrugGroup = data['geneDrugGroup']
-
-    data_file = open(fr'{csv_destination}', 'w')
-
-    csv_writer = csv.writer(data_file)
-
-    count = 0
-
-    for gdg in geneDrugGroup:
-        geneDrugInfo = gdg['geneDrugInfo']
-
-        for gdi in geneDrugInfo:
-            if count == 0:
-                # Writing headers of CSV file
-                header = gdi.keys()
-                csv_writer.writerow(header)
-                count += 1
-
-                # Writing data of CSV file
-                csv_writer.writerow(gdi.values())
-
-    data_file.close()
+from clonucopya_tools import json_to_csv
 
 
 

@@ -5,17 +5,10 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 from matplotlib import pyplot as plt
+from clonucopya_tools import chr_to_num
 
 
-def chr_to_num(chr_str):
-    """Convert sexual chromosomes to a number to order mutations"""
-    chr_str = chr_str.replace('chr', '')
-    if chr_str == 'X':
-        return 23
-    elif chr_str == 'Y':
-        return 24
-    else:
-        return int(chr_str)
+
 
 def build_heatmap_df(tree_df,pvi_out, mut_dir):
 

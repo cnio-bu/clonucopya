@@ -3,28 +3,8 @@ import glob
 import os
 import ast
 import argparse
+from clonucopya_tools import chr_to_num, is_file_empty
 
-
-# Translate chr format to sort mutation ids
-
-def chr_to_num(chr_str):
-    """Convierte el cromosoma a un número para ordenamiento"""
-    chr_str = chr_str.replace('chr', '')
-    if chr_str == 'X':
-        return 23
-    elif chr_str == 'Y':
-        return 24
-    else:
-        return int(chr_str)
-
-
-# Check if drug-gene output file is empty
-def is_file_empty(file):
-    try:
-        df = pd.read_csv(file)
-        return df.empty
-    except Exception:
-        return True  
 
 
 
@@ -174,10 +154,11 @@ def build_drug_priorization(gene_alterations, pandrugs_dir, out_dir):
         gene_drugs = concatenated_df.copy()
 
         # Subset gen-drug concat file of all clones to resume information of the each query
-        genalt_subset = gene_drugs[['gene', 'drug', 'status', 'interactionType', 'dScore', 'gScore' , 'source']].copy()
+        genalt_subset = gene_drugs[['gene', 'drug', 'status', 'interactionType', 'dScore', 'gScore' , 'cancer', 'source']].copy()
 
         # Format source column to clear the dataframe
         genalt_subset['source'] = genalt_subset['source'].apply(lambda x: '; '.join(ast.literal_eval(x)) if isinstance(x, str) and x.startswith("[") else None)
+        genalt_subset['cancer'] = genalt_subset['cancer'].apply(lambda x: '; '.join(ast.literal_eval(x)) if isinstance(x, str) and x.startswith("[") else None)
 
         # Format gene column to obtain driverGene and geneSymbol information in new columns
         genalt_subset[['driverGene', 'geneSymbol']] = genalt_subset['gene'].apply(
@@ -185,8 +166,8 @@ def build_drug_priorization(gene_alterations, pandrugs_dir, out_dir):
     )[['driverGene', 'geneSymbol']]
     
         #  Sort and Rename columns of the subset datraframe from gene-drugs files
-        genalt_subset_formatted = genalt_subset[['geneSymbol', 'drug', 'status', 'interactionType', 'driverGene', 'dScore', 'gScore' , 'source']]
-        genalt_subset_formatted.columns = ['Gene Symbol', 'Drug', 'Status', 'Interaction Type', 'Driver Gene', 'dScore', 'gScore' , 'Source']
+        genalt_subset_formatted = genalt_subset[['geneSymbol', 'drug', 'status', 'interactionType', 'driverGene', 'dScore', 'gScore' , 'cancer', 'source']]
+        genalt_subset_formatted.columns = ['Gene Symbol', 'Drug', 'Status', 'Interaction Type', 'Driver Gene', 'dScore', 'gScore' , 'Cancer', 'Source']
 
         # Merge subsetted Gene alterations info with drug-gene interactions files
         drug_priorization = (

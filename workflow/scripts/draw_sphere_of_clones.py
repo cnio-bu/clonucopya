@@ -5,6 +5,7 @@ import argparse
 import os
 
 
+
 def create_hex_grid(rows, cols, radius=1.0):
     """
     Define the shape of the circles for the sphere of clones
