@@ -1,10 +1,11 @@
 rule pvi_vep_prep:
     input:
-        pvi_df="results/pyclone-vi/{project}/pvi_out.tsv"
+        pvi_prep="results/pyclone-vi_prep/{project}/combined_intersect_pvi.tsv",
+        pvi_results="results/pyclone-vi/{project}/pvi_out.tsv"
     output:
         dir=directory("results/pvi_vep_prep/{project}")
     params:
-        sample_id=lambda wildcards: wildcards.project
+        study=lambda wildcards: wildcards.project
     log:
         "logs/pvi_vep_prep/{project}/pvi_vep_prep.log"
     benchmark:
@@ -18,8 +19,9 @@ rule pvi_vep_prep:
         runtime=240
     shell:
         """
-        python scripts/vep_formatting.py --pvi_data {input.pvi_df} \
-                                         --sample_id {params.sample_id} \
+        python scripts/vep_formatting.py --pvi_prep {input.pvi_prep} \
+                                         --pvi_data {input.pvi_results} \
+                                         --study {params.study} \
                                          --out_dir {output.dir} 2> {log}
         """
 
