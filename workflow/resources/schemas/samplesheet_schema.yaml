@@ -3,7 +3,7 @@ description: Samplesheet validation of Clonucopya
 csv:
   delimiter: ','
 columns:
-  - name: project
+  - name: study
     type: string
     rules:
       not_empty: true
