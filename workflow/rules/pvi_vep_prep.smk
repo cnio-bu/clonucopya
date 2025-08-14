@@ -1,15 +1,15 @@
 rule pvi_vep_prep:
     input:
-        pvi_prep="results/pyclone-vi_prep/{project}/combined_intersect_pvi.tsv",
-        pvi_results="results/pyclone-vi/{project}/pvi_out.tsv"
+        pvi_prep="results/{study}/pyclone-vi_prep/combined_intersect_pvi.tsv",
+        pvi_results="results/{study}/pyclone-vi/pvi_out.tsv"
     output:
-        dir=directory("results/pvi_vep_prep/{project}")
+        dir=directory("results/{study}/pvi_vep_prep")
     params:
-        study=lambda wildcards: wildcards.project
+        study=lambda wildcards: wildcards.study
     log:
-        "logs/pvi_vep_prep/{project}/pvi_vep_prep.log"
+        "logs/{study}/pvi_vep_prep/pvi_vep_prep.log"
     benchmark:
-        "logs/pvi_vep_prep/{project}/pvi_vep_prep.smk"
+        "logs/{study}/pvi_vep_prep/pvi_vep_prep.bmk"
     conda:
         "../envs/pvi_vep_prep.yaml"
     threads: 

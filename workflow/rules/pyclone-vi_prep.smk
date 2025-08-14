@@ -1,15 +1,15 @@
 rule pvi_intesersect:
     input:
-        mutations = "results/mutation_prep/{project}/{sample}_prep.mut.tsv",
+        mutations = "results/{study}/mutation_prep/{sample}_prep.mut.tsv",
         cnvs = lambda wildcards: samples.loc[wildcards.sample, "cnvs"]
     output:
-        "results/pyclone-vi_prep/{project}/{sample}_intersect_pvi.tsv"
+        "results/{study}/pyclone-vi_prep/{sample}_intersect_pvi.tsv"
     params:
         sample_id = lambda wildcards: wildcards.sample
     log:
-        "logs/pyclone-vi_prep/{project}/{sample}.log"
+        "logs/{study}/pyclone-vi_prep/{sample}.log"
     benchmark:
-        "logs/pyclone-vi_prep/{project}/{sample}.bmk"
+        "logs/{study}/pyclone-vi_prep/{sample}.bmk"
     conda:
         "../envs/intersect_mutations_cnv.yaml"
     threads:
@@ -34,17 +34,19 @@ rule pvi_intesersect:
 rule format_pvi_intersect:
     input:
         lambda wildcards: expand(
-            "results/pyclone-vi_prep/{project}/{sample}_intersect_pvi.tsv",
-            sample=samples_df[samples_df['project'] == wildcards.project]['sample_id'],
-            project=wildcards.project
+            "results/{study}/pyclone-vi_prep/{sample}_intersect_pvi.tsv",
+            sample=samples_df[samples_df['study'] == wildcards.study]['sample_id'],
+            study=wildcards.study
         )
     output:
-        pvi="results/pyclone-vi_prep/{project}/combined_intersect_pvi.tsv",
-        phyclone_prep="results/pyclone-vi_prep/{project}/pvi_input_phyclone_formatted.tsv"
+        pvi="results/{study}/pyclone-vi_prep/combined_intersect_pvi.tsv",
+        phyclone_prep="results/{study}/pyclone-vi_prep/pvi_input_phyclone_formatted.tsv"
     params:
         samplesheet=config["samplesheet"]
     log:
-        "logs/pyclone-vi_prep/{project}/concat.log"
+        "logs/{study}/pyclone-vi_prep/concat.log"
+    benchmark:
+        "logs/{study}/pyclone-vi_prep/concat.bmk"
     conda:
         "../envs/intersect_mutations_cnv.yaml"
     threads:

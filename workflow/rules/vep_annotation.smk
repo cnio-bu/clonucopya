@@ -1,15 +1,15 @@
 rule vep_annotation:
     input:
-        pvi_prep="results/pvi_vep_prep/{project}"
+        pvi_prep="results/{study}/pvi_vep_prep"
     output:
-        stats=directory("results/vep_annotation/{project}/stats"),
-        annotations=directory("results/vep_annotation/{project}/annotations"),
+        stats=directory("results/{study}/vep_annotation/stats"),
+        annotations=directory("results/{study}/vep_annotation/annotations"),
     params:
         cache_dir="resources/vep/cache"
     log:
-        "logs/vep_annotation/{project}.log"
+        "logs/{study}/vep_annotation/annotation.log"
     benchmark:
-        "logs/vep_annotation/{project}.smk"
+        "logs/{study}/vep_annotation/annotation.bmk"
     conda: "../envs/vep_annotation.yaml"
     threads: config["resources"]["default"]["threads"]
     resources:

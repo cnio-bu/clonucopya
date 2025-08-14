@@ -1,9 +1,9 @@
 rule pyclone_vi:
     input:
-        "results/pyclone-vi_prep/{project}/combined_intersect_pvi.tsv"
+        "results/{study}/pyclone-vi_prep/combined_intersect_pvi.tsv"
     output:
-        fit = "results/pyclone-vi/{project}/pvi_out.h5",
-        result = "results/pyclone-vi/{project}/pvi_out.tsv"
+        fit = "results/{study}/pyclone-vi/pvi_out.h5",
+        result = "results/{study}/pyclone-vi/pvi_out.tsv"
     params:
         nclusters = config["params"]["pyclone-vi"]["num_clusters"],
         density = config["params"]["pyclone-vi"]["density"],
@@ -11,9 +11,9 @@ rule pyclone_vi:
         nrestarts = config["params"]["pyclone-vi"]["num_restarts"],
         seed = config["params"]["pyclone-vi"]["seed"]
     log:
-        "logs/pyclone-vi/{project}/pvi.log"
+        "logs/{study}/pyclone-vi/pvi.log"
     benchmark:
-        "logs/pyclone-vi/{project}/pvi.smk"
+        "logs/{study}/pyclone-vi/pvi.bmk"
     conda:
         "../envs/pyclone-vi.yaml"
     threads: 

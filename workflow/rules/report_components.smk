@@ -1,23 +1,23 @@
 def get_mutation_files(wildcards):
-    samples = samples_df[samples_df['project'] == wildcards.project]['sample_id'].tolist()
-    return [f"results/mutation_prep/{wildcards.project}/{sample}_prep.mut.tsv" for sample in samples]
+    samples = samples_df[samples_df['study'] == wildcards.study]['sample_id'].tolist()
+    return [f"results/{wildcards.study}/mutation_prep/{sample}_prep.mut.tsv" for sample in samples]
 
 
 
 rule report_panels:
     input:
         samplesheet = config["samplesheet"],
-        intersect = "results/pyclone-vi_prep/{project}/combined_intersect_pvi.tsv",
+        intersect = "results/{study}/pyclone-vi_prep/combined_intersect_pvi.tsv",
         mut_files = get_mutation_files
     output:
-        "results/report/{project}/components/report_panel.tsv"
+        "results/{study}/report/components/report_panel.tsv"
     params:
-        project = lambda wildcards: wildcards.project,
-        mut_dir = lambda wildcards: f"results/mutation_prep/{wildcards.project}"
+        study = lambda wildcards: wildcards.study,
+        mut_dir = lambda wildcards: f"results/{wildcards.study}/mutation_prep"
     log:
-        "logs/report/{project}/report_panels.log"
+        "logs/{study}/report/report_panels.log"
     benchmark:
-        "logs/report/{project}/report_panels.bmk"
+        "logs/{study}/report/report_panels.bmk"
     conda:
         "../envs/report_components.yaml"
     threads: 
@@ -28,7 +28,7 @@ rule report_panels:
     shell:
         """
         python scripts/build_panels.py \
-             --project {params.project} \
+             --study {params.study} \
              --samplesheet {input.samplesheet} \
              --mut_dir {params.mut_dir} \
              --intersect_combined {input.intersect} \
@@ -39,15 +39,15 @@ rule report_panels:
 
 rule plot_tree:
     input:
-        nwk_file = "results/phyclone/{project}/tree.nwk"
+        nwk_file = "results/{study}/phyclone/tree.nwk"
     output:
-        "results/report/{project}/components/clonal_tree.png"
+        "results/{study}/report/components/clonal_tree.png"
     params:
         palette = "resources/clonucopya_palette.txt"
     log:
-        "logs/report/{project}/plot_tree.log"
+        "logs/{study}/report/plot_tree.log"
     benchmark:
-        "logs/report/{project}/plot_tree.bmk"
+        "logs/{study}/report/plot_tree.bmk"
     conda:
         "../envs/report_components.yaml"
     threads:
@@ -67,15 +67,15 @@ rule plot_tree:
 
 rule plot_sphere:
     input:
-        tree_df = "results/phyclone/{project}/tree_table.tsv"
+        tree_df = "results/{study}/phyclone/tree_table.tsv"
     output:
-        directory("results/report/{project}/components/spheres_of_clones")
+        directory("results/{study}/report/components/spheres_of_clones")
     params:
         palette = "resources/clonucopya_palette.txt"
     log:
-        "logs/report/{project}/plot_sphere.log"
+        "logs/{study}/report/plot_sphere.log"
     benchmark:
-        "logs/report/{project}/plot_sphere.bmk"
+        "logs/{study}/report/plot_sphere.bmk"
     conda:
         "../envs/report_components.yaml"
     threads:
@@ -95,17 +95,17 @@ rule plot_sphere:
 
 rule plot_vaf_heatmap:
     input:
-        tree_df = "results/phyclone/{project}/tree_table.tsv",
-        pvi_out = "results/pyclone-vi/{project}/pvi_out.tsv",
+        tree_df = "results/{study}/phyclone/tree_table.tsv",
+        pvi_out = "results/{study}/pyclone-vi/pvi_out.tsv",
         mut_files = get_mutation_files
     output:
-        directory("results/report/{project}/components/vaf_heatmaps")
+        directory("results/{study}/report/components/vaf_heatmaps")
     params:
-        mut_dir = lambda wildcards: f"results/mutation_prep/{wildcards.project}"
+        mut_dir = lambda wildcards: f"results/{wildcards.study}/mutation_prep"
     log:
-        "logs/report/{project}/plot_vaf_heatmap.log"
+        "logs/{study}/report/plot_vaf_heatmap.log"
     benchmark:
-        "logs/report/{project}/plot_vaf_heatmap.bmk"
+        "logs/{study}/report/plot_vaf_heatmap.bmk"
     conda:
         "../envs/report_components.yaml"
     threads:
@@ -126,19 +126,19 @@ rule plot_vaf_heatmap:
 
 rule report_tables:
     input:
-        tree_df = "results/phyclone/{project}/tree_table.tsv",
-        pandrugs_dir = "results/query_pandrugs/{project}",
+        tree_df = "results/{study}/phyclone/tree_table.tsv",
+        pandrugs_dir = "results/{study}/query_pandrugs",
         mut_files = get_mutation_files
     output:
-        "results/report/{project}/components/gene_alterations.tsv",
-        "results/report/{project}/components/drug_priorization.tsv"
+        "results/{study}/report/components/gene_alterations.tsv",
+        "results/{study}/report/components/drug_priorization.tsv"
     params:
-        out_dir = directory("results/report/{project}/components"),
-        mut_dir = lambda wildcards: f"results/mutation_prep/{wildcards.project}"
+        out_dir = directory("results/{study}/report/components"),
+        mut_dir = lambda wildcards: f"results/{wildcards.study}/mutation_prep"
     log:
-        "logs/report/{project}/report_tables.log"
+        "logs/{study}/report/report_tables.log"
     benchmark:
-        "logs/report/{project}/report_tables.bmk"
+        "logs/{study}/report/report_tables.bmk"
     conda:
         "../envs/report_components.yaml"
     threads:

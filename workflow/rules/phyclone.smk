@@ -1,12 +1,12 @@
 rule phyclone:
     input:
-        pvi_input="results/pyclone-vi_prep/{project}/pvi_input_phyclone_formatted.tsv",
-        pvi_output="results/pyclone-vi/{project}/pvi_out.tsv"
+        pvi_input="results/{study}/pyclone-vi_prep/pvi_input_phyclone_formatted.tsv",
+        pvi_output="results/{study}/pyclone-vi/pvi_out.tsv"
     output:
-        clusters="results/phyclone/{project}/clusters.tsv",
-        trace="results/phyclone/{project}/trace.pkl.gz",
-        tree_nwk="results/phyclone/{project}/tree.nwk",
-        tree_table="results/phyclone/{project}/tree_table.tsv"
+        clusters="results/{study}/phyclone/clusters.tsv",
+        trace="results/{study}/phyclone/trace.pkl.gz",
+        tree_nwk="results/{study}/phyclone/tree.nwk",
+        tree_table="results/{study}/phyclone/tree_table.tsv"
     params:
         num_chains = config["params"]["phyclone"]["num_chains"],
         density = config["params"]["phyclone"]["density"],
@@ -16,9 +16,9 @@ rule phyclone:
         seed = config["params"]["phyclone"]["seed"],
         grid_size = config["params"]["phyclone"]["grid_size"]
     log:
-        "logs/phyclone/{project}/phyclone.log"
+        "logs/{study}/phyclone/phyclone.log"
     benchmark:
-        "logs/phyclone/{project}/phyclone.smk"
+        "logs/{study}/phyclone/phyclone.bmk"
     conda:
         "../envs/phyclone.yaml"
     threads:
