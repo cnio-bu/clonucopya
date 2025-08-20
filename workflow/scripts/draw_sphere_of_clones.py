@@ -32,7 +32,7 @@ def draw_sphere_of_clones(tree_df, palette, out_dir):
     Args:
         tree_df (str): dictionary of samples' dataframes to plot the VAF Heatmap.
         palette (str): Path to clonucopya's color palette (TXT)
-        out_path (str): Path to output directory of the project.
+        out_path (str): Path to output directory of the study.
         
     """
 
@@ -118,7 +118,7 @@ def draw_sphere_of_clones(tree_df, palette, out_dir):
         legend_patches = [plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=color,markersize=10,
                           label=f"{'' if clone == 'parent cell' else 'clone '}{clone} ({proportions[clone]*100:.0f}%)")
                           for clone, color in clone_color.items()]
-        ax.legend(handles=legend_patches, loc='upper right', bbox_to_anchor=(1.4, 1), borderaxespad=2)
+        ax.legend(handles=legend_patches, loc='upper right', bbox_to_anchor=(1.6, 1), borderaxespad=2)
         
         # Set axis properties
         ax.set_aspect('equal')
