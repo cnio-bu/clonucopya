@@ -22,12 +22,12 @@ def vaf_string_for_mutation(mutation_id, vaf_dict):
 def build_gene_alterations(tree_df, pandrugs_dir, mut_dir, out_dir):
 
     """
-    Build Daframe for sample panels of the project.
+    Build Daframe for sample panels of the study.
 
     Args:
-        tree_df (str): Path to the dataframe of Phyclone results of the project
-        pandrugs_dir (str): Path to the query_pandrugs project
-        mut_dir (str): Path to the files from mutation_prep project
+        tree_df (str): Path to the dataframe of Phyclone results of the study
+        pandrugs_dir (str): Path to the query_pandrugs study
+        mut_dir (str): Path to the files from mutation_prep study
         out_dir (str): Path to the output directory
 
     Return:
@@ -49,7 +49,7 @@ def build_gene_alterations(tree_df, pandrugs_dir, mut_dir, out_dir):
     # Search all files that match the vscore pattern
     vscore_files = glob.glob(vscore_path)
     
-    # Create list of dataframes to store all samples from the same project
+    # Create list of dataframes to store all samples from the same study
     clone_dfs = []
     
     for file in vscore_files:
@@ -67,7 +67,7 @@ def build_gene_alterations(tree_df, pandrugs_dir, mut_dir, out_dir):
     
         clone_dfs.append(subset_df)
         
-    project_df = pd.concat(clone_dfs, ignore_index=True)
+    study_df = pd.concat(clone_dfs, ignore_index=True)
     
     
     
@@ -89,38 +89,38 @@ def build_gene_alterations(tree_df, pandrugs_dir, mut_dir, out_dir):
     
     
     
-    # Use vaf_string_for_mutation to give format to VAF cells with the values of each sample of the sample project in the same cell
-    project_df['VAF'] = project_df['ID'].apply(lambda mut_id: vaf_string_for_mutation(mut_id, vaf_dict))
+    # Use vaf_string_for_mutation to give format to VAF cells with the values of each sample of the sample study in the same cell
+    study_df['VAF'] = study_df['ID'].apply(lambda mut_id: vaf_string_for_mutation(mut_id, vaf_dict))
     
     
     # Format Table: rename columns, sort rows and columns
-    project_df.columns = ['Mutation ID', 'Gene Symbol', 'Ensembl ID', 'Consequence', 'Impact', 'Clone', 'VAF']
+    study_df.columns = ['Mutation ID', 'Gene Symbol', 'Ensembl ID', 'Consequence', 'Impact', 'Clone', 'VAF']
     
     
-    project_df  = project_df.set_index('Mutation ID')
-    temp_df = pd.DataFrame(index=project_df.index)
-    temp_df['Clone'] = project_df['Clone']
+    study_df  = study_df.set_index('Mutation ID')
+    temp_df = pd.DataFrame(index=study_df.index)
+    temp_df['Clone'] = study_df['Clone']
     temp_df['chr_num'] = temp_df.index.to_series().apply(lambda x: chr_to_num(x.split(':')[0]))
     temp_df['pos'] = temp_df.index.to_series().apply(lambda x: int(x.split(':')[1]))
     temp_df_sorted = temp_df.sort_values(by=['Clone','chr_num', 'pos'])
-    project_sorted = project_df.loc[temp_df_sorted.index]
-    project_sorted = project_sorted.reset_index()
-    project_sorted = project_sorted[['Clone', 'Mutation ID', 'Gene Symbol', 'Ensembl ID', 'VAF', 'Consequence', 'Impact']]
+    study_sorted = study_df.loc[temp_df_sorted.index]
+    study_sorted = study_sorted.reset_index()
+    study_sorted = study_sorted[['Clone', 'Mutation ID', 'Gene Symbol', 'Ensembl ID', 'VAF', 'Consequence', 'Impact']]
 
     # Save to TSV table
-    project_sorted.to_csv(f"{out_dir}/gene_alterations.tsv", sep='\t', index=False)
+    study_sorted.to_csv(f"{out_dir}/gene_alterations.tsv", sep='\t', index=False)
 
-    return project_sorted
+    return study_sorted
 
 
 def build_drug_priorization(gene_alterations, pandrugs_dir, out_dir):
 
     """
-    Build Daframe for sample panels of the project.
+    Build Daframe for sample panels of the study.
 
     Args:
-        gene_alterations (str): Path to the dataframe of Phyclone results of the project
-        pandrugs_dir (str): Path to the query_pandrugs project
+        gene_alterations (str): Path to the dataframe of Phyclone results of the study
+        pandrugs_dir (str): Path to the query_pandrugs study
         out_dir (str): Path to the output directory
 
     Return:
@@ -150,7 +150,7 @@ def build_drug_priorization(gene_alterations, pandrugs_dir, out_dir):
         concatenated_df.to_csv(f"{out_dir}/drug_priorization.tsv", sep='\t', index=False)
     else:
         # Subset Gene Alterations dataframe to get relevant columns for Drug Priorizaton datataframe
-        project_subset = gene_alterations[['Clone', 'Mutation ID', 'Gene Symbol', 'VAF']]
+        study_subset = gene_alterations[['Clone', 'Mutation ID', 'Gene Symbol', 'VAF']]
         gene_drugs = concatenated_df.copy()
 
         # Subset gen-drug concat file of all clones to resume information of the each query
@@ -171,7 +171,7 @@ def build_drug_priorization(gene_alterations, pandrugs_dir, out_dir):
 
         # Merge subsetted Gene alterations info with drug-gene interactions files
         drug_priorization = (
-        project_subset
+        study_subset
         .merge(genalt_subset_formatted, on='Gene Symbol', how='inner')
     )
     
