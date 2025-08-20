@@ -5,27 +5,27 @@ import argparse
 
 
 
-def get_project_panels(project, samplesheet, mut_dir, intersect_combined, out_file):
+def get_study_panels(study, samplesheet, mut_dir, intersect_combined, out_file):
 
     """
-    Build Daframe for sample panels of the project.
+    Build Daframe for sample panels of the study.
 
     Args:
-        project (str): name of the project
+        study (str): name of the study
         samplesheet (str): Path to the samplesheet (CSV)
-        mut_dir (str): Path to the files from mutation_prep project
-        intersect_combined(str): Path to the intersect combined of the project
+        mut_dir (str): Path to the files from mutation_prep study
+        intersect_combined(str): Path to the intersect combined of the study
         out_file (str): Path to the output file (TSV)
 
     Return:
-        DataFrame of the main statistic of the samples of the same project
+        DataFrame of the main statistic of the samples of the same study
         
     """
 
     # Load Samplesheet
     sheet = pd.read_table(samplesheet, sep=',')
-    project_filt = sheet.loc[sheet['project'] == project, ['sample_id', 'sex', 'tumour_content', 'cnvs']]
-    samplesheet_stats = project_filt[['sample_id', 'sex', 'tumour_content']]
+    study_filt = sheet.loc[sheet['study'] == study, ['sample_id', 'sex', 'tumour_content', 'cnvs']]
+    samplesheet_stats = study_filt[['sample_id', 'sex', 'tumour_content']]
 
 
     # COUNT MUTATIONS
@@ -50,7 +50,7 @@ def get_project_panels(project, samplesheet, mut_dir, intersect_combined, out_fi
 
 
     # COUNT CNVS
-    cnvs = project_filt[['sample_id', 'cnvs']]
+    cnvs = study_filt[['sample_id', 'cnvs']]
     cnv_df = pd.DataFrame(
         [(sampleid, pd.read_table(file).shape[0]) for sampleid, file in cnvs.values],
         columns=['sample_id', 'cnvs'])
@@ -75,7 +75,7 @@ def get_project_panels(project, samplesheet, mut_dir, intersect_combined, out_fi
 
 if __name__ == '__main__':
     input_parser = argparse.ArgumentParser()
-    input_parser.add_argument("--project", action='store', required=True)
+    input_parser.add_argument("--study", action='store', required=True)
     input_parser.add_argument("--samplesheet", action='store', required=True)
     input_parser.add_argument("--mut_dir", action='store', required=True)
     input_parser.add_argument("--intersect_combined", action='store', required=True)
@@ -84,4 +84,4 @@ if __name__ == '__main__':
     args = input_parser.parse_args()
 
 
-    get_project_panels(args.project, args.samplesheet, args.mut_dir, args.intersect_combined, args.out_file)
+    get_study_panels(args.study, args.samplesheet, args.mut_dir, args.intersect_combined, args.out_file)
