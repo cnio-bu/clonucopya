@@ -1,5 +1,8 @@
+import json
+import csv
+
 def chr_to_num(chr_str):
-    """Convierte el cromosoma a un número para ordenamiento"""
+    """Convert X and Y chromosome into a number to sort chromosomes from 1 to 24"""
     chr_str = chr_str.replace('chr', '')
     if chr_str == 'X':
         return 23
@@ -31,3 +34,26 @@ def json_to_csv(json_origin, csv_destination):
     Returns:
         None
     """
+
+    # Opening JSON file and loading the data
+    with open(fr'{json_origin}') as json_file:
+            data = json.load(json_file)
+
+    geneDrugGroup = data['geneDrugGroup']
+    data_file = open(fr'{csv_destination}', 'w')
+    csv_writer = csv.writer(data_file)
+    count = 0
+
+    for gdg in geneDrugGroup:
+        geneDrugInfo = gdg['geneDrugInfo']
+        for gdi in geneDrugInfo:
+            if count == 0:
+                # Writing headers of CSV file
+                header = gdi.keys()
+                csv_writer.writerow(header)
+                count += 1
+
+            # Writing data of CSV file
+            csv_writer.writerow(gdi.values())
+
+    data_file.close()
