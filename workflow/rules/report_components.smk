@@ -97,7 +97,8 @@ rule plot_vaf_heatmap:
     input:
         tree_df = "results/{study}/phyclone/tree_table.tsv",
         pvi_out = "results/{study}/pyclone-vi/pvi_out.tsv",
-        mut_files = get_mutation_files
+        mut_files = get_mutation_files,
+        gene_alt = "results/{study}/report/components/gene_alterations.tsv"
     output:
         directory("results/{study}/report/components/vaf_heatmaps")
     params:
@@ -119,6 +120,7 @@ rule plot_vaf_heatmap:
             --tree_df {input.tree_df} \
             --pvi_out {input.pvi_out} \
             --mut_dir {params.mut_dir} \
+            --gene_alterations {input.gene_alt} \
             --out_dir {output} > {log} 2>&1
         """
 
