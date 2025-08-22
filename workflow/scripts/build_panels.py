@@ -23,7 +23,11 @@ def get_study_panels(study, samplesheet, mut_dir, intersect_combined, out_file):
     """
 
     # Load Samplesheet
-    sheet = pd.read_table(samplesheet, sep=',')
+    try:
+       sheet = pd.read_table(samplesheet, sep=',')
+    except Exception as e:
+        raise ValueError(f"Error reading samplesheet file: {e}")
+
     study_filt = sheet.loc[sheet['study'] == study, ['sample_id', 'sex', 'tumour_content', 'cnvs']]
     samplesheet_stats = study_filt[['sample_id', 'sex', 'tumour_content']]
 
@@ -40,7 +44,11 @@ def get_study_panels(study, samplesheet, mut_dir, intersect_combined, out_file):
     for file in mut_files:
         file_name = os.path.basename(file)
         sampleid = file_name.split('_prep.mut.tsv')[0]
-        sample_df = pd.read_table(file)
+        try:
+            sample_df = pd.read_table(file)
+        except Exception as e:
+            raise ValueError(f"Error reading mutation file of {sampleid} of study {study}: {e}")
+            
         mut_count = sample_df.shape[0]
         
         sampleids.append(sampleid)
@@ -51,12 +59,19 @@ def get_study_panels(study, samplesheet, mut_dir, intersect_combined, out_file):
 
     # COUNT CNVS
     cnvs = study_filt[['sample_id', 'cnvs']]
-    cnv_df = pd.DataFrame(
-        [(sampleid, pd.read_table(file).shape[0]) for sampleid, file in cnvs.values],
-        columns=['sample_id', 'cnvs'])
-
+    try:
+        cnv_df = pd.DataFrame(
+           [(sampleid, pd.read_table(file).shape[0]) for sampleid, file in cnvs.values],
+           columns=['sample_id', 'cnvs'])
+    except Exception as e:
+        raise ValueError(f"Error reading cnv file of sample {sampleid} of study {study}: {e}")
+        
     # COUNT INTERSECTS
-    intersect = pd.read_table(intersect_combined)
+    try:
+        intersect = pd.read_table(intersect_combined)
+    except Exception as e:
+        raise ValueError(f"Error reading intersect file of study {study}: {e}")
+        
     intersect_counts = intersect.groupby('sample_id').size().to_frame('intersect')
 
     # CREATE PANEL DATAFRAME
