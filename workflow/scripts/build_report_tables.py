@@ -3,9 +3,15 @@ import glob
 import os
 import ast
 import argparse
-from clonucopya_tools import chr_to_num, is_file_empty
+from clonucopya_tools import chr_to_num
 
 
+def is_file_empty(file):
+    try:
+        df = pd.read_csv(file)
+        return df.empty
+    except Exception:
+        return True
 
 
 # Format samples' VAF per mutation
@@ -174,7 +180,8 @@ def build_drug_priorization(gene_alterations, pandrugs_dir, out_dir):
         study_subset
         .merge(genalt_subset_formatted, on='Gene Symbol', how='inner')
     )
-    
+        # Remove duplicate queries
+        drug_priorization = drug_priorization.drop_duplicates(subset=['Clone', 'Mutation ID', 'Gene Symbol', 'Drug','VAF'])        
         
         drug_priorization.to_csv(f"{out_dir}/drug_priorization.tsv", sep='\t', index=False, na_rep='-')
     
