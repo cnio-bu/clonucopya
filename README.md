@@ -100,6 +100,7 @@ sbatch -p long -e error.txt -c 8 --mem=32G -t1200 --wrap "snakemake --executor s
 Clonucopya’s output is structured by `study` which is a group of biologically related samples that are analyzed together in Clonucopy. The experimental design and grouping criteria are defined according to specific research objectives, allowing multiple use cases adapted to the needs of the
 comparative analysis (read use [Main applications](#main-applications) section for futher details). The tree of files of the output is as it  follows:
 
+```
 {study}/
 │
 ├── pyclone-vi_prep/
@@ -141,7 +142,7 @@ comparative analysis (read use [Main applications](#main-applications) section f
             │   └── {sample_id}_complete_vaf_heatmap.png
             └── sampled/
                 └── {sample_id}_sampled_vaf_heatmap.png
-
+```
 
 ## Authors
 
