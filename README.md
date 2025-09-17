@@ -98,57 +98,49 @@ sbatch -p long -e error.txt -c 8 --mem=32G -t1200 --wrap "snakemake --executor s
 
 ## Results
 Clonucopya’s output is structured by `study` which is a group of biologically related samples that are analyzed together in Clonucopy. The experimental design and grouping criteria are defined according to specific research objectives, allowing multiple use cases adapted to the needs of the
-comparative analysis (read use [Main applications](## Main applications) section for futher details). The tree of files of the output is as it  follows:
+comparative analysis (read use [Main applications](#main-applications) section for futher details). The tree of files of the output is as it  follows:
 
-.
-|----mutation_prep
-|     |---{sample_id}_prep.mut.tsv
-|
-|----pyclone-vi_prep
-|      |---{sample_id}_intersect_pvi.tsv
-|      |---combined_intersect_pvi.tsv
-|      |---pvi_input_phyclone_formatted.tsv
-|
-|----pyclone-vi
-|     |---pvi_out.h5
-|     |---pvi_out.tsv
-|
-|----phyclone
-|      |---clusters.tsv
-|      |--- trace.pkl.gz 
-|      |--- tree.nwk
-|      |---tree_table.tsv
-|
-|----pvi_vep_prep
-|     |---{study}_cluster_*.tsv
-|
-|----vep_annotation
-|      |---annotations
-|      |    |---JRSC_cluster_*.vcf
-|      |---stats
-|           |---JRSC_cluster_*_summary.html
-|
-|----query_pandrugs
-|      |---cluster_*
-|           |---{study}_cluster_*_computation.tsv
-|           |---{study}_cluster_*_vscore.vcf
-|           |--- {study}_cluster_*_gene-drug.json
-|           |---{study}_cluster_*_gene-drug.csv
-|
-|----report
-|     |---{study}_report.pdf
-|     |---components
-|          |---clonal_tree.png
-|          |---drug_priorization.tsv
-|          |---gene_alterations.tsv
-|          |---report_panel.tsv
-|          |---spheres_of_clones
-|          |    |---{sample_id}_sphere_of_clones.png
-|          |---vaf_heatmaps
-|               |---complete
-|                    |---{sample_id}_complete_vaf_heatmap.png
-|               |---sampled
-|                    |---{sample_id}_sampled_vaf_heatmap.png
+{study}/
+│
+├── pyclone-vi_prep/
+│   ├── {sample_id}_intersect_pvi.tsv
+│   ├── combined_intersect_pvi.tsv
+│   └── pvi_input_phyclone_formatted.tsv
+├── pyclone-vi/
+│   ├── pvi_out.h5
+│   └── pvi_out.tsv
+├── phyclone/
+│   ├── clusters.tsv
+│   ├── trace.pkl.gz
+│   ├── tree.nwk
+│   └── tree_table.tsv
+├── pvi_vep_prep
+│   └── {study}_cluster_*.tsv
+├── vep_annotation/
+│   ├── annotations/
+│   │   └── JRSC_cluster_*.vcf
+│   └── stats/ 
+│       └── JRSC_cluster_*_summary.html
+├── query_pandrugs/
+│   └── cluster_*/
+│       ├── {study}_cluster_*_computation.tsv
+│       ├── {study}_cluster_*_vscore.vcf
+│       ├── {study}_cluster_*_gene-drug.json
+│       └── {study}_cluster_*_gene-drug.csv
+└── report/
+    ├── {study}_report.pdf
+    └── components/
+        ├── clonal_tree.png
+        ├── drug_priorization.tsv
+        ├── gene_alterations.tsv
+        ├── report_panel.tsv
+        ├── spheres_of_clones/
+        │   └── {sample_id}_sphere_of_clones.png
+        └── vaf_heatmaps/
+            ├── complete/
+            │   └── {sample_id}_complete_vaf_heatmap.png
+            └── sampled/
+                └── {sample_id}_sampled_vaf_heatmap.png
 
 
 ## Authors
