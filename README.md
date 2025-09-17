@@ -98,12 +98,12 @@ sbatch -p long -e error.txt -c 8 --mem=32G -t1200 --wrap "snakemake --executor s
 
 ## Results
 Clonucopya’s output is structured by `study` which is a group of biologically related samples that are analyzed together in Clonucopy. The experimental design and grouping criteria are defined according to specific research objectives, allowing multiple use cases adapted to the needs of the
-comparative analysis (read use [Main applications](#main-applications) section for futher details). The tree of files of the output is as it  follows:
+comparative analysis (read [main applications](#main-applications) section for futher details). The tree of files of the output is as it  follows:
 
+```
 {study}/
-│
 ├── pyclone-vi_prep/
-│   ├── {sample_id}_intersect_pvi.tsv
+│   ├── {sample_id}intersect_pvi.tsv
 │   ├── combined_intersect_pvi.tsv
 │   └── pvi_input_phyclone_formatted.tsv
 ├── pyclone-vi/
@@ -114,19 +114,19 @@ comparative analysis (read use [Main applications](#main-applications) section f
 │   ├── trace.pkl.gz
 │   ├── tree.nwk
 │   └── tree_table.tsv
-├── pvi_vep_prep
-│   └── {study}_cluster_*.tsv
+├── pvi_vep_prep/
+│   └── {study}_cluster*.tsv
 ├── vep_annotation/
 │   ├── annotations/
-│   │   └── JRSC_cluster_*.vcf
-│   └── stats/ 
-│       └── JRSC_cluster_*_summary.html
+│   │   └── JRSC_cluster.vcf
+│   └── stats/
+│       └── JRSC_cluster_summary.html
 ├── query_pandrugs/
-│   └── cluster_*/
-│       ├── {study}_cluster_*_computation.tsv
-│       ├── {study}_cluster_*_vscore.vcf
-│       ├── {study}_cluster_*_gene-drug.json
-│       └── {study}_cluster_*_gene-drug.csv
+│   └── cluster/
+│       ├── {study}_cluster_computation.tsv
+│       ├── {study}_cluster_vscore.vcf
+│       ├── {study}_cluster_gene-drug.json
+│       └── {study}_cluster*_gene-drug.csv
 └── report/
     ├── {study}_report.pdf
     └── components/
@@ -141,6 +141,7 @@ comparative analysis (read use [Main applications](#main-applications) section f
             │   └── {sample_id}_complete_vaf_heatmap.png
             └── sampled/
                 └── {sample_id}_sampled_vaf_heatmap.png
+```
 
 
 ## Authors
