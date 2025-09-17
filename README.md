@@ -118,9 +118,9 @@ comparative analysis (read use [Main applications](#main-applications) section f
 │   └── {study}_cluster_*.tsv
 ├── vep_annotation/
 │   ├── annotations/
-│   │   └── JRSC_cluster_*.vcf
+│   │   └── {study}_cluster_*.vcf
 │   └── stats/ 
-│       └── JRSC_cluster_*_summary.html
+│       └── {study}_cluster_*_summary.html
 ├── query_pandrugs/
 │   └── cluster_*/
 │       ├── {study}_cluster_*_computation.tsv
