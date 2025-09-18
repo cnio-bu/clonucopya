@@ -102,7 +102,8 @@ comparative analysis (read [Main applications](#main-applications) section for f
 
 ```
 {study}/
-│
+├── mutation_prep/
+│   └──{sample_id}_prep.mut.tsv
 ├── pyclone-vi_prep/
 │   ├── {sample_id}_intersect_pvi.tsv
 │   ├── combined_intersect_pvi.tsv
