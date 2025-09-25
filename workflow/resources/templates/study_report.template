@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ report_title }} - {{ system_name }}</title>
     <style>
+        /* Import Title Font */
+        @import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
+
         @page {
             size: A4;
             margin: 0.8cm !important;
@@ -112,11 +115,12 @@
             padding: 15px;
             border-radius: 5px;
             color: #000;
-            font-size: 24px;
+            font-size: 40px;
             font-weight: bold;
             text-align: center;
             display: inline-block;
             min-width: 200px;
+            font-family: 'Lobster', cursive, sans-serif;
         }
         
         .report-container {
@@ -282,17 +286,17 @@
         }
         
 
-        .drug-table th:nth-child(1) { width: 5%; }   /* Clone */
-        .drug-table th:nth-child(2) { width: 10%; }  /* Mutation ID */
+        .drug-table th:nth-child(1) { width: 6%; }   /* Clone */
+        .drug-table th:nth-child(2) { width: 14%; }  /* Mutation ID */
         .drug-table th:nth-child(3) { width: 8%; }   /* Gene Symbol */
         .drug-table th:nth-child(4) { width: 8%; }   /* VAF */
         .drug-table th:nth-child(5) { width: 12%; }  /* Drug */
         .drug-table th:nth-child(6) { width: 8%; }   /* Status */
         .drug-table th:nth-child(7) { width: 10%; }  /* Interaction Type */
-        .drug-table th:nth-child(8) { width: 8%; }   /* Driver Gene */
+        .drug-table th:nth-child(8) { width: 6%; }   /* Driver Gene */
         .drug-table th:nth-child(9) { width: 7%; }   /* dScore */
         .drug-table th:nth-child(10) { width: 7%; }  /* gScore */
-        .drug-table th:nth-child(11) { width: 17%; } /* Source */
+        .drug-table th:nth-child(11) { width: 16%; } /* Source */
 
 
 
@@ -355,7 +359,7 @@
         <div class="logo-container">
             <div class="box-white">
                 {% if logo_path %}
-                <img src="{{ logo_path }}" alt="Logo" style="width: 70px; height: 70px; object-fit: contain;">
+                <img src="{{ logo_path }}" alt="Logo" style="width: 75px; height: 75px; object-fit: contain;">
                 {% else %}
                 <div style="font-weight: bold; font-size: 12px; color: #333;">LOGO</div>
                 {% endif %}
@@ -378,8 +382,8 @@
 
 
 <div class="panel">
-    <h2>Project Statistics: {{ project_id }}</h2>
-    <p>{{ project_description }}</p>
+    <h2>Study Statistics: {{ study_id }}</h2>
+    <p>{{ study_description }}</p>
     
     {% for sample in samples_df.itertuples() %}
     <div class="stats-card">
@@ -397,7 +401,7 @@
                 <p>{{ sample.tumour_content|safe_float(2) }}</p>
             </div>
             <div class="stat-box">
-                <h3>Mutations</h3>
+                <h3>SNVs/Indels</h3>
                 <p>{{ sample.mutations|safe_int }}</p>
             </div>
             <div class="stat-box">
@@ -405,7 +409,7 @@
                 <p>{{ sample.cnvs|safe_int }}</p>
             </div>
             <div class="stat-box">
-                <h3>Intersect</h3>
+                <h3>SNV-CNV Intersects</h3>
                 <p>{{ sample.intersect|safe_int }}</p>
             </div>
         </div>
@@ -432,18 +436,18 @@
         </div>
     </div>
 
-    <div>
-        <h3>{{ comparison_section.clonal_proportions.title }}</h3>
-        <p>{{ comparison_section.clonal_proportions.description }}</p>
-        <div style="text-align: center; margin: 20px 0;">
-            {% for sample in samples_df.itertuples() %}
-            {% if sample.sample_id in clonal_proportions_images %}
-            <div style="display: inline-block; margin: 10px 20px; text-align: center;">
-                <img src="file://{{ clonal_proportions_images[sample.sample_id] }}" alt="Clonal Proportions - {{ sample.sample_id }}" style="max-width: 400px; border-radius: 4px;">
-            </div>
-            {% endif %}
-            {% endfor %}
-        </div>
+<div>
+    <h3>{{ comparison_section.clonal_proportions.title }}</h3>
+    <p>{{ comparison_section.clonal_proportions.description }}</p>
+
+    <div class="sphere-container">
+        {% for sample in samples_df.itertuples() %}
+        {% if sample.sample_id in clonal_proportions_images %}
+        <img src="file://{{ clonal_proportions_images[sample.sample_id] }}" 
+             class="sphere-image" 
+             alt="Clonal Proportions - {{ sample.sample_id }}">
+        {% endif %}
+        {% endfor %}
     </div>
 </div>
 
@@ -472,12 +476,12 @@
                 <thead>
                     <tr>
                         <th style="width: 6%;">Clone</th>
-                        <th style="width: 12%;">Mutation ID</th>
+                        <th style="width: 14%;">Mutation ID</th>
                         <th style="width: 8%;">Gene Symbol</th>
-                        <th style="width: 10%;">Ensembl ID</th>
+                        <th style="width: 14%;">Ensembl ID</th>
                         <th style="width: 12%;">VAF</th>
                         <th style="width: 30%;">Consequence</th>
-                        <th style="width: 22%;">Impact</th>
+                        <th style="width: 14%;">Impact</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -514,13 +518,14 @@
                         <th style="width: 12%;">Mutation ID</th>
                         <th style="width: 8%;">Gene Symbol</th>
                         <th style="width: 10%;">VAF</th>
-                        <th style="width: 12%;">Drug</th>
+                        <th style="width: 10%;">Drug</th>
                         <th style="width: 8%;">Status</th>
                         <th style="width: 10%;">Interaction Type</th>
-                        <th style="width: 8%;">Driver Gene</th>
+                        <th style="width: 6%;">Driver Gene</th>
                         <th style="width: 6%;">dScore</th>
                         <th style="width: 6%;">gScore</th>
-                        <th style="width: 14%;">Source</th>
+                        <th style="width: 6%;">Cancer</th>
+                        <th style="width: 12%;">Source</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -536,6 +541,7 @@
                         <td>{{ row['Driver Gene'] }}</td>
                         <td>{{ row['dScore']|safe_float(3) }}</td>
                         <td>{{ row['gScore']|safe_float(3) }}</td>
+                        <td>{{ row['Cancer'] }}</td>
                         <td>{{ row['Source'] }}</td>
                     </tr>
                     {% endfor %}
@@ -544,12 +550,23 @@
         </div>
         {% else %}
         <div class="no-data-message">
-            NOT AVAILABLE TREATMENTS. No actionable therapies could be suggested for this case because no molecular alterations with sufficient clinical or biological evidence for drug prioritization were identified in the analyzed profile. This may occur when detected variants are of low or unknown functional impact, when no approved or clinical trial drugs currently target the altered genes, or when available evidence does not support a therapeutic recommendation for this specific context.
+            NOT AVAILABLE TREATMENTS.
+No actionable therapies could be suggested for this case because no molecular alterations with sufficient clinical or biological evidence for drug prioritization were identified in the analyzed profile. This may occur when detected variants are of low or unknown functional impact, when no approved or clinical trial drugs currently target the altered genes, or when available evidence does not support a therapeutic recommendation for this specific context.
 
         </div>
         {% endif %}
     </div>
 </div>
+
+<div class="panel">
+  <h2>Key Concepts</h2>
+  <dl>
+    {% for concept in key_concepts %}
+      <dt><strong>{{ concept.term }}</strong></dt>
+      <dd>{{ concept.definition }}</dd>
+    {% endfor %}
+  </dl>
+    </div>
 
 </body>
 </html>
