@@ -125,10 +125,10 @@ def render_report_to_pdf(study_name, output_path, template_path="template.html",
     
     
     
-    # Preparar datos
+    # Format data
     data = prepare_report_data(study_name)
     
-    # Prepare logo as base64 (more compatible)
+    # Prepare logo as base64
     logo_data_uri = None
     if logo_path and os.path.exists(logo_path):
         import base64
@@ -146,7 +146,7 @@ def render_report_to_pdf(study_name, output_path, template_path="template.html",
         logo_base64 = base64.b64encode(logo_bytes).decode('utf-8')
         logo_data_uri = f"data:{mime_type};base64,{logo_base64}"
     
-    # Crear entorno Jinja2
+    # Initialize jinja environment
     template_dir = os.path.dirname(os.path.abspath(template_path)) or "."
     template_filename = os.path.basename(template_path)
     
