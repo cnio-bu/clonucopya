@@ -119,7 +119,7 @@ def build_gene_alterations(tree_df, pandrugs_dir, mut_dir, out_dir):
     return study_sorted
 
 
-def build_drug_priorization(gene_alterations, pandrugs_dir, out_dir):
+def build_drug_prioritization(gene_alterations, pandrugs_dir, out_dir):
 
     """
     Build Daframe for sample panels of the study.
@@ -130,7 +130,7 @@ def build_drug_priorization(gene_alterations, pandrugs_dir, out_dir):
         out_dir (str): Path to the output directory
 
     Return:
-        DataFrame of Drug Priorization from Pandrugs' query with extended clonal/gene/VAF information
+        DataFrame of Drug Prioritization from Pandrugs' query with extended clonal/gene/VAF information
 
     """
 
@@ -153,9 +153,9 @@ def build_drug_priorization(gene_alterations, pandrugs_dir, out_dir):
 
     
     if concatenated_df.empty:
-        concatenated_df.to_csv(f"{out_dir}/drug_priorization.tsv", sep='\t', index=False)
+        concatenated_df.to_csv(f"{out_dir}/drug_prioritization.tsv", sep='\t', index=False)
     else:
-        # Subset Gene Alterations dataframe to get relevant columns for Drug Priorizaton datataframe
+        # Subset Gene Alterations dataframe to get relevant columns for Drug Prioritizaton datataframe
         study_subset = gene_alterations[['Clone', 'Mutation ID', 'Gene Symbol', 'VAF']]
         gene_drugs = concatenated_df.copy()
 
@@ -176,14 +176,14 @@ def build_drug_priorization(gene_alterations, pandrugs_dir, out_dir):
         genalt_subset_formatted.columns = ['Gene Symbol', 'Drug', 'Status', 'Interaction Type', 'Driver Gene', 'dScore', 'gScore' , 'Cancer', 'Source']
 
         # Merge subsetted Gene alterations info with drug-gene interactions files
-        drug_priorization = (
+        drug_prioritization = (
         study_subset
         .merge(genalt_subset_formatted, on='Gene Symbol', how='inner')
     )
         # Remove duplicate queries
-        drug_priorization = drug_priorization.drop_duplicates(subset=['Clone', 'Mutation ID', 'Gene Symbol', 'Drug','VAF'])        
+        drug_prioritization = drug_prioritization.drop_duplicates(subset=['Clone', 'Mutation ID', 'Gene Symbol', 'Drug','VAF'])        
         
-        drug_priorization.to_csv(f"{out_dir}/drug_priorization.tsv", sep='\t', index=False, na_rep='-')
+        drug_prioritization.to_csv(f"{out_dir}/drug_prioritization.tsv", sep='\t', index=False, na_rep='-')
     
 
     
@@ -199,4 +199,4 @@ if __name__ == '__main__':
 
 
     gene_alterations = build_gene_alterations(args.tree_df,args.pandrugs_dir, args.mut_dir, args.out_dir)
-    build_drug_priorization(gene_alterations, args.pandrugs_dir, args.out_dir)
+    build_drug_prioritization(gene_alterations, args.pandrugs_dir, args.out_dir)
