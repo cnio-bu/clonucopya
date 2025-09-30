@@ -64,18 +64,18 @@ def prepare_report_data(study_path):
             gene_alterations_df = None
         
 
-    # Drug priorization
-    drug_priorization_path = components_path / "drug_priorization.tsv"
-    drug_priorization_df = None
-    if drug_priorization_path.exists():
+    # Drug prioritization
+    drug_prioritization_path = components_path / "drug_prioritization.tsv"
+    drug_prioritization_df = None
+    if drug_prioritization_path.exists():
         try:
-            drug_priorization_df = pd.read_csv(drug_priorization_path, sep='\t')
-            if drug_priorization_df.empty:
-                drug_priorization_df = None
+            drug_prioritization_df = pd.read_csv(drug_prioritization_path, sep='\t')
+            if drug_prioritization_df.empty:
+                drug_prioritization_df = None
             else:
-                drug_priorization_df = drug_priorization_df[drug_priorization_df['Status'] == 'APPROVED'].drop_duplicates(subset=['Clone', 'Mutation ID', 'Gene Symbol', 'Drug','VAF'])
+                drug_prioritization_df = drug_prioritization_df[drug_prioritization_df['Status'] == 'APPROVED'].drop_duplicates(subset=['Clone', 'Mutation ID', 'Gene Symbol', 'Drug','VAF'])
         except:
-            drug_priorization_df = None
+            drug_prioritization_df = None
     
     # Absolute paths to images
     clonal_tree_image = os.path.abspath(str(components_path / "clonal_tree.png"))
@@ -99,7 +99,7 @@ def prepare_report_data(study_path):
     return {
         'samples_df': samples_df,
         'gene_alterations_df': gene_alterations_df,
-        'drug_priorization_df': drug_priorization_df,
+        'drug_prioritization_df': drug_prioritization_df,
         'clonal_tree_image': clonal_tree_image,
         'clonal_proportions_images': clonal_proportions_images,
         'clone_alterations_images': clone_alterations_images
@@ -121,7 +121,7 @@ def render_report_to_pdf(study_path, output_path, template_path="template.html",
     spheres_path = components_path / "spheres_of_clones" / "{sample_id}_sphere_of_clones.png"
     heatmaps_path = components_path / "vaf_heatmaps" / "sampled" / "{sample_id}_sampled_vaf_heatmap.png"
     gene_alterations_path = components_path / "gene_alterations.tsv"
-    drug_priorization_path = components_path / "drug_priorization.tsv"
+    drug_prioritization_path = components_path / "drug_prioritization.tsv"
     
     
     
@@ -180,7 +180,7 @@ def render_report_to_pdf(study_path, output_path, template_path="template.html",
     
         'samples_df': data['samples_df'],
         'gene_alterations_df': data['gene_alterations_df'],
-        'drug_priorization_df': data['drug_priorization_df'],
+        'drug_prioritization_df': data['drug_prioritization_df'],
         'clonal_proportions_images': data['clonal_proportions_images'],
         'clone_alterations_images': data['clone_alterations_images'],
         
@@ -219,7 +219,7 @@ def render_report_to_pdf(study_path, output_path, template_path="template.html",
                 <p>The source files are available at: {gene_alterations_path}.</p>
                 """
             },
-            'drug_priorization': {
+            'drug_prioritization': {
                 'title': 'Drug Prioritization',
 'description': f"""
     <p>In the results of the small variant analysis performed by Pandrugs2, only those mutations for which a drug proposal has been found are shown. Only mutations considered clinically relevant will appear in the results.</p>
