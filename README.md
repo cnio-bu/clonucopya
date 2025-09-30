@@ -133,7 +133,7 @@ comparative analysis (read [Main applications](#main-applications) section for f
     ├── {study}_report.pdf
     └── components/
         ├── clonal_tree.png
-        ├── drug_priorization.tsv
+        ├── drug_prioritization.tsv
         ├── gene_alterations.tsv
         ├── report_panel.tsv
         ├── spheres_of_clones/
