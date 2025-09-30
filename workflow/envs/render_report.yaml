@@ -1,0 +1,9 @@
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - conda-forge::pandas=2.2.2
+  - conda-forge::numpy=2.1.2
+  - conda-forge::jinja2=3.1.6
+  - conda-forge::weasyprint=66.0
