@@ -48,8 +48,8 @@ rule all:
         expand("results/{study}/report/components/clonal_tree.png", study=samples_df["study"].unique()),
         expand("results/{study}/report/components/spheres_of_clones", study=samples_df["study"].unique()),
         expand("results/{study}/report/components/vaf_heatmaps", study=samples_df["study"].unique()),
-        expand("results/{study}/report/components/gene_alterations.tsv", study=samples_df["study"].unique())
-
+        expand("results/{study}/report/components/gene_alterations.tsv", study=samples_df["study"].unique()),
+        expand("results/{study}/report/{study}_report.pdf", study=samples_df["study"].unique())
 
 
 # FORMAT MUTATION VCF
@@ -95,3 +95,8 @@ include: "rules/phyclone.smk"
 # GENERATE REPORT COMPONENTS: PLOTS AND TABLES
 
 include: "rules/report_components.smk"
+
+
+# RENDER STUDY REPORT TO PDF
+
+include: "rules/render_report.smk"
