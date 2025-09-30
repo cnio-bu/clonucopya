@@ -37,17 +37,18 @@ def create_jinja_env(template_dir="."):
 
 
 
-def prepare_report_data(study_name, base_path="results"):
+def prepare_report_data(study_path):
     """
     Prepare data for the template injection with absolute paths
     """
-    study_path = Path(base_path) / study_name / "report" / "components"
+    study_name = os.path.basename(study_path)
+    components_path = Path(study_path) / "report" / "components"
     
     # Load report panel
-    samples_df = pd.read_csv(study_path / "report_panel.tsv", sep='\t')
+    samples_df = pd.read_csv(components_path / "report_panel.tsv", sep='\t')
     
     # Gene alterations
-    gene_alterations_path = study_path / "gene_alterations.tsv"
+    gene_alterations_path = components_path / "gene_alterations.tsv"
     gene_alterations_df = None
     gene_alterations_df_filt = None
     
@@ -64,7 +65,7 @@ def prepare_report_data(study_name, base_path="results"):
         
 
     # Drug priorization
-    drug_priorization_path = study_path / "drug_priorization.tsv"
+    drug_priorization_path = components_path / "drug_priorization.tsv"
     drug_priorization_df = None
     if drug_priorization_path.exists():
         try:
@@ -77,7 +78,7 @@ def prepare_report_data(study_name, base_path="results"):
             drug_priorization_df = None
     
     # Absolute paths to images
-    clonal_tree_image = os.path.abspath(str(study_path / "clonal_tree.png"))
+    clonal_tree_image = os.path.abspath(str(components_path / "clonal_tree.png"))
     
     clonal_proportions_images = {}
     clone_alterations_images = {}
@@ -86,12 +87,12 @@ def prepare_report_data(study_name, base_path="results"):
         sample_id = sample['sample_id']
         
         # Sphere of clones
-        sphere_path = study_path / "spheres_of_clones" / f"{sample_id}_sphere_of_clones.png"
+        sphere_path = components_path / "spheres_of_clones" / f"{sample_id}_sphere_of_clones.png"
         if sphere_path.exists():
             clonal_proportions_images[sample_id] = os.path.abspath(str(sphere_path))
         
         # VAF heatmap
-        heatmap_path = study_path / "vaf_heatmaps" / "sampled" / f"{sample_id}_sampled_vaf_heatmap.png"
+        heatmap_path = components_path / "vaf_heatmaps" / "sampled" / f"{sample_id}_sampled_vaf_heatmap.png"
         if heatmap_path.exists():
             clone_alterations_images[sample_id] = os.path.abspath(str(heatmap_path))
     
@@ -105,28 +106,27 @@ def prepare_report_data(study_name, base_path="results"):
     }
 
 
-def render_report_to_pdf(study_name, output_path, template_path="template.html", logo_path=None):
+def render_report_to_pdf(study_path, output_path, template_path="template.html", logo_path=None):
     """
     Render template to PDF directly
     """
 
     # Set path to source files
 
-    base_path="results"
+    study_name = os.path.basename(study_path)
+    components_path = Path(study_path) / "report" / "components"
 
-    study_path = Path(base_path) / study_name / "report" / "components"
-
-    panels_path = study_path / "report_panel.tsv"
-    clonal_tree_path = study_path / "clonal_tree.png"
-    spheres_path = study_path / "spheres_of_clones" / "{sample_id}_sphere_of_clones.png"
-    heatmaps_path = study_path / "vaf_heatmaps" / "sampled" / "{sample_id}_sampled_vaf_heatmap.png"
-    gene_alterations_path = study_path / "gene_alterations.tsv"
-    drug_priorization_path = study_path / "drug_priorization.tsv"
+    panels_path = components_path / "report_panel.tsv"
+    clonal_tree_path = components_path / "clonal_tree.png"
+    spheres_path = components_path / "spheres_of_clones" / "{sample_id}_sphere_of_clones.png"
+    heatmaps_path = components_path / "vaf_heatmaps" / "sampled" / "{sample_id}_sampled_vaf_heatmap.png"
+    gene_alterations_path = components_path / "gene_alterations.tsv"
+    drug_priorization_path = components_path / "drug_priorization.tsv"
     
     
     
     # Format data
-    data = prepare_report_data(study_name)
+    data = prepare_report_data(study_path)
     
     # Prepare logo as base64
     logo_data_uri = None
