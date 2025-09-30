@@ -133,7 +133,7 @@ rule report_tables:
         mut_files = get_mutation_files
     output:
         "results/{study}/report/components/gene_alterations.tsv",
-        "results/{study}/report/components/drug_priorization.tsv"
+        "results/{study}/report/components/drug_prioritization.tsv"
     params:
         out_dir = directory("results/{study}/report/components"),
         mut_dir = lambda wildcards: f"results/{wildcards.study}/mutation_prep"
