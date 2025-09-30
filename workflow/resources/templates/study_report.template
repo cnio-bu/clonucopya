@@ -507,9 +507,9 @@
     </div>
 
     <div>
-        <h3>{{ alteration_section.drug_priorization.title }}</h3>
-        <p>{{ alteration_section.drug_priorization.description }}</p>
-        {% if drug_priorization_df is not none and not drug_priorization_df.empty %}
+        <h3>{{ alteration_section.drug_prioritization.title }}</h3>
+        <p>{{ alteration_section.drug_prioritization.description }}</p>
+        {% if drug_prioritization_df is not none and not drug_prioritization_df.empty %}
         <div class="table-container">
             <table class="data-table drug-table">
                 <thead>
@@ -529,7 +529,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for row in drug_priorization_df.to_dict('records') %}
+                    {% for row in drug_prioritization_df.to_dict('records') %}
                     <tr>
                         <td>{{ row['Clone'] }}</td>
                         <td>{{ row['Mutation ID'] }}</td>
