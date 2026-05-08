@@ -1,4 +1,4 @@
-# Remove '_template' from config_tempplate.yaml or change the path in Snakefile
+# Remove '_template' from config_template.yaml or change the path in Snakefile
 
 samplesheet: "/path/to/samplesheet/config/samplesheet.csv"
 
