@@ -20,18 +20,18 @@ rule report_panels:
         "logs/{study}/report/report_panels.bmk"
     conda:
         "../envs/report_components.yaml"
-    threads: 
+    threads:
         config["resources"]["default"]["threads"]
     resources:
         mem_mb=config["resources"]["default"]["mem"],
         runtime=config["resources"]["default"]["walltime"]
     shell:
         """
-        python scripts/build_panels.py \
-             --study {params.study} \
-             --samplesheet {input.samplesheet} \
-             --mut_dir {params.mut_dir} \
-             --intersect_combined {input.intersect} \
+        python scripts/build_panels.py \\
+             --study {params.study} \\
+             --samplesheet {input.samplesheet} \\
+             --mut_dir {params.mut_dir} \\
+             --intersect_combined {input.intersect} \\
              --out_file {output} > {log} 2>&1
         """
 
@@ -57,25 +57,25 @@ rule plot_tree:
         runtime=config["resources"]["default"]["walltime"]
     shell:
         """
-        python scripts/draw_clonal_tree.py \
-            --nwk_file {input.nwk_file} \
-            --palette {params.palette} \
+        python scripts/draw_clonal_tree.py \\
+            --nwk_file {input.nwk_file} \\
+            --palette {params.palette} \\
             --out_file {output} > {log} 2>&1
         """
-
 
 
 rule plot_sphere:
     input:
         tree_df = "results/{study}/phyclone/tree_table.tsv"
     output:
-        directory("results/{study}/report/components/spheres_of_clones")
+        "results/{study}/report/components/spheres_of_clones/{sample}_sphere_of_clones.png"
     params:
-        palette = "resources/clonucopya_palette.txt"
+        palette = "resources/clonucopya_palette.txt",
+        out_dir = lambda wildcards: f"results/{wildcards.study}/report/components/spheres_of_clones"
     log:
-        "logs/{study}/report/plot_sphere.log"
+        "logs/{study}/report/plot_sphere_{sample}.log"
     benchmark:
-        "logs/{study}/report/plot_sphere.bmk"
+        "logs/{study}/report/plot_sphere_{sample}.bmk"
     conda:
         "../envs/report_components.yaml"
     threads:
@@ -85,12 +85,12 @@ rule plot_sphere:
         runtime=config["resources"]["default"]["walltime"]
     shell:
         """
-        python scripts/draw_sphere_of_clones.py \
-            --tree_df {input.tree_df} \
-            --palette {params.palette} \
-            --out_dir {output} > {log} 2>&1
+        mkdir -p {params.out_dir}
+        python scripts/draw_sphere_of_clones.py \\
+            --tree_df {input.tree_df} \\
+            --palette {params.palette} \\
+            --out_dir {params.out_dir} > {log} 2>&1
         """
-
 
 
 rule plot_vaf_heatmap:
@@ -100,13 +100,14 @@ rule plot_vaf_heatmap:
         mut_files = get_mutation_files,
         gene_alt = "results/{study}/report/components/gene_alterations.tsv"
     output:
-        directory("results/{study}/report/components/vaf_heatmaps")
+        "results/{study}/report/components/vaf_heatmaps/sampled/{sample}_sampled_vaf_heatmap.png"
     params:
-        mut_dir = lambda wildcards: f"results/{wildcards.study}/mutation_prep"
+        mut_dir = lambda wildcards: f"results/{wildcards.study}/mutation_prep",
+        out_dir = lambda wildcards: f"results/{wildcards.study}/report/components/vaf_heatmaps"
     log:
-        "logs/{study}/report/plot_vaf_heatmap.log"
+        "logs/{study}/report/plot_vaf_heatmap_{sample}.log"
     benchmark:
-        "logs/{study}/report/plot_vaf_heatmap.bmk"
+        "logs/{study}/report/plot_vaf_heatmap_{sample}.bmk"
     conda:
         "../envs/report_components.yaml"
     threads:
@@ -116,12 +117,13 @@ rule plot_vaf_heatmap:
         runtime=config["resources"]["default"]["walltime"]
     shell:
         """
-        python scripts/draw_vaf_heatmap.py \
-            --tree_df {input.tree_df} \
-            --pvi_out {input.pvi_out} \
-            --mut_dir {params.mut_dir} \
-            --gene_alterations {input.gene_alt} \
-            --out_dir {output} > {log} 2>&1
+        mkdir -p {params.out_dir}/sampled
+        python scripts/draw_vaf_heatmap.py \\
+            --tree_df {input.tree_df} \\
+            --pvi_out {input.pvi_out} \\
+            --mut_dir {params.mut_dir} \\
+            --gene_alterations {input.gene_alt} \\
+            --out_dir {params.out_dir} > {log} 2>&1
         """
 
 
@@ -150,10 +152,9 @@ rule report_tables:
         runtime=config["resources"]["default"]["walltime"]
     shell:
         """
-        python scripts/build_report_tables.py \
-            --tree_df {input.tree_df} \
-            --pandrugs_dir {input.pandrugs_dir} \
-            --mut_dir {params.mut_dir} \
+        python scripts/build_report_tables.py \\
+            --tree_df {input.tree_df} \\
+            --pandrugs_dir {input.pandrugs_dir} \\
+            --mut_dir {params.mut_dir} \\
             --out_dir {params.out_dir} > {log} 2>&1
         """
-
