@@ -46,8 +46,8 @@ rule all:
         expand("results/{study}/phyclone/tree.nwk", study=samples_df["study"].unique()),
         expand("results/{study}/report/components/report_panel.tsv", study=samples_df["study"].unique()),
         expand("results/{study}/report/components/clonal_tree.png", study=samples_df["study"].unique()),
-        expand("results/{study}/report/components/spheres_of_clones", study=samples_df["study"].unique()),
-        expand("results/{study}/report/components/vaf_heatmaps", study=samples_df["study"].unique()),
+        expand("results/{study}/report/components/spheres_of_clones/{sample}_sphere_of_clones.png", zip, study=samples_df["study"], sample=samples_df["sample_id"]),
+        expand("results/{study}/report/components/vaf_heatmaps/sampled/{sample}_sampled_vaf_heatmap.png", zip, study=samples_df["study"], sample=samples_df["sample_id"]),
         expand("results/{study}/report/components/gene_alterations.tsv", study=samples_df["study"].unique()),
         expand("results/{study}/report/{study}_report.pdf", study=samples_df["study"].unique())
 
