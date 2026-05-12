@@ -82,19 +82,42 @@ def prepare_report_data(study_path):
     
     clonal_proportions_images = {}
     clone_alterations_images = {}
-    
+
+    # Candidate locations / filename patterns for VAF heatmaps.
+    heatmap_candidates = [
+        ("vaf_heatmaps", "sampled", "{sample_id}_sampled_vaf_heatmap.png"),
+        ("vaf_heatmaps", "{sample_id}_sampled_vaf_heatmap.png"),
+        ("vaf_heatmaps", "{sample_id}_vaf_heatmap.png"),
+        ("vaf_heatmaps", "sampled", "{sample_id}_vaf_heatmap.png"),
+    ]
+
     for _, sample in samples_df.iterrows():
         sample_id = sample['sample_id']
-        
+
         # Sphere of clones
         sphere_path = components_path / "spheres_of_clones" / f"{sample_id}_sphere_of_clones.png"
         if sphere_path.exists():
             clonal_proportions_images[sample_id] = os.path.abspath(str(sphere_path))
-        
-        # VAF heatmap
-        heatmap_path = components_path / "vaf_heatmaps" / "sampled" / f"{sample_id}_sampled_vaf_heatmap.png"
-        if heatmap_path.exists():
-            clone_alterations_images[sample_id] = os.path.abspath(str(heatmap_path))
+        else:
+            print(f"[WARN] sphere of clones not found for {sample_id}: {sphere_path}")
+
+        # VAF heatmap — try several known locations/patterns
+        found_heatmap = None
+        tried = []
+        for parts in heatmap_candidates:
+            resolved_parts = [p.format(sample_id=sample_id) for p in parts]
+            candidate = components_path.joinpath(*resolved_parts)
+            tried.append(str(candidate))
+            if candidate.exists():
+                found_heatmap = candidate
+                break
+
+        if found_heatmap is not None:
+            clone_alterations_images[sample_id] = os.path.abspath(str(found_heatmap))
+        else:
+            print(f"[WARN] VAF heatmap not found for {sample_id}. Tried:")
+            for t in tried:
+                print(f"        - {t}")
     
     return {
         'samples_df': samples_df,
@@ -302,38 +325,60 @@ def render_report_to_pdf(study_path, output_path, template_path="template.html",
         size: A4;
         margin: 0.8cm;
     }
-    
+
     img {
         max-width: 100% !important;
         height: auto !important;
-        display: block !important;
-        margin: 10px auto !important;
     }
-    
+
+    /* Two-per-row layout for clonal proportions spheres.
+       Uses inline-block (well supported in WeasyPrint) instead of float,
+       which behaves inconsistently with images inside paged media. */
     .sphere-container {
         display: block !important;
         width: 100% !important;
-        text-align: left !important;
+        text-align: center !important;
         margin: 20px 0 !important;
-        line-height: 0 !important;
+        font-size: 0 !important; /* removes whitespace gaps between inline-blocks */
     }
-    
+
     .sphere-image {
+        display: inline-block !important;
         width: 48% !important;
         max-width: 48% !important;
         height: auto !important;
-        display: inline !important;
-        float: left !important;
         margin: 1% !important;
+        vertical-align: top !important;
         box-sizing: border-box !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
     }
     
-    .sphere-container::after {
-        content: "" !important;
-        display: table !important;
-        clear: both !important;
+    /* Heatmap grid override: two per row, robust under WeasyPrint */
+    .image-grid {
+        display: block !important;
+        width: 100% !important;
+        text-align: center !important;
+        font-size: 0 !important;
     }
-    
+
+    .image-grid .image-container {
+        display: inline-block !important;
+        width: 48% !important;
+        max-width: 48% !important;
+        margin: 1% !important;
+        vertical-align: top !important;
+        box-sizing: border-box !important;
+        font-size: 12px !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    .image-grid .image-container img {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+
     .data-table {
         width: 100% !important;
         font-size: 8px !important;
