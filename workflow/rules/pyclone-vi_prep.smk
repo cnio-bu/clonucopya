@@ -1,4 +1,6 @@
 rule pvi_intesersect:
+    wildcard_constraints:
+        sample = "|".join(samples["sample_id"].tolist())
     input:
         mutations = "results/{study}/mutation_prep/{sample}_prep.mut.tsv",
         cnvs = lambda wildcards: samples.loc[wildcards.sample, "cnvs"]
