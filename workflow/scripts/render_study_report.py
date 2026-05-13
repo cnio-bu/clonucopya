@@ -331,9 +331,7 @@ def render_report_to_pdf(study_path, output_path, template_path="template.html",
         height: auto !important;
     }
 
-    /* Two-per-row layout for clonal proportions spheres.
-       Uses inline-block (well supported in WeasyPrint) instead of float,
-       which behaves inconsistently with images inside paged media. */
+    /* Two-per-row layout for clonal proportions spheres. */
     .sphere-container {
         display: block !important;
         width: 100% !important;
@@ -354,7 +352,6 @@ def render_report_to_pdf(study_path, output_path, template_path="template.html",
         break-inside: avoid !important;
     }
     
-    /* Heatmap grid override: two per row, robust under WeasyPrint */
     .image-grid {
         display: block !important;
         width: 100% !important;
@@ -392,6 +389,24 @@ def render_report_to_pdf(study_path, output_path, template_path="template.html",
         font-size: 8px !important;
     }
     .data-table tr {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+    
+    /* Allow panels to split across pages */
+    .panel {
+        page-break-inside: auto !important;
+        break-inside: auto !important;
+        overflow: visible !important;
+    }
+    .stats-card {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    h2, h3 {
+        page-break-after: avoid !important;
+        break-after: avoid !important;
         page-break-inside: avoid !important;
         break-inside: avoid !important;
     }
