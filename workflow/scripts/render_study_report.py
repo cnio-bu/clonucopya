@@ -270,20 +270,21 @@ def render_report_to_pdf(study_path, output_path, template_path="template.html",
             'gene_alterations': {
                 'title': 'Gene Alterations',
                 'description': f"""
-                <p>Both SNVs and small indels (if selected at the beginning of the workflow) used in clone inference are displayed with the most relevant information at the clone and sample level. To sum up the results, this section only shows mutations with moderate or high impact.</p>
+                <p>Both SNVs and small indels (if selected at the beginning of the workflow) used in clone inference are displayed with the most relevant information at the clone and sample level. To sum up the results, this section only shows top 10 mutations per clone with moderate or high impact.</p>
                 <p>The source files are available at: {gene_alterations_path}.</p>
                 """
             },
             'drug_prioritization': {
                 'title': 'Drug Prioritization',
 'description': f"""
-    <p>In the results of the small variant analysis performed by Pandrugs2, only those mutations for which a drug proposal has been found are shown. Only mutations considered clinically relevant will appear in the results.</p>
+    <p>The small variant analysis performed by PanDrugs2 displays only mutations deemed clinically relevant.</p>
     <p>The filtering criteria are as follows:</p>
     <ul>
         <li>GMAF/gnomAD population frequency less than 0.01.</li>
         <li>Predicted moderate or high functional impact, including variant types such as missense, nonsense, frameshift, and splice site mutations.</li>
         <li>Affection of relevant isoforms. Priority is given to canonical or unknown isoforms.</li>
     </ul>
+    <p>The table below provides a simplified overview of the drugs targeting the affected genes, with the top 3 drugs selected per genetic alteration and ranked by Status and dScore.</p>
     <p>The source files are available at: {gene_alterations_path}.</p>
 """
             }
