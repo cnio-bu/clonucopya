@@ -79,7 +79,35 @@ def prepare_report_data(study_path):
             if drug_prioritization_df.empty:
                 drug_prioritization_df = None
             else:
-                drug_prioritization_df = drug_prioritization_df[drug_prioritization_df['Status'] == 'APPROVED'].drop_duplicates(subset=['Clone', 'Mutation ID', 'Gene Symbol', 'Drug','VAF'])
+           #     drug_prioritization_df = drug_prioritization_df[drug_prioritization_df['Status'] == 'APPROVED'].drop_duplicates(subset=['Clone', 'Mutation ID', 'Gene Symbol', 'Drug','VAF'])
+                drug_prioritization_df["dScore"] = pd.to_numeric(drug_prioritization_df["dScore"], errors="coerce")
+
+                # Sort Status column
+                status_order = ["APPROVED", "CLINICAL_TRIALS", "EXPERIMENTAL"]
+                drug_prioritization_df["Status"] = pd.Categorical(drug_prioritization_df["Status"], categories=status_order, ordered=True)
+                
+                # Grouping key
+                group_keys = ["Clone", "Mutation ID", "Gene Symbol", "VAF"]
+                
+                drugs_df_sorted = drug_prioritization_df.sort_values(
+                    by=group_keys + ["Status", "dScore"],
+                    ascending=[True, True, True, True, True, False]
+                )
+                
+                # Top 3 drugs for "each mutation of the clone" (an specific mutation may be targeted by one or more drugs)
+                drugs_df_compact = (
+                    drugs_df_sorted
+                    .groupby(group_keys, sort=False)
+                    .head(3)
+                    .reset_index(drop=True)
+                )
+
+                # Colapse repeated key columns for readability
+                collapse_cols = ["Clone", "Mutation ID", "Gene Symbol", "VAF"]
+                is_dup = ~drugs_df_compact[collapse_cols].ne(drugs_df_compact[collapse_cols].shift()).any(axis=1)
+                drugs_df_compact.loc[is_dup, collapse_cols] = ""
+            
+            
         except:
             drug_prioritization_df = None
     
@@ -128,7 +156,7 @@ def prepare_report_data(study_path):
     return {
         'samples_df': samples_df,
         'gene_alterations_df': gene_alterations_top,
-        'drug_prioritization_df': drug_prioritization_df,
+        'drug_prioritization_df': drugs_df_compact,
         'clonal_tree_image': clonal_tree_image,
         'clonal_proportions_images': clonal_proportions_images,
         'clone_alterations_images': clone_alterations_images
