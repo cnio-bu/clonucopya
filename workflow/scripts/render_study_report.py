@@ -49,47 +49,45 @@ def prepare_report_data(study_path):
     
     # Gene alterations
     gene_alterations_path = components_path / "gene_alterations.tsv"
-    gene_alterations_df = None
-#    gene_alterations_df_filt = None
+    gene_alt = None
     
     if gene_alterations_path.exists():
         try:
-            gene_alterations_df = pd.read_csv(gene_alterations_path, sep='\t')
-            if gene_alterations_df.empty:
-                gene_alterations_df = None
+            gene_alt = pd.read_csv(gene_alterations_path, sep='\t')
+            if gene_alt.empty:
+                gene_alt = None
             else:
-                gene_alterations_df = gene_alterations_df[(gene_alterations_df['Impact'] == 'MODERATE') 
-                | (gene_alterations_df['Impact'] == 'HIGH')]
+                gene_alt = gene_alt[(gene_alt['Impact'] == 'MODERATE') 
+                | (gene_alt['Impact'] == 'HIGH')]
                 # Sort by clone and impact
                 impact_order = pd.CategoricalDtype(categories=["HIGH", "MODERATE"], ordered=True)
-                gene_alterations_df["Impact"] = gene_alterations_df["Impact"].str.upper().astype(impact_order)
-                gene_alterations_sorted = gene_alterations_df.sort_values(by=["Clone", "Impact"], ascending=[True, True])
+                gene_alt["Impact"] = gene_alt["Impact"].str.upper().astype(impact_order)
+                gene_alterations_sorted = gene_alt.sort_values(by=["Clone", "Impact"], ascending=[True, True])
                 # Select top 10 alterations per clone
                 gene_alterations_top = gene_alterations_sorted.groupby("Clone", sort=False).head(10)
         except:
-            gene_alterations_df = None
+            gene_alt = None
         
 
     # Drug prioritization
     drug_prioritization_path = components_path / "drug_prioritization.tsv"
-    drug_prioritization_df = None
+    drug_hits = None
     if drug_prioritization_path.exists():
         try:
-            drug_prioritization_df = pd.read_csv(drug_prioritization_path, sep='\t')
-            if drug_prioritization_df.empty:
-                drug_prioritization_df = None
+            drug_hits = pd.read_csv(drug_prioritization_path, sep='\t')
+            if drug_hits.empty:
+                drug_hits = None
             else:
-           #     drug_prioritization_df = drug_prioritization_df[drug_prioritization_df['Status'] == 'APPROVED'].drop_duplicates(subset=['Clone', 'Mutation ID', 'Gene Symbol', 'Drug','VAF'])
-                drug_prioritization_df["dScore"] = pd.to_numeric(drug_prioritization_df["dScore"], errors="coerce")
+                drug_hits["dScore"] = pd.to_numeric(drug_hits["dScore"], errors="coerce")
 
                 # Sort Status column
                 status_order = ["APPROVED", "CLINICAL_TRIALS", "EXPERIMENTAL"]
-                drug_prioritization_df["Status"] = pd.Categorical(drug_prioritization_df["Status"], categories=status_order, ordered=True)
+                drug_hits["Status"] = pd.Categorical(drug_hits["Status"], categories=status_order, ordered=True)
                 
                 # Grouping key
                 group_keys = ["Clone", "Mutation ID", "Gene Symbol", "VAF"]
                 
-                drugs_df_sorted = drug_prioritization_df.sort_values(
+                drugs_df_sorted = drug_hits.sort_values(
                     by=group_keys + ["Status", "dScore"],
                     ascending=[True, True, True, True, True, False]
                 )
@@ -109,7 +107,7 @@ def prepare_report_data(study_path):
             
             
         except:
-            drug_prioritization_df = None
+            drug_hits = None
     
     # Absolute paths to images
     clonal_tree_image = os.path.abspath(str(components_path / "clonal_tree.png"))
