@@ -50,7 +50,7 @@ def prepare_report_data(study_path):
     # Gene alterations
     gene_alterations_path = components_path / "gene_alterations.tsv"
     gene_alterations_df = None
-    gene_alterations_df_filt = None
+#    gene_alterations_df_filt = None
     
     if gene_alterations_path.exists():
         try:
@@ -60,6 +60,12 @@ def prepare_report_data(study_path):
             else:
                 gene_alterations_df = gene_alterations_df[(gene_alterations_df['Impact'] == 'MODERATE') 
                 | (gene_alterations_df['Impact'] == 'HIGH')]
+                # Sort by clone and impact
+                impact_order = pd.CategoricalDtype(categories=["HIGH", "MODERATE"], ordered=True)
+                gene_alterations_df["Impact"] = gene_alterations_df["Impact"].str.upper().astype(impact_order)
+                gene_alterations_sorted = gene_alterations_df.sort_values(by=["Clone", "Impact"], ascending=[True, True])
+                # Select top 10 alterations per clone
+                gene_alterations_top = gene_alterations_sorted.groupby("Clone", sort=False).head(10)
         except:
             gene_alterations_df = None
         
@@ -121,7 +127,7 @@ def prepare_report_data(study_path):
     
     return {
         'samples_df': samples_df,
-        'gene_alterations_df': gene_alterations_df,
+        'gene_alterations_df': gene_alterations_top,
         'drug_prioritization_df': drug_prioritization_df,
         'clonal_tree_image': clonal_tree_image,
         'clonal_proportions_images': clonal_proportions_images,
