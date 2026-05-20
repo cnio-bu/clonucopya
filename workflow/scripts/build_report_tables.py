@@ -184,9 +184,30 @@ def build_drug_prioritization(gene_alterations, pandrugs_dir, out_dir):
         drug_prioritization = drug_prioritization.drop_duplicates(subset=['Clone', 'Mutation ID', 'Gene Symbol', 'Drug','VAF'])        
         
         drug_prioritization.to_csv(f"{out_dir}/drug_prioritization.tsv", sep='\t', index=False, na_rep='-')
-    
+
+        # DRUG SUMMARY
+        drug_summary = (
+        drug_prioritization
+        .groupby('Drug')
+        .agg(
+            Status=('Status', 'first'),
+            max_dScore=('dScore', lambda x: round(x.max(), 4)),
+            Clones=('Clone', lambda x: ', '.join(sorted(x.unique().astype(str)))),
+            Genes=('Gene Symbol', lambda x: ', '.join(sorted(x.unique().astype(str)))),
+            n_clones=('Clone', 'nunique'),
+        )
+        .reset_index()
+        .sort_values(['n_clones', 'max_dScore'], ascending=[False,False])
+        
+    )
+        # Drop n_clones column
+        drug_summary.drop(columns = ["n_clones"], axis=1, inplace=True)
+        drug_summary_top = drug_summary.head(25)
+
+        drug_summary_top.to_csv(f"{out_dir}/drug_summary.tsv", sep='\t', index=False)
 
     
+
     
 if __name__ == '__main__':
     input_parser = argparse.ArgumentParser()
