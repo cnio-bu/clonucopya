@@ -2,7 +2,7 @@ rule pvi_intesersect:
     wildcard_constraints:
         sample = "|".join(samples["sample_id"].tolist())
     input:
-        mutations = "results/{study}/mutation_prep/{sample}_prep.mut.tsv",
+        mutations = "results/{study}/mutation_prep/bam_checked/{sample}_check.mut.tsv",
         cnvs = lambda wildcards: samples.loc[wildcards.sample, "cnvs"]
     output:
         "results/{study}/pyclone-vi_prep/{sample}_intersect_pvi.tsv"
