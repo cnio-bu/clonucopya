@@ -3,3 +3,4 @@ channels:
   - bioconda
 dependencies:
   - conda-forge::pandas =2.2.2
+  - bioconda::pysam =0.24.0-0
