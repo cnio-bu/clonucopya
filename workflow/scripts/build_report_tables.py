@@ -202,9 +202,8 @@ def build_drug_prioritization(gene_alterations, pandrugs_dir, out_dir):
     )
         # Drop n_clones column
         drug_summary.drop(columns = ["n_clones"], axis=1, inplace=True)
-        drug_summary_top = drug_summary.head(25)
 
-        drug_summary_top.to_csv(f"{out_dir}/drug_summary.tsv", sep='\t', index=False)
+        drug_summary.to_csv(f"{out_dir}/drug_summary.tsv", sep='\t', index=False)
 
     
 
