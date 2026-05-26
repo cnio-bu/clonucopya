@@ -12,7 +12,9 @@ properties:
     type: string
     description: Whether to process only SNVs or keep Indels (True/False)
 
-
+  bam_files:
+    type: string
+    description: Path to the directory where indexed bam files are placed
   params:
     type: object
     properties:
