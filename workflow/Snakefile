@@ -36,6 +36,7 @@ if not missing_files.empty:
 rule all:
     input:
         expand("results/{study}/mutation_prep/{sample}_prep.mut.tsv", zip, study=samples_df["study"], sample=samples_df["sample_id"]),
+        expand("results/{study}/mutation_prep/bam_checked/{sample}_check.mut.tsv",zip, study=samples_df["study"], sample=samples_df["sample_id"]),
         expand("results/{study}/pyclone-vi_prep/{sample}_intersect_pvi.tsv", zip, study=samples_df["study"], sample=samples_df["sample_id"]),
         expand("results/{study}/pyclone-vi_prep/combined_intersect_pvi.tsv", study=samples_df["study"].unique()),
         expand("results/{study}/pyclone-vi/pvi_out.tsv", study=samples_df["study"].unique()),
@@ -52,10 +53,9 @@ rule all:
         expand("results/{study}/report/{study}_report.pdf", study=samples_df["study"].unique())
 
 
-# FORMAT MUTATION VCF
+# FORMAT MUTATION VCF AND CHECK BAM POSITIONS
 
 include: "rules/mutation_prep.smk"
-
 
 # INTERSECT MUTATIONS AND CNVs
 
