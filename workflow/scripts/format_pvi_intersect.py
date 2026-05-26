@@ -44,40 +44,22 @@ def format_intersect(intersect_list, samplesheet, pvi_prep, phyclone):
     ## Get missing mutations
     missing_mutations = mutations_complete - true_mutations
 
-    # Add mock mutations for missing ones
-    mock_entries = []
-    for mutation_id, sample_id in missing_mutations:
-        mock_entries.append({
-            'mutation_id': mutation_id,
-            'sample_id': sample_id,
-            'ref_counts': 0,
-            'alt_counts': 0,
-            'major_cn': 2,
-            'minor_cn': 2,
-            'normal_cn': 1 if str(mutation_id).lower().startswith('chry') else 2
-        })
-
-
-    ## Add mock mutations df to the original df
-    mock_df = pd.DataFrame(mock_entries)
-    complete_df = pd.concat([combined_pvi_dedup, mock_df], ignore_index=True)
-
     ## Sort completed df by mutation_id and sample_id
-    complete_df.sort_values(by=['mutation_id', 'sample_id'], inplace=True)
+    combined_pvi_dedup.sort_values(by=['mutation_id', 'sample_id'], inplace=True)
 
     # Add tumour_content aka purity
     samplesheet = pd.read_csv(samplesheet)
     tumour_content_dict = dict(zip(samplesheet['sample_id'], samplesheet['tumour_content']))
-    complete_df['tumour_content'] = complete_df['sample_id'].map(tumour_content_dict)
+    combined_pvi_dedup['tumour_content'] = combined_pvi_dedup['sample_id'].map(tumour_content_dict)
 
     # Save pyclone-vi formatted intersect df
-    complete_df.to_csv(pvi_prep, sep='\t', index=False)
+    combined_pvi_dedup.to_csv(pvi_prep, sep='\t', index=False)
 
     # Subset and save intersect df for phyclone input format
-    phyclone_df = complete_df[['mutation_id', 'sample_id', 'ref_counts', 'alt_counts', 'major_cn', 'minor_cn', 'normal_cn', 'tumour_content']]
+    phyclone_df = combined_pvi_dedup[['mutation_id', 'sample_id', 'ref_counts', 'alt_counts', 'major_cn', 'minor_cn', 'normal_cn', 'tumour_content']]
     phyclone_df.to_csv(phyclone, sep='\t', index=False)
 
-    return complete_df, phyclone_df
+    return combined_pvi_dedup, phyclone_df
 
 
 if __name__ == '__main__':
