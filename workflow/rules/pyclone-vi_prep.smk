@@ -42,7 +42,6 @@ rule format_pvi_intersect:
         )
     output:
         pvi="results/{study}/pyclone-vi_prep/combined_intersect_pvi.tsv",
-        phyclone_prep="results/{study}/pyclone-vi_prep/pvi_input_phyclone_formatted.tsv"
     params:
         samplesheet=config["samplesheet"]
     log:
@@ -62,7 +61,5 @@ rule format_pvi_intersect:
             --intersect_list {input} \
             --samplesheet {params.samplesheet} \
             --pvi_prep {output.pvi} \
-            --phyclone {output.phyclone_prep} \
         > {log} 2>&1
         """
-
