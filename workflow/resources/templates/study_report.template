@@ -270,15 +270,26 @@
             font-size: 11px;
         }
 
+        
         .data-table tr:nth-child(even) {
             background-color: #f2f2f2;
         }
 
-
-        .drug-table {
-            font-size: 7px !important;
-            table-layout: fixed !important;
-}
+        .drug-summary-table th {
+            background-color: #BF530F;
+        }
+        
+        .gene-table th {
+            background-color: #009879;
+        }
+        
+        .drug-table th {
+            background-color: #185DA5;
+        }
+                .drug-table {
+                    font-size: 7px !important;
+                    table-layout: fixed !important;
+        }
 
         .drug-table th,
         .drug-table td {
@@ -423,7 +434,7 @@
 {% if drug_summary is not none and not drug_summary.empty %}
 <div class="panel">
     <h3>Drug Summary</h3>
-    <table class="data-table">
+    <table class="data-table drug-summary-table">
         <thead>
             <tr>
                 <th>Drug</th>
