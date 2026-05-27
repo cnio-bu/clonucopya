@@ -420,6 +420,34 @@
     {% endfor %}
 </div>
 
+{% if drug_summary is not none and not drug_summary.empty %}
+<div class="panel">
+    <h3>Drug Summary</h3>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Drug</th>
+                <th>Status</th>
+                <th>max_dScore</th>
+                <th>Clones</th>
+                <th>Genes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for _, row in drug_summary.iterrows() %}
+            <tr>
+                <td>{{ row['Drug'] }}</td>
+                <td>{{ row['Status'] }}</td>
+                <td>{{ row['max_dScore'] | safe_float(3) }}</td>
+                <td>{{ row['Clones'] }}</td>
+                <td>{{ row['Genes'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
 
 <div class="panel">
     <h2>{{ comparison_section.title }}</h2>
