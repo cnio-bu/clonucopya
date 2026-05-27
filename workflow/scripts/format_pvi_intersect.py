@@ -5,8 +5,7 @@ import argparse
 
 
 
-
-def format_intersect(intersect_list, samplesheet, pvi_prep, phyclone):
+def format_intersect(intersect_list, samplesheet, pvi_prep):
     """
         Build DataFrames for Pyclone-VI and Phyclone, one per sample.
 
@@ -14,7 +13,6 @@ def format_intersect(intersect_list, samplesheet, pvi_prep, phyclone):
         intersect_list (str): spaced list of intersect dataframes of each sample (TSV)
         samplesheet (str): Path to the study samplesheet
         pvi_prep (str): Path to formatted dataframe for Pyclone-VI (TSV).
-        phyclone (str):  Path to formatted dataframe for Phyclone (TSV).
 
     Return:
         Dictionary of samples' dataframes to plot the VAF Heatmap
@@ -55,19 +53,14 @@ def format_intersect(intersect_list, samplesheet, pvi_prep, phyclone):
     # Save pyclone-vi formatted intersect df
     combined_pvi_dedup.to_csv(pvi_prep, sep='\t', index=False)
 
-    # Subset and save intersect df for phyclone input format
-    phyclone_df = combined_pvi_dedup[['mutation_id', 'sample_id', 'ref_counts', 'alt_counts', 'major_cn', 'minor_cn', 'normal_cn', 'tumour_content']]
-    phyclone_df.to_csv(phyclone, sep='\t', index=False)
 
-    return combined_pvi_dedup, phyclone_df
-
+    return combined_pvi_dedup
 
 if __name__ == '__main__':
     input_parser = argparse.ArgumentParser()
     input_parser.add_argument("--intersect_list", action='store', nargs='+', required=True)
     input_parser.add_argument("--samplesheet", action='store', required=True)
     input_parser.add_argument("--pvi_prep", action='store', required=True)
-    input_parser.add_argument("--phyclone", action='store', required=True)
     args = input_parser.parse_args() 
     
-    format_intersect(args.intersect_list, args.samplesheet, args.pvi_prep, args.phyclone)
+    format_intersect(args.intersect_list, args.samplesheet, args.pvi_prep)
