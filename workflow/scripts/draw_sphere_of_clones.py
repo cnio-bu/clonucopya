@@ -44,6 +44,7 @@ def draw_sphere_of_clones(tree_df, palette, out_dir):
 
     # Load tree inference daframe 
     tree_clones = pd.read_table(tree_df)
+    tree_clones = tree_clones[tree_clones["clone_id"] != -1]
     clonal_prev_df = tree_clones[['clone_id', 'sample_id', 'clonal_prev']].drop_duplicates().reset_index(drop=True)
     num_clones = clonal_prev_df['clone_id'].drop_duplicates().tolist()
     sample_ids = clonal_prev_df['sample_id'].drop_duplicates().tolist()

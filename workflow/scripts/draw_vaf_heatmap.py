@@ -61,7 +61,9 @@ def build_heatmap_df(tree_df, pvi_out, mut_dir, gene_alterations):
         phy_df = pd.read_table(tree_df)
     except Exception as e:
         raise ValueError(f"Error reading Phyclone file: {e}")
-    
+    # Remove outlier mutations
+    phy_df = phy_df[phy_df["clone_id"] != -1] 
+
     # Obtain cluter-clone equivalences
     phy_clones = phy_df[['clone_id', 'cluster_id']].drop_duplicates()
     cluster_to_clone = dict(zip(phy_clones['cluster_id'], phy_clones['clone_id']))
