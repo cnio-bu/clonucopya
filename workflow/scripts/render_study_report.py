@@ -46,6 +46,17 @@ def prepare_report_data(study_path):
     
     # Load report panel
     samples_df = pd.read_csv(components_path / "report_panel.tsv", sep='\t')
+
+    # Drug Summary
+    drug_sum_path = components_path / "drug_summary.tsv"
+    drug_sum_top = None
+    if drug_sum_path.exists():
+        try:
+            drug_sum = pd.read_csv(drug_sum_path, sep='\t')
+            if not drug_sum.empty:
+                drug_sum_top = drug_sum.head(25)
+        except:
+            drug_sum_top = None
     
     # Gene alterations
     gene_alterations_path = components_path / "gene_alterations.tsv"
@@ -82,16 +93,19 @@ def prepare_report_data(study_path):
                 drug_hits = drug_hits[drug_hits["Clone"] != -1]
                 drug_hits["dScore"] = pd.to_numeric(drug_hits["dScore"], errors="coerce")
 
-                # Sort Status column
+                # Sort Status and Intereaction type column
                 status_order = ["APPROVED", "CLINICAL_TRIALS", "EXPERIMENTAL"]
                 drug_hits["Status"] = pd.Categorical(drug_hits["Status"], categories=status_order, ordered=True)
+
+                interaction_type_order = ["DIRECT_TARGET", "PATHWAY_MEMBER", "BIOMARKER"]
+                drug_hits["Interaction Type"] = pd.Categorical(drug_hits["Interaction Type"], categories=interaction_type_order, ordered=True)
                 
                 # Grouping key
                 group_keys = ["Clone", "Mutation ID", "Gene Symbol", "VAF"]
                 
                 drugs_df_sorted = drug_hits.sort_values(
-                    by=group_keys + ["Status", "dScore"],
-                    ascending=[True, True, True, True, True, False]
+                    by=group_keys + ["Status", "dScore", "Interaction Type"],
+                    ascending=[True, True, True, True, True, False, True]
                 )
                 
                 # Top 3 drugs for "each mutation of the clone" (an specific mutation may be targeted by one or more drugs)
@@ -155,6 +169,7 @@ def prepare_report_data(study_path):
     
     return {
         'samples_df': samples_df,
+        'drug_summary': drug_sum_top,
         'gene_alterations_df': gene_alterations_top,
         'drug_prioritization_df': drugs_df_compact,
         'clonal_tree_image': clonal_tree_image,
@@ -172,8 +187,9 @@ def render_report_to_pdf(study_path, output_path, template_path="template.html",
 
     study_name = os.path.basename(study_path)
     components_path = Path(study_path) / "report" / "components"
-
+    
     panels_path = components_path / "report_panel.tsv"
+    drug_summary_path = components_path / "drug_summary.tsv"
     clonal_tree_path = components_path / "clonal_tree.png"
     spheres_path = components_path / "spheres_of_clones" / "{sample_id}_sphere_of_clones.png"
     heatmaps_path = components_path / "vaf_heatmaps" / "sampled" / "{sample_id}_sampled_vaf_heatmap.png"
@@ -236,6 +252,7 @@ def render_report_to_pdf(study_path, output_path, template_path="template.html",
         
     
         'samples_df': data['samples_df'],
+        'drug_summary': data['drug_summary'],
         'gene_alterations_df': data['gene_alterations_df'],
         'drug_prioritization_df': data['drug_prioritization_df'],
         'clonal_proportions_images': data['clonal_proportions_images'],
