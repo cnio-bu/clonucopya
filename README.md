@@ -108,8 +108,7 @@ comparative analysis (read [Main applications](#main-applications) section for f
 │      └──{sample_id}_check.mut.tsv
 ├── pyclone-vi_prep/
 │   ├── {sample_id}_intersect_pvi.tsv
-│   ├── combined_intersect_pvi.tsv
-│   └── pvi_input_phyclone_formatted.tsv
+│   └── combined_intersect_pvi.tsv
 ├── pyclone-vi/
 │   ├── pvi_out.h5
 │   └── pvi_out.tsv
