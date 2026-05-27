@@ -57,6 +57,7 @@ def prepare_report_data(study_path):
             if gene_alt.empty:
                 gene_alt = None
             else:
+                gene_alt = gene_alt[gene_alt["Clone"] != -1]
                 gene_alt = gene_alt[(gene_alt['Impact'] == 'MODERATE') 
                 | (gene_alt['Impact'] == 'HIGH')]
                 # Sort by clone and impact
@@ -78,6 +79,7 @@ def prepare_report_data(study_path):
             if drug_hits.empty:
                 drug_hits = None
             else:
+                drug_hits = drug_hits[drug_hits["Clone"] != -1]
                 drug_hits["dScore"] = pd.to_numeric(drug_hits["dScore"], errors="coerce")
 
                 # Sort Status column
