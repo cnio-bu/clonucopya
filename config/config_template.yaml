@@ -5,6 +5,9 @@ samplesheet: "/path/to/samplesheet/config/samplesheet.csv"
 # True / False
 just_snv: "True"
 
+# Indexed bam files of study's samples
+bam_files: "/path/to/bam/files/directory"
+
 params:
     pyclone-vi:
         num_clusters: 40
