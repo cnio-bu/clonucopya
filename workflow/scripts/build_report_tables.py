@@ -186,8 +186,12 @@ def build_drug_prioritization(gene_alterations, pandrugs_dir, out_dir):
         drug_prioritization.to_csv(f"{out_dir}/drug_prioritization.tsv", sep='\t', index=False, na_rep='-')
 
         # DRUG SUMMARY
+        drug_hits_no_outliers = drug_prioritization[drug_prioritization["Clone"] != -1] 
+
+        status_order = ["APPROVED", "CLINICAL_TRIALS", "EXPERIMENTAL"]
+        
         drug_summary = (
-        drug_prioritization
+        drug_hits_no_outliers
         .groupby('Drug')
         .agg(
             Status=('Status', 'first'),
@@ -197,9 +201,20 @@ def build_drug_prioritization(gene_alterations, pandrugs_dir, out_dir):
             n_clones=('Clone', 'nunique'),
         )
         .reset_index()
-        .sort_values(['n_clones', 'max_dScore'], ascending=[False,False])
+        )
+
+        drug_summary["Status"] = pd.Categorical(
+            drug_summary["Status"],
+            categories=status_order,
+            ordered=True
+        )
         
-    )
+        drug_summary = drug_summary.sort_values(
+            ['n_clones', 'Status'],
+            ascending=[False, True]
+        )
+
+        
         # Drop n_clones column
         drug_summary.drop(columns = ["n_clones"], axis=1, inplace=True)
 
