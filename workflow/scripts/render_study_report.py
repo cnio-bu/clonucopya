@@ -97,7 +97,7 @@ def prepare_report_data(study_path):
                 status_order = ["APPROVED", "CLINICAL_TRIALS", "EXPERIMENTAL"]
                 drug_hits["Status"] = pd.Categorical(drug_hits["Status"], categories=status_order, ordered=True)
 
-                interaction_type_order = ["DIRECT_TARGET", "PATHWAY_MEMBER", "BIOMARKER"]
+                interaction_type_order = ["DIRECT_TARGET", "BIOMARKER", "PATHWAY_MEMBER"]
                 drug_hits["Interaction Type"] = pd.Categorical(drug_hits["Interaction Type"], categories=interaction_type_order, ordered=True)
                 
                 # Grouping key
@@ -257,6 +257,14 @@ def render_report_to_pdf(study_path, output_path, template_path="template.html",
         'drug_prioritization_df': data['drug_prioritization_df'],
         'clonal_proportions_images': data['clonal_proportions_images'],
         'clone_alterations_images': data['clone_alterations_images'],
+
+            'drug_summary_description': f"""
+            <p>The Drug Summary provides a high-level overview of the therapeutic candidates identified across the entire study. For each drug, the table reports the number of genetic alterations supporting its prioritization, its regulatory approval status (APPROVED, CLINICAL_TRIALS, or EXPERIMENTAL), and the type of interaction with the affected genes
+            (DIRECT_TARGET, BIOMARKER, or PATHWAY_MEMBER).</p>
+            <p>This table summarizes up to 25 top-ranked drug candidates derived from the mutational landscape of all samples included in the study. A detailed per-clone breakdown is available in the Drug Prioritization section.</p>
+            
+            <p>The source files are available at: {drug_summary_path}.</p>
+            """,
         
         'comparison_section': {
             'title': 'Clonal Evolution Analysis',
@@ -290,21 +298,34 @@ def render_report_to_pdf(study_path, output_path, template_path="template.html",
                 'title': 'Gene Alterations',
                 'description': f"""
                 <p>Both SNVs and small indels (if selected at the beginning of the workflow) used in clone inference are displayed with the most relevant information at the clone and sample level. To sum up the results, this section only shows top 10 mutations per clone with moderate or high impact.</p>
+                <p> Mutations are sorted using the following criteria:</p>
+                <ul>
+                    <li>Clone.</li>
+                    <li>Mutation positon.</li>
+                    <li>Impact: High and Moderate.</li>
+                </ul>
                 <p>The source files are available at: {gene_alterations_path}.</p>
                 """
             },
             'drug_prioritization': {
                 'title': 'Drug Prioritization',
-'description': f"""
-    <p>The small variant analysis performed by PanDrugs2 displays only mutations deemed clinically relevant.</p>
-    <p>The filtering criteria are as follows:</p>
-    <ul>
-        <li>GMAF/gnomAD population frequency less than 0.01.</li>
-        <li>Predicted moderate or high functional impact, including variant types such as missense, nonsense, frameshift, and splice site mutations.</li>
-        <li>Affection of relevant isoforms. Priority is given to canonical or unknown isoforms.</li>
-    </ul>
-    <p>The table below provides a simplified overview of the drugs targeting the affected genes, with the top 3 drugs selected per genetic alteration and ranked by Status and dScore.</p>
-    <p>The source files are available at: {gene_alterations_path}.</p>
+                'description': f"""
+                    <p>The small variant analysis performed by PanDrugs2 displays only mutations deemed clinically relevant.</p>
+                    <p>The filtering criteria are as follows:</p>
+                    <ul>
+                        <li>GMAF/gnomAD population frequency less than 0.01.</li>
+                        <li>Predicted moderate or high functional impact, including variant types such as missense, nonsense, frameshift, and splice site mutations.</li>
+                        <li>Affection of relevant isoforms. Priority is given to canonical or unknown isoforms.</li>
+                    </ul>
+                    <p>The table below provides a simplified overview of the drugs targeting the affected genes, with the top 3 drugs selected per genetic alteration and ranked by Status and dScore.</p>
+                    <p> Drugs are sorted using the following criteria:</p>
+                    <ul>
+                        <li>Clone.</li>
+                        <li>Mutation positon.</li>
+                        <li>Status: APPROVED, CLINICAL_TRIALS, and EXPERIMENTAL.</li>
+                        <li>Interaction type: DIRECT_TARGET, BIOMARKER, and PATHWAY_MEMBER.</li>
+                    </ul>
+                    <p>The source files are available at: {gene_alterations_path}.</p>
 """
             }
         },

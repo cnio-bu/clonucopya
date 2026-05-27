@@ -434,6 +434,7 @@
 {% if drug_summary is not none and not drug_summary.empty %}
 <div class="panel">
     <h3>Drug Summary</h3>
+    {{ drug_summary_description | safe }}
     <table class="data-table drug-summary-table">
         <thead>
             <tr>
