@@ -1,6 +1,7 @@
 rule phyclone:
     input:
-        pvi_input="results/{study}/pyclone-vi_prep/combined_intersect_pvi.tsv",
+#        pvi_input="results/{study}/pyclone-vi_prep/combined_intersect_pvi.tsv",
+        pvi_input=get_pyclone_input,
         pvi_output="results/{study}/pyclone-vi/pvi_out.tsv"
     output:
         clusters="results/{study}/phyclone/clusters.tsv",
