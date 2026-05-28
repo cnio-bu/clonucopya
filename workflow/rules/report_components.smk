@@ -159,3 +159,35 @@ rule report_tables:
             --mut_dir {params.mut_dir} \\
             --out_dir {params.out_dir} > {log} 2>&1
         """
+
+
+######################### TABLES FOR ALTERNATIVE WORKFLOW ###############################
+
+rule report_tables:
+    input:
+        tree_df = "results/{study}/phyclone/tree_table.tsv",
+        pandrugs_dir = "results/{study}/query_pandrugs"
+    output:
+        "results/{study}/report/components/gene_alterations_wf2.tsv",
+        "results/{study}/report/components/drug_prioritization_wf2.tsv",
+        "results/{study}/report/components/drug_summary_wf2.tsv"
+    params:
+        out_dir = directory("results/{study}/report/components")
+    log:
+        "logs/{study}/report/report_tables.log"
+    benchmark:
+        "logs/{study}/report/report_tables.bmk"
+    conda:
+        "../envs/report_components.yaml"
+    threads:
+        config["resources"]["default"]["threads"]
+    resources:
+        mem_mb=config["resources"]["default"]["mem"],
+        runtime=config["resources"]["default"]["walltime"]
+    shell:
+        """
+        python scripts/build_report_tables_wf2.py \\
+            --tree_df {input.tree_df} \\
+            --pandrugs_dir {input.pandrugs_dir} \\
+            --out_dir {params.out_dir} > {log} 2>&1
+        """
