@@ -3,7 +3,7 @@ from snakemake.utils import validate
 from glob import glob
 import os
 import pandas as pd
-
+from collections import defaultdict
 
 ###### Config file, environment and sample sheet #####
 
@@ -17,7 +17,7 @@ os.environ["SNAKEMAKE_OUTPUT_CACHE"] = f"{os.getcwd()}/resources/vep/cache"
 
 samplesheet = pd.read_csv(config["samplesheet"])
 
-studies = samplesheet.set_index("study", drop=False)
+#studies = samplesheet.set_index("study", drop=False)
 
 #validate(studies, "resources/schemas/samplesheet_ALT_schema.yaml")
 
@@ -26,13 +26,37 @@ studies = samplesheet.set_index("study", drop=False)
 
 #print("Processing studies:", read_studies)
 
-#pvi_files = samplesheet["pyclone-vi"].unique().tolist()
+study_to_pvi = {}
+study_to_samples = defaultdict(set)
 
-# Check files exist
-#for pvi in in pvi_files:
-#    if not os.path.exists(pvi):
-#       raise FileNotFoundError(f"Missing input file: {pvi}")
+for _, row in samplesheet.iterrows():
+    study = row["study"]
+    pvi_path = row["pyclone_vi"]
 
+    if pd.isna(pvi_path) or pvi_path == "":
+        continue
+
+    study_to_pvi[study] = pvi_path
+
+    if not os.path.exists(pvi_path):
+        raise FileNotFoundError(f"Missing input file: {pvi_path}")
+
+    pvi_df = pd.read_csv(pvi_path, sep="\t")
+    for s in pvi_df["sample_id"].unique():
+        study_to_samples[study].add(s)
+
+study_to_samples = {k: sorted(list(v)) for k, v in study_to_samples.items()}
+
+studies = sorted(list(study_to_samples.keys()))
+
+print("Processing studies:", studies)
+
+sphere_clones = []
+for study, sample_list in study_to_samples.items():
+    for sample in sample_list:
+        sphere_clones.append(
+            f"results/{study}/report/components/spheres_of_clones/{sample}_sphere_of_clones.png"
+        )
 
 rule all:
     input:
@@ -43,8 +67,8 @@ rule all:
         expand("results/{study}/query_pandrugs", study=samplesheet["study"].unique()),
 #        expand("results/{study}/report/components/report_panel.tsv", study=samples_df["study"].unique()),
         expand("results/{study}/report/components/clonal_tree.png", study=samplesheet["study"].unique()),
-        expand("results/{study}/report/components/spheres_of_clones", study=samplesheet["study"].unique()),
-#        expand("results/{study}/report/components/gene_alterations.tsv", study=samples_df["study"].unique()),
+        sphere_clones,
+#        expand("results/{study}/report/components/gene_alterations_wf2.tsv", study=samples_df["study"].unique()),
 #        expand("results/{study}/report/{study}_report.pdf", study=samples_df["study"].unique())
 
 
