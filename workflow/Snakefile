@@ -67,9 +67,9 @@ include: "rules/pyclone-vi_prep.smk"
 include: "rules/pyclone-vi.smk"
 
 
-# FORMAT PYCLONE-VI OUTPUT FOR ENSEMBL-VEP
+# FORMAT PHYCLONE OUTPUT FOR ENSEMBL-VEP
 
-include: "rules/pvi_vep_prep.smk"
+include: "rules/mut_vep_prep.smk"
 
 
 # DOWNLOAD ENSEMBL-VEP CACHE
