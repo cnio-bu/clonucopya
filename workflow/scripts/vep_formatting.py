@@ -7,52 +7,17 @@ from clonucopya_tools import chr_to_num
 
 
 
-def filt_mock_mutations(pvi_in, pvi_out):
-
+def process_pyclone_muts_clones(phy_out, study, out_dir):
     """
-    Filter out mock mutations before formatting vep input.
+    Format output from Phyclone to VEP standard as input for ensembl-vep.
     
     Args:
-        pvi_int: Path to input TSV file containing PyClone-VI input
-        pvi_out: Path to input TSV file containing PyClone-VI results
-    
-    Returns:
-        DataFrame contained filtered Pyclone-VI output witout mock mutations
-    """
-
-    # Filter mock mutations out of Pyclone-VI input
-    pvi_mock = pvi_in[((pvi_in.ref_counts == 0) & (pvi_in.alt_counts == 0))]
-
-
-    # Filter mock mutations out of Pyclone-VI output using filtered pvi input
-    pvi_filt = (
-        pvi_out
-        .merge(
-            pvi_mock[['mutation_id', 'sample_id']],
-            on=['mutation_id', 'sample_id'],
-            how='left',
-            indicator=True
-        )
-        .query('_merge == "left_only"')
-        .drop(columns=['_merge'])
-    )
-    return pvi_filt
-
-
-
-
-def process_pyclone_muts_clones(pvi_in, pvi_out, study, out_dir):
-    """
-    Format output from PyClone-VI to VEP standard as input for ensembl-vep.
-    
-    Args:
-        pvi_int: Path to input TSV file containing PyClone-VI input
-        pvi_out: Path to input TSV file containing PyClone-VI results
+        phy_out: Path to input TSV file containing Phyclone results
         study: Name of the sample
         out_dir: Path to output directory
     
     Returns:
-        Dictionary mapping cluster ids to dataframes containing mutation information
+        Dictionary mapping clone ids to dataframes containing mutation information
     """
 
     
@@ -60,26 +25,19 @@ def process_pyclone_muts_clones(pvi_in, pvi_out, study, out_dir):
     out_path = Path(out_dir)
     out_path.mkdir(parents=True, exist_ok=True)
 
-    # Load PyClone-VI input
-    try:
-        pvi_prep = pd.read_csv(pvi_in, sep='\t')
-    except Exception as e:
-        raise ValueError(f"Failed to read PyClone-VI input file: {e}")
     
-    # Load PyClone-VI output
+    # Load Phyclone output
     try:
-        pvi_results = pd.read_csv(pvi_out, sep='\t')
+        mut_info = pd.read_csv(phy_out, sep='\t')
     except Exception as e:
-        raise ValueError(f"Failed to read PyClone-VI output file: {e}")
+        raise ValueError(f"Failed to read Phyclone output file: {e}")
 
-    # Filter mock mutations out of Pyclone-VI output
-    pvi_filt = filt_mock_mutations(pvi_prep, pvi_results)
 
     # Initialize cluster dictionary
     clone_dataframes: Dict[int, List[Dict]] = {}
     
     # Process mutations
-    for mut in pvi_filt['mutation_id'].unique():
+    for mut in mut_info['mutation_id'].unique():
         try:
             # Process chromosome prefix and split mutation components
             chrom, pos, ref, alt = mut.split(':')
@@ -93,7 +51,7 @@ def process_pyclone_muts_clones(pvi_in, pvi_out, study, out_dir):
                 # Substitution
                 end = int(pos) + len(ref) - 1
 
-            clone_id = pvi_filt.loc[pvi_filt['mutation_id'] == mut, 'cluster_id'].iloc[0]
+            clone_id = mut_info.loc[mut_info['mutation_id'] == mut, 'clone_id'].iloc[0]
 
             if clone_id not in clone_dataframes:
                 clone_dataframes[clone_id] = []
@@ -125,13 +83,12 @@ def process_pyclone_muts_clones(pvi_in, pvi_out, study, out_dir):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--pvi_prep",  action='store', required=True)
-    parser.add_argument("--pvi_data",  action='store', required=True)
+    parser.add_argument("--mut_data",  action='store', required=True)
     parser.add_argument("--study", action='store', required=True)
     parser.add_argument("--out_dir", action='store', required=True)
     
     args = parser.parse_args()
-    process_pyclone_muts_clones(args.pvi_prep, args.pvi_data, args.study, args.out_dir)
+    process_pyclone_muts_clones(args.mut_data, args.study, args.out_dir)
 
 
 
