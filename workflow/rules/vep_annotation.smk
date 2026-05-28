@@ -1,6 +1,6 @@
 rule vep_annotation:
     input:
-        pvi_prep="results/{study}/pvi_vep_prep"
+        pvi_prep="results/{study}/mut_vep_prep"
     output:
         stats=directory("results/{study}/vep_annotation/stats"),
         annotations=directory("results/{study}/vep_annotation/annotations"),
