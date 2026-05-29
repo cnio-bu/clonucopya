@@ -449,6 +449,22 @@ def render_report_to_pdf(study_path, output_path, template_path="template.html",
         height: auto !important;
     }
 
+    .heatmap-grid .image-container {
+    display: inline-block !important;
+    width: 98% !important;
+    max-width: 98% !important;
+    margin: 1% !important;
+    vertical-align: top !important;
+    box-sizing: border-box !important;
+    font-size: 12px !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    }
+    .heatmap-grid .image-container img {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+
     .data-table {
         width: 100% !important;
         font-size: 8px !important;
