@@ -1,0 +1,110 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+title: Clonucopya Configuration Schema
+description: Validation schema for Clonucopya config file
+type: object
+properties:
+  samplesheet:
+    type: string
+    pattern: ".+\\.csv$"
+    description: Path to samplesheet CSV file
+
+  params:
+    type: object
+    properties:
+      pyclone-vi:
+        type: object
+        properties:
+          num_clusters:
+            type: integer
+            minimum: 1
+          density:
+            type: string
+            enum: ["beta-binomial", "binomial"]
+          num_grid_points:
+            type: integer
+            minimum: 10
+          num_restarts:
+            type: integer
+            minimum: 1
+          seed:
+            type: integer
+        required:
+          - num_clusters
+          - density
+          - num_grid_points
+          - num_restarts
+          - seed
+        additionalProperties: false
+
+      phyclone:
+        type: object
+        properties:
+          num_chains:
+            type: integer
+            minimum: 1
+          density:
+            type: string
+            enum: ["beta-binomial", "binomial"]
+          proposal:
+            type: string
+            enum: ["fully-adapted", "bootstrap", "semi-adapted"]
+          burnin:
+            type: integer
+            minimum: 100
+          num_iters:
+            type: integer
+            minimum: 1000
+          seed:
+            type: integer
+          grid_size:
+            type: integer
+            minimum: 50
+        required:
+          - num_chains
+          - density
+          - proposal
+          - burnin
+          - num_iters
+          - seed
+          - grid_size
+        additionalProperties: false
+    required:
+      - pyclone-vi
+      - phyclone
+
+  resources:
+    type: object
+    properties:
+      default:
+        $ref: "#/definitions/resource_entry"
+      pyclone-vi:
+        $ref: "#/definitions/resource_entry"
+      pandrugs:
+        $ref: "#/definitions/resource_entry"
+      phyclone:
+        $ref: "#/definitions/resource_entry"
+    required:
+      - default
+
+required:
+  - samplesheet
+  - params
+  - resources
+
+definitions:
+  resource_entry:
+    type: object
+    properties:
+      threads:
+        type: integer
+        minimum: 1
+      mem:
+        type: integer
+        minimum: 1000
+      walltime:
+        type: integer
+        minimum: 60
+    required:
+      - threads
+      - mem
+      - walltime

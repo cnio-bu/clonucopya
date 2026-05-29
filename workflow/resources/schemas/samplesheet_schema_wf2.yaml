@@ -1,0 +1,16 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+description: Samplesheet validation of Clonucopya
+csv:
+  delimiter: ','
+columns:
+  - name: study
+    type: string
+    rules:
+      not_empty: true
+    description: name of the group of samples
+  - name: pyclone_vi
+    type: string
+    rules:
+      not_empty: true
+      is_file: true
+    description: path to Pyclone-vi input file
