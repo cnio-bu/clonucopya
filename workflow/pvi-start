@@ -9,7 +9,7 @@ from collections import defaultdict
 
 configfile: "../config/config_pvi-start.yaml"
 
-#validate(config, "resources/schemas/config_schema.yaml")
+validate(config, "resources/schemas/config_schema_wf2.yaml")
 
 os.environ["SNAKEMAKE_OUTPUT_CACHE"] = f"{os.getcwd()}/resources/vep/cache"
 
@@ -17,14 +17,11 @@ os.environ["SNAKEMAKE_OUTPUT_CACHE"] = f"{os.getcwd()}/resources/vep/cache"
 
 samplesheet = pd.read_csv(config["samplesheet"])
 
-#studies = samplesheet.set_index("study", drop=False)
+studies = samplesheet.set_index("study", drop=False)
 
-#validate(studies, "resources/schemas/samplesheet_ALT_schema.yaml")
+validate(studies, "resources/schemas/samplesheet_schema_wf2.yaml")
 
 
-#read_studies = samplesheet["studies"].unique().tolist()
-
-#print("Processing studies:", read_studies)
 
 study_to_pvi = {}
 study_to_samples = defaultdict(set)
@@ -68,7 +65,7 @@ rule all:
         expand("results/{study}/report/components/report_panel_wf2.tsv", study=samplesheet["study"].unique()),
         expand("results/{study}/report/components/clonal_tree.png", study=samplesheet["study"].unique()),
         sphere_clones,
-#        expand("results/{study}/report/components/gene_alterations_wf2.tsv", study=samples_df["study"].unique()),
+        expand("results/{study}/report/components/gene_alterations_wf2.tsv", study=samplesheet["study"].unique()),
 #        expand("results/{study}/report/{study}_report.pdf", study=samples_df["study"].unique())
 
 
