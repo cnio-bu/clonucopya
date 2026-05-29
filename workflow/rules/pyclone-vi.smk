@@ -1,25 +1,17 @@
-#def get_pyclone_input(wildcards):
-#    row = studies.loc[wildcards.study]
-#    # Usa directamente el samplesheet si la columna existe y no es NaN
-#    pvi_path = row.get("pyclone_vi", None)
-#    if pd.notna(pvi_path) and pvi_path != "":
-#        return pvi_path.format(study=wildcards.study)
-#    else:
-#        return f"results/{wildcards.study}/pyclone-vi_prep/combined_intersect_pvi.tsv"
-
 def get_pyclone_input(wildcards):
-    pvi_path = study_to_pvi.get(wildcards.study, None)
+    study_to_pvi = globals().get("study_to_pvi", None)
 
-    if pvi_path is not None and pvi_path != "":
-        return pvi_path.format(study=wildcards.study)
-    else:
-        return f"results/{wildcards.study}/pyclone-vi_prep/combined_intersect_pvi.tsv"
+    if study_to_pvi:
+        pvi_path = study_to_pvi.get(wildcards.study, None)
+        if pvi_path:
+            return pvi_path.format(study=wildcards.study)
+
+    return f"results/{wildcards.study}/pyclone-vi_prep/combined_intersect_pvi.tsv"
 
 
 
 rule pyclone_vi:
     input:
-#        "results/{study}/pyclone-vi_prep/combined_intersect_pvi.tsv"
         get_pyclone_input
     output:
         fit = "results/{study}/pyclone-vi/pvi_out.h5",
