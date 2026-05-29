@@ -2,11 +2,17 @@
 
 samplesheet: "/path/to/samplesheet/config/samplesheet.csv"
 
+# Indexed bam files of study's samples. Leave it empty "" if you dont have bam files
+
+bam_files: "/path/to/bam/files/directory"
+
+# True / False
+
+bam_check: False
+
 # True / False
 just_snv: "True"
 
-# Indexed bam files of study's samples
-bam_files: "/path/to/bam/files/directory"
 
 params:
     pyclone-vi:
