@@ -1,8 +1,21 @@
+def get_check_mutations_input(wildcards):
+    if config.get("bam_check", False):
+        return "results/{study}/mutation_prep/bam_checked/{sample}_check.mut.tsv".format(
+            study=wildcards.study,
+            sample=wildcards.sample
+        )
+    else:
+        return "results/{study}/mutation_prep/{sample}_prep.mut.tsv".format(
+            study=wildcards.study,
+            sample=wildcards.sample
+        )
+
+
 rule pvi_intesersect:
     wildcard_constraints:
         sample = "|".join(samples["sample_id"].tolist())
     input:
-        mutations = "results/{study}/mutation_prep/bam_checked/{sample}_check.mut.tsv",
+        mutations = get_check_mutations_input,
         cnvs = lambda wildcards: samples.loc[wildcards.sample, "cnvs"]
     output:
         "results/{study}/pyclone-vi_prep/{sample}_intersect_pvi.tsv"
