@@ -497,7 +497,7 @@
 
         <h3>{{ comparison_section.clone_alterations.title }}</h3>
         <p>{{ comparison_section.clone_alterations.description }}</p>
-        <div class="image-grid">
+        <div class="heatmap-grid">
             {% for sample in samples_df.itertuples() %}
             {% if sample.sample_id in clone_alterations_images %}
             <div class="image-container">
