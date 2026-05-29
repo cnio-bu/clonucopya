@@ -163,7 +163,30 @@ rule report_tables:
 
 ######################### TABLES FOR ALTERNATIVE WORKFLOW ###############################
 
-rule report_tables:
+rule report_panels_wf2:
+    input:
+        phy_out = "results/{study}/phyclone/tree_table.tsv"
+    output:
+        "results/{study}/report/components/report_panel_wf2.tsv"
+    log:
+        "logs/{study}/report/report_panels_wf2.log"
+    benchmark:
+        "logs/{study}/report/report_panels_wf2.bmk"
+    conda:
+        "../envs/report_components.yaml"
+    threads:
+        config["resources"]["default"]["threads"]
+    resources:
+        mem_mb=config["resources"]["default"]["mem"],
+        runtime=config["resources"]["default"]["walltime"]
+    shell:
+        """
+        python scripts/build_panels_wf2.py --phy_out {input.phy_out} \\
+                                           --out_file {output} > {log} 2>&1
+        """
+
+
+rule report_tables_wf2:
     input:
         tree_df = "results/{study}/phyclone/tree_table.tsv",
         pandrugs_dir = "results/{study}/query_pandrugs"
