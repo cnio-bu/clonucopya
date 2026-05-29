@@ -35,6 +35,9 @@ def build_gene_alterations(tree_df, pandrugs_dir, out_dir):
     # Load Phyclone output
     phy_df = pd.read_table(tree_df)
     
+    # Remove outlier clone
+    phy_df = phy_df[phy_df["clone_id"] != -1]    
+
     # Obtain cluter-clone equivalences
     phy_clones = phy_df[['clone_id', 'cluster_id']].drop_duplicates()
     cluster_to_clone = dict(zip(phy_clones['cluster_id'], phy_clones['clone_id']))
@@ -51,6 +54,11 @@ def build_gene_alterations(tree_df, pandrugs_dir, out_dir):
     
     for file in vscore_files:
         file_name = os.path.basename(file)
+
+        # Pass cluster -1 (outlier)
+        if "cluster_-1" in file_name:
+            continue
+
         match = re.search(r'cluster_(\d+)', file_name)
         if match:
             cluster = int(match.group(1))
