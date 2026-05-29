@@ -1,5 +1,6 @@
 import pandas as pd
 import glob
+import re
 import os
 import ast
 import argparse
@@ -12,15 +13,6 @@ def is_file_empty(file):
         return df.empty
     except Exception:
         return True
-
-
-# Format samples' VAF per mutation
-#def vaf_string_for_mutation(mutation_id, vaf_dict):
-#    vaf_entries = []
-#    for sample_id, mut_vafs in vaf_dict.items():
-#        vaf_value = mut_vafs.get(mutation_id, 'NA')
-#        vaf_entries.append(f"{sample_id}: {vaf_value}")
-#    return "; ".join(vaf_entries)
 
 
 
@@ -59,7 +51,11 @@ def build_gene_alterations(tree_df, pandrugs_dir, out_dir):
     
     for file in vscore_files:
         file_name = os.path.basename(file)
-        cluster = int(file_name.split('_')[2])
+        match = re.search(r'cluster_(\d+)', file_name)
+        if match:
+            cluster = int(match.group(1))
+        else:
+            raise ValueError(f"No cluster number found in filename: {file_name}")
         clone = cluster_to_clone[cluster]
         
         sample_df = pd.read_table(file)
@@ -193,7 +189,7 @@ def build_drug_prioritization(gene_alterations, pandrugs_dir, out_dir):
         # Drop n_clones column
         drug_summary.drop(columns = ["n_clones"], axis=1, inplace=True)
 
-        drug_summary.to_csv(f"{out_dir}/drug_summary.tsv", sep='\t', index=False)
+        drug_summary.to_csv(f"{out_dir}/drug_summary_wf2.tsv", sep='\t', index=False)
 
     
 

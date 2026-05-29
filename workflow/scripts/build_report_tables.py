@@ -60,7 +60,12 @@ def build_gene_alterations(tree_df, pandrugs_dir, mut_dir, out_dir):
     
     for file in vscore_files:
         file_name = os.path.basename(file)
-        cluster = int(file_name.split('_')[2])
+        match = re.search(r'cluster_(\d+)', file_name)
+        if match:
+            cluster = int(match.group(1))
+        else:
+            raise ValueError(f"No cluster number found in filename: {file_name}")
+
         clone = cluster_to_clone[cluster]
         
         sample_df = pd.read_table(file)
