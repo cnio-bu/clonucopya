@@ -65,7 +65,7 @@ rule all:
         expand("results/{study}/phyclone/tree.nwk", study=samplesheet["study"].unique()),
         expand("results/{study}/vep_annotation/annotations", study=samplesheet["study"].unique()),
         expand("results/{study}/query_pandrugs", study=samplesheet["study"].unique()),
-#        expand("results/{study}/report/components/report_panel.tsv", study=samples_df["study"].unique()),
+        expand("results/{study}/report/components/report_panel_wf2.tsv", study=samplesheet["study"].unique()),
         expand("results/{study}/report/components/clonal_tree.png", study=samplesheet["study"].unique()),
         sphere_clones,
 #        expand("results/{study}/report/components/gene_alterations_wf2.tsv", study=samples_df["study"].unique()),
