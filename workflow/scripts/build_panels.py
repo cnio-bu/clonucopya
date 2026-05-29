@@ -8,7 +8,7 @@ import argparse
 def get_study_panels(study, samplesheet, mut_dir, intersect_combined, out_file):
 
     """
-    Build Daframe for sample panels of the study.
+    Build Dataframe for sample panels of the study.
 
     Args:
         study (str): name of the study
@@ -37,7 +37,7 @@ def get_study_panels(study, samplesheet, mut_dir, intersect_combined, out_file):
     muts_path = f"{mut_dir}/*.tsv"
     mut_files = glob.glob(muts_path)
     
-    # Crear el diccionario
+    # Create list to build the final dataframe
     sampleids = []
     mut_counts = []
     
