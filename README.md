@@ -236,6 +236,11 @@ comparative analysis (read [Main applications](#main-applications) section for f
                 └── {sample_id}_sampled_vaf_heatmap.png
 ```
 
+
+>[!WARNING]
+> Clonucopya is set to run full-set mode by default unless you specify the option `-s pvi-start` in the snakemake commnand.
+> Be carefull with the name of the config and samplesheet file. Remove the suffix '_template' or change the name at the snakefile pvi-start or Snakefile (full-set mode). 
+
 # Authors
 
 * Guillermo Sánchez-Cid
