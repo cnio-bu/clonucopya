@@ -51,12 +51,12 @@ def process_pyclone_muts_clones(phy_out, study, out_dir):
                 # Substitution
                 end = int(pos) + len(ref) - 1
 
-            clone_id = mut_info.loc[mut_info['mutation_id'] == mut, 'clone_id'].iloc[0]
+            cluster_id = mut_info.loc[mut_info['mutation_id'] == mut, 'cluster_id'].iloc[0]
 
-            if clone_id not in clone_dataframes:
-                clone_dataframes[clone_id] = []
+            if cluster_id not in clone_dataframes:
+                clone_dataframes[cluster_id] = []
                 
-            clone_dataframes[clone_id].append({
+            clone_dataframes[cluster_id].append({
                   'chr': chrom,
                   'start': pos,
                   'end': end,
@@ -69,15 +69,15 @@ def process_pyclone_muts_clones(phy_out, study, out_dir):
 
     # Sort clone dfs and save them in the same output directory
     result: Dict[int, pd.DataFrame] = {}
-    for clone_id, variants in clone_dataframes.items():
+    for cluster_id, variants in clone_dataframes.items():
         df = pd.DataFrame(variants)
         df['start'] = df['start'].astype(int)
         df['chr_num'] = df['chr'].apply(chr_to_num)
         df.sort_values(by =['chr_num','start'], inplace=True)
         df.drop(columns=['chr_num'], inplace=True)
-        output_file = out_path / f"{study}_cluster_{clone_id}.tsv"
+        output_file = out_path / f"{study}_cluster_{cluster_id}.tsv"
         df.to_csv(output_file, sep='\t', index=False, header=False)
-        result[clone_id] = df
+        result[cluster_id] = df
     
     return result
 

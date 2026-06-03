@@ -25,7 +25,7 @@ columns:
       not_empty: true
       is_file: true
     description: path to mutations' file of the sample
-  - name: cnvs
+  - name: cnas
     type: string
     rules:
       not_empty: true

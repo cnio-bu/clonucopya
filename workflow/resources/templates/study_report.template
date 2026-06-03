@@ -419,11 +419,11 @@
                 <p>{{ sample.mutations|safe_int }}</p>
             </div>
             <div class="stat-box">
-                <h3>CNVs</h3>
-                <p>{{ sample.cnvs|safe_int }}</p>
+                <h3>CNAs</h3>
+                <p>{{ sample.cnas|safe_int }}</p>
             </div>
             <div class="stat-box">
-                <h3>SNV-CNV Intersects</h3>
+                <h3>SNV-CNA Intersects</h3>
                 <p>{{ sample.intersect|safe_int }}</p>
             </div>
         </div>
