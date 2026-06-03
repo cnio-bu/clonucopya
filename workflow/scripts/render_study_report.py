@@ -235,7 +235,7 @@ def render_report_to_pdf(study_path, output_path, template_path="template.html",
     # Template's data
     template_data = {
         'system_name': 'Clonucopya',
-        'report_title': 'Clonal Evolution Report',
+        'report_title': 'Clonal Evolution & Treatment Report',
         'study_id': study_name,
         'study_description': f"""
         <p>Overview of study {study_name}'s key statistics by sample, including the number of sample's name, sex, number of mutations such as Single Nucleotide Variation (SNVs) or small Indels, Copy Number Variations (CNVs), and the number of intersections between mutations and CNVs.</p>
