@@ -69,7 +69,7 @@ def build_gene_alterations(tree_df, pandrugs_dir, mut_dir, out_dir):
         if "cluster_-1" in file_name:
             continue
 
-        match = re.search(r'cluster_(\d+)', file_name)
+        match = re.search(r'cluster_(-?\d+)', file)
         if match:
             cluster = int(match.group(1))
         else:
