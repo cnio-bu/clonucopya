@@ -66,6 +66,7 @@ rule all:
         expand("results/{study}/report/components/clonal_tree.png", study=samplesheet["study"].unique()),
         sphere_clones,
         expand("results/{study}/report/components/gene_alterations_wf2.tsv", study=samplesheet["study"].unique()),
+        expand("results/{study}/report/components/clonal_histogram.png", study=samplesheet["study"].unique()),
 #        expand("results/{study}/report/{study}_report.pdf", study=samples_df["study"].unique())
 
 
