@@ -1,10 +1,12 @@
 rule mutation_prep:
     input:
-        mutations = lambda wildcards: samples.loc[wildcards.sample, "mutations"]
+#        mutations = lambda wildcards: samples.loc[wildcards.sample, "mutations"]
+         mutations = lambda wildcards: samples.at[(wildcards.study, wildcards.sample), "mutations"]
     output:
         "results/{study}/mutation_prep/{sample}_prep.mut.tsv"
     params:
-        snv_filter = config["just_snv"]
+        snv_filter = config["just_snv"],
+        sample = lambda wildcards: wildcards.sample
     log:
         "logs/{study}/mutation_prep/{sample}.log"
     benchmark:
@@ -18,7 +20,7 @@ rule mutation_prep:
         runtime = config["resources"]["default"]["walltime"]
     shell:
         """
-        python scripts/mutations_formatting.py --input_vcf {input} --just_snv {params.snv_filter} --output_file {output} > {log} 2>&1
+        python scripts/mutations_formatting.py --input_vcf {input} --just_snv {params.snv_filter} --sample {params.sample}  --output_file {output} > {log} 2>&1
     """
 
 
