@@ -1,69 +1,136 @@
 import pandas as pd
 import argparse
 
- 
+
+def get_vcf_columns(input_vcf):
+    """Read CHROM line and returns all column names"""
+    with open(input_vcf) as f:
+        for line in f:
+            if line.startswith('#CHROM'):
+                return line.strip().lstrip('#').split('\t')
+    raise ValueError("Header not found at VCF file")
+
+
+def extract_format_field(genotype_series, format_series, field):
+    """
+    Extracts genotype field using FORMAT column.
+    """
+    results = []
+    for gt, fmt in zip(genotype_series, format_series):
+        keys = str(fmt).split(':')
+        vals = str(gt).split(':')
+        fmt_dict = dict(zip(keys, vals))
+        results.append(fmt_dict.get(field, pd.NA))
+    return pd.Series(results, index=genotype_series.index)
+
     
-def process_vcf_mutations(input_vcf, just_snv, output_file):
+def process_vcf_mutations(input_vcf, just_snv, output_file, sample):
     """
     Process VCF file to extract mutation information and read counts.
     
     Args:
         input_vcf (str): Path to input VCF file
         just_snv (bool): Filters out indels if True
-        output_file (str, optional): Path to output TSV file. If None, won't save to file
+        output_file (str, optional): Path to output TSV file.
+        sample (str): Sample name to extract ('tumor' by default, 'normal' also accepted).
+                      If not found, uses the last sample column.
         
     Returns:
         pandas.DataFrame: Processed mutations data
     """
-    # Load mutations
+    # Read header to get column names
+    vcf_cols = get_vcf_columns(input_vcf)
+
+    # Fixed VCF columns
+    fixed_cols = ['CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER', 'INFO', 'FORMAT']
+    sample_cols = [c for c in vcf_cols if c not in fixed_cols]
+
+    if not sample_cols:
+        raise ValueError("No sample column found at VCF file.")
+
+    # Select the target sample column
+    if sample in sample_cols:
+        target_sample = sample
+    else:
+        target_sample = sample_cols[-1]
+        print(f"Sample '{sample}' not found. Using '{target_sample}'.")
+
+    target_sample_idx = vcf_cols.index(target_sample)
+
+    #Load VCF (skip comment lines)
     try:
-        mut_vcf = pd.read_csv(input_vcf, sep='\t', comment='#', header=None)
+#        mut_vcf = pd.read_csv(
+#            input_vcf, sep='\t', comment='#', header=None,
+#            usecols=range(len(fixed_cols) + len(sample_cols))
+#        )
+        # Only use columns matching the header
+#        mut_vcf = mut_vcf.iloc[:, :len(vcf_cols)]
+        mut_vcf.columns = vcf_cols
     except Exception as e:
         raise ValueError(f"Error reading VCF file: {e}")
-    
 
     # Select relevant columns
-    mut_vcf_filt = mut_vcf.iloc[:,[0,1,3,4]].copy()
-    mut_vcf_filt.columns = ['CHROM', 'POS', 'REF', 'ALT']
-    
-    # Adapt format to VEP Standard
-    mut_vcf_filt['REF'] = mut_vcf_filt['REF'].apply(lambda x: x.replace('.', '-') if '.' in x else x)
-    mut_vcf_filt['ALT'] = mut_vcf_filt['ALT'].apply(lambda x: x.replace('.', '-') if '.' in x else x)
+    mut_vcf_filt = mut_vcf[['CHROM', 'POS', 'REF', 'ALT']].copy()
 
+    # Adapt format to VEP standard
+    mut_vcf_filt['REF'] = mut_vcf_filt['REF'].str.replace('.', '-', regex=False)
+    mut_vcf_filt['ALT'] = mut_vcf_filt['ALT'].str.replace('.', '-', regex=False)
 
-    # Indels Filter
+    # Add genotype and FORMAT columns
+    mut_vcf_filt['_genotype'] = mut_vcf[target_sample].astype(str).values
+    mut_vcf_filt['_format']   = mut_vcf['FORMAT'].astype(str).values
 
+    # Indels filter
     if just_snv:
         mut_vcf_filt = mut_vcf_filt[
-        (mut_vcf_filt['REF'].str.len() == 1) & 
-        (mut_vcf_filt['ALT'].str.len() == 1)
-    ]
+            (mut_vcf_filt['REF'].str.len() == 1) &
+            (mut_vcf_filt['ALT'].str.len() == 1)
+        ].copy()
 
-
-    # Extract genotype info
-    genotype_column = mut_vcf.iloc[:,[-1]].squeeze().copy()
-
-    # Parse read counts and variant alelle frequencies
+    # Extract read counts from FORMAT
     try:
-        mut_vcf_filt['ref_counts'] = genotype_column.str.split(':').str[1].str.split(',').str[0]
-        mut_vcf_filt['alt_counts'] = genotype_column.str.split(':').str[1].str.split(',').str[1]
-        mut_vcf_filt['VAF'] = genotype_column.str.split(':').str[2]
+        ad_raw = extract_format_field(mut_vcf_filt['_genotype'], mut_vcf_filt['_format'], 'AD')
+        mut_vcf_filt['ref_counts'] = pd.to_numeric(
+            ad_raw.str.split(',').str[0], errors='coerce')
+        mut_vcf_filt['alt_counts'] = pd.to_numeric(
+            ad_raw.str.split(',').str[1], errors='coerce')
 
-        mut_vcf_filt['ref_counts'] = pd.to_numeric(mut_vcf_filt['ref_counts'], errors='coerce')
-        mut_vcf_filt['alt_counts'] = pd.to_numeric(mut_vcf_filt['alt_counts'], errors='coerce')
-        mut_vcf_filt['VAF'] = pd.to_numeric(mut_vcf_filt['VAF'], errors='coerce')
+        # VAF: try multiple field names used by different callers
+        mut_vcf_filt['VAF'] = pd.NA
+        for vaf_field in ['FA', 'AF', 'VAF', 'FREQ']:
+            vaf_raw = extract_format_field(
+                mut_vcf_filt['_genotype'], mut_vcf_filt['_format'], vaf_field)
+            # Some callers express FREQ as "33.33%"
+#            vaf_parsed = pd.to_numeric(
+#                vaf_raw.astype(str).str.rstrip('%').replace('NA', pd.NA),
+#                errors='coerce')
+            vaf_parsed = pd.to_numeric(vaf_raw.astype(str).str.rstrip('%'), errors='coerce')
+            if vaf_parsed.notna().any():
+                # Normalize percentage to fraction if needed
+                if (vaf_parsed.dropna() > 1).any():
+                    vaf_parsed = vaf_parsed / 100
+                mut_vcf_filt['VAF'] = vaf_parsed
+                break
+
+        if mut_vcf_filt['VAF'].isna().all():
+            # Fallback: compute VAF from ref/alt counts
+            total = mut_vcf_filt['ref_counts'] + mut_vcf_filt['alt_counts']
+            mut_vcf_filt['VAF'] = (mut_vcf_filt['alt_counts'] / total).round(4)
+
     except Exception as e:
         raise ValueError(f"Error parsing read counts: {e}")
 
+    # Drop support columns
+    mut_vcf_filt = mut_vcf_filt.drop(columns=['_genotype', '_format'])
 
-    
     # Build mutation ID
-    mut_vcf_filt['mutation_id'] = (mut_vcf_filt['CHROM'] + ':' + 
-                                  mut_vcf_filt['POS'].astype(str) + ':' + 
-                                  mut_vcf_filt['REF'] + ':' + 
-                                  mut_vcf_filt['ALT'])
+    mut_vcf_filt['mutation_id'] = (
+        mut_vcf_filt['CHROM'].astype(str) + ':' +
+        mut_vcf_filt['POS'].astype(str) + ':' +
+        mut_vcf_filt['REF'] + ':' +
+        mut_vcf_filt['ALT']
+    )
 
-    
     mut_vcf_filt.to_csv(output_file, sep='\t', index=False)
 
     return mut_vcf_filt
@@ -73,8 +140,9 @@ def process_vcf_mutations(input_vcf, just_snv, output_file):
 if __name__ == '__main__':
     input_parser = argparse.ArgumentParser()
     input_parser.add_argument("--input_vcf", action='store', required=True)
-    input_parser.add_argument("--just_snv", action='store', required=True)
+    input_parser.add_argument("--just_snv", type=lambda x: x.lower() in ('true', '1', 'yes'), required=True)
     input_parser.add_argument("--output_file", action='store', required=True)
+    input_parser.add_argument("--sample", action='store', default="tumour")
     args = input_parser.parse_args() 
     
-    process_vcf_mutations(args.input_vcf, args.just_snv, args.output_file)
+    process_vcf_mutations(args.input_vcf, args.just_snv, args.output_file, args.sample)
