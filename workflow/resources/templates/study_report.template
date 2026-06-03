@@ -331,14 +331,14 @@
             vertical-align: top !important;
         }
         
-        /* Prevenir cortes de fila */
+        
         .gene-table tr,
         .drug-table tr {
             page-break-inside: avoid !important;
             break-inside: avoid !important;
         }
         
-        /* Centrado para clonal proportions */
+        
         .clonal-proportions-centered {
             text-align: center;
             margin: 20px 0;
@@ -602,7 +602,7 @@ No actionable therapies could be suggested for this case because no molecular al
 </div>
 
 <div class="panel">
-  <h2>Key Concepts</h2>
+  <h2>Glossary of Terms</h2>
   <dl>
     {% for concept in key_concepts %}
       <dt><strong>{{ concept.term }}</strong></dt>
