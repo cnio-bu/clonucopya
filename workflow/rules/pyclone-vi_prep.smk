@@ -16,7 +16,7 @@ rule pvi_intesersect:
         sample = "|".join(samples["sample_id"].tolist())
     input:
         mutations = get_check_mutations_input,
-        cnvs = lambda wildcards: samples.loc[wildcards.sample, "cnvs"]
+        cnas = lambda wildcards: samples.at[(wildcards.study, wildcards.sample), "cnas"]
     output:
         "results/{study}/pyclone-vi_prep/{sample}_intersect_pvi.tsv"
     params:
@@ -26,7 +26,7 @@ rule pvi_intesersect:
     benchmark:
         "logs/{study}/pyclone-vi_prep/{sample}.bmk"
     conda:
-        "../envs/intersect_mutations_cnv.yaml"
+        "../envs/intersect_mutations_cna.yaml"
     threads:
         config["resources"]["default"]["threads"]
     resources:
@@ -34,10 +34,10 @@ rule pvi_intesersect:
         runtime = config["resources"]["default"]["walltime"]
     shell:
         """
-        python scripts/intersect_mutations_cnv.py \
+        python scripts/intersect_mutations_cna.py \
               --sample_id {params.sample_id} \
               --mutations {input.mutations} \
-              --cnvs {input.cnvs} \
+              --cnas {input.cnas} \
               --output_file {output} > {log} 2>&1
     """
 
@@ -62,7 +62,7 @@ rule format_pvi_intersect:
     benchmark:
         "logs/{study}/pyclone-vi_prep/concat.bmk"
     conda:
-        "../envs/intersect_mutations_cnv.yaml"
+        "../envs/intersect_mutations_cna.yaml"
     threads:
         config["resources"]["default"]["threads"]
     resources:

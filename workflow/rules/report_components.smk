@@ -214,3 +214,30 @@ rule report_tables_wf2:
             --pandrugs_dir {input.pandrugs_dir} \\
             --out_dir {params.out_dir} > {log} 2>&1
         """
+
+
+rule plot_histogram:
+    input:
+        tree_df = "results/{study}/phyclone/tree_table.tsv"
+    output:
+        "results/{study}/report/components/clonal_histogram.png"
+    params:
+        palette = "resources/clonucopya_palette.txt"
+    log:
+        "logs/{study}/report/plot_histogram.log"
+    benchmark:
+        "logs/{study}/report/plot_histogram.bmk"
+    conda:
+        "../envs/report_components.yaml"
+    threads:
+        config["resources"]["default"]["threads"]
+    resources:
+        mem_mb=config["resources"]["default"]["mem"],
+        runtime=config["resources"]["default"]["walltime"]
+    shell:
+        """
+        python scripts/draw_clone_histogram.py \\
+            --input {input.tree_df} \\
+            --palette {params.palette} \\
+            --output {output} > {log} 2>&1
+        """

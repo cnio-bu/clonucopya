@@ -1,6 +1,5 @@
 rule mutation_prep:
     input:
-#        mutations = lambda wildcards: samples.loc[wildcards.sample, "mutations"]
          mutations = lambda wildcards: samples.at[(wildcards.study, wildcards.sample), "mutations"]
     output:
         "results/{study}/mutation_prep/{sample}_prep.mut.tsv"
