@@ -17,7 +17,7 @@ os.environ["SNAKEMAKE_OUTPUT_CACHE"] = f"{os.getcwd()}/resources/vep/cache"
 
 samples_df = pd.read_csv(config["samplesheet"])
 
-samples = samples_df.set_index("sample_id", drop=False)
+samples = samples_df.set_index(["study", "sample_id"], drop=False)
 
 validate(samples, "resources/schemas/samplesheet_schema.yaml")
 
