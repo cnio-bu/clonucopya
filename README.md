@@ -126,18 +126,18 @@ comparative analysis (read [Main applications](#main-applications) section for f
 │   ├── tree.nwk
 │   └── tree_table.tsv
 ├── pvi_vep_prep
-│   └── {study}_cluster_*.tsv
+│   └── {study}_clone_*.tsv
 ├── vep_annotation/
 │   ├── annotations/
-│   │   └── {study}_cluster_*.vcf
+│   │   └── {study}_clone_*.vcf
 │   └── stats/ 
-│       └── {study}_cluster_*_summary.html
+│       └── {study}_clone_*_summary.html
 ├── query_pandrugs/
 │   └── cluster_*/
-│       ├── {study}_cluster_*_computation.tsv
-│       ├── {study}_cluster_*_vscore.vcf
-│       ├── {study}_cluster_*_gene-drug.json
-│       └── {study}_cluster_*_gene-drug.csv
+│       ├── {study}_clone_*_computation.tsv
+│       ├── {study}_clone_*_vscore.vcf
+│       ├── {study}_clone_*_gene-drug.json
+│       └── {study}_clone_*_gene-drug.csv
 └── report/
     ├── {study}_report.pdf
     └── components/
@@ -210,19 +210,20 @@ comparative analysis (read [Main applications](#main-applications) section for f
 │   └── {study}_cluster_*.tsv
 ├── vep_annotation/
 │   ├── annotations/
-│   │   └── {study}_cluster_*.vcf
+│   │   └── {study}_clone_*.vcf
 │   └── stats/ 
-│       └── {study}_cluster_*_summary.html
+│       └── {study}_clone_*_summary.html
 ├── query_pandrugs/
 │   └── cluster_*/
-│       ├── {study}_cluster_*_computation.tsv
-│       ├── {study}_cluster_*_vscore.vcf
-│       ├── {study}_cluster_*_gene-drug.json
-│       └── {study}_cluster_*_gene-drug.csv
+│       ├── {study}_clone_*_computation.tsv
+│       ├── {study}_clone_*_vscore.vcf
+│       ├── {study}_clone_*_gene-drug.json
+│       └── {study}_clone_*_gene-drug.csv
 └── report/
     ├── {study}_report.pdf
     └── components/
         ├── clonal_tree.png
+        ├── clonal_histogram.png
         ├── drug_prioritization_wf2.tsv
         ├── drug_summary_wf2.tsv
         ├── gene_alterations_wf2.tsv
