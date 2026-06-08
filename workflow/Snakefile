@@ -29,7 +29,7 @@ print("Sample-Study pairs:", sample_study_pairs)
 
 # Check files exist
 missing_files = samples_df[~samples_df["mutations"].apply(os.path.exists) | 
-                          ~samples_df["cnvs"].apply(os.path.exists)]
+                          ~samples_df["cnas"].apply(os.path.exists)]
 if not missing_files.empty:
     raise FileNotFoundError(f"Missing input files in the samplesheet:\n{missing_files}")
 
@@ -49,6 +49,7 @@ rule all:
         expand("results/{study}/report/components/spheres_of_clones/{sample}_sphere_of_clones.png", zip, study=samples_df["study"], sample=samples_df["sample_id"]),
         expand("results/{study}/report/components/vaf_heatmaps/sampled/{sample}_sampled_vaf_heatmap.png", zip, study=samples_df["study"], sample=samples_df["sample_id"]),
         expand("results/{study}/report/components/gene_alterations.tsv", study=samples_df["study"].unique()),
+        expand("results/{study}/report/components/clonal_histogram.png", study=samples_df["study"].unique()),
         expand("results/{study}/report/{study}_report.pdf", study=samples_df["study"].unique())
 
 
@@ -76,7 +77,7 @@ include: "rules/mut_vep_prep.smk"
 include: "rules/get_vep_cache.smk"
 
 
-# VEP ANNOTATION PER CLUSTER
+# VEP ANNOTATION PER CLONE
 
 include: "rules/vep_annotation.smk"
 
@@ -86,7 +87,7 @@ include: "rules/vep_annotation.smk"
 include: "rules/query_pandrugs.smk"
 
 
-# BUILD SUBCLONAL TREE
+# BUILD CLONAL TREE
 
 include: "rules/phyclone.smk"
 
