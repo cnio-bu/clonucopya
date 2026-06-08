@@ -1,4 +1,4 @@
-# Clonucopya hands-on tutorial
+# Hands-on tutorial
 In this tutorial, we present an step-by-step guide to run Clonucopya with sample data obtained from Pyclone-VI supplementary files, specifically from Dream Challenge dataset (ICGC-TCGA DREAM Somatic Mutation Calling – Tumor Heterogeneity (SMC-Het) Challenge). For this demonstration, we will perform an study we sample P3. To lauch the analysis, there are a paired SNV (data/P3.vcf) and CNA (data/P3.txt) variant calling obtained from Mutec and Battemberg, repectively. 
 
 ## Installation
