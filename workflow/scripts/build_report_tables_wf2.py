@@ -37,14 +37,10 @@ def build_gene_alterations(tree_df, pandrugs_dir, out_dir):
     
     # Remove outlier clone
     phy_df = phy_df[phy_df["clone_id"] != -1]    
-
-    # Obtain cluter-clone equivalences
-    phy_clones = phy_df[['clone_id', 'cluster_id']].drop_duplicates()
-    cluster_to_clone = dict(zip(phy_clones['cluster_id'], phy_clones['clone_id']))
     
     
     # Obtain relevant information about gene alterations fed to Pandrugs
-    vscore_path = f"{pandrugs_dir}/cluster_*/*_vscore.vcf"
+    vscore_path = f"{pandrugs_dir}/clone_*/*_vscore.vcf"
     
     # Search all files that match the vscore pattern
     vscore_files = glob.glob(vscore_path)
@@ -55,20 +51,19 @@ def build_gene_alterations(tree_df, pandrugs_dir, out_dir):
     for file in vscore_files:
         file_name = os.path.basename(file)
 
-        # Pass cluster -1 (outlier)
-        if "cluster_-1" in file_name:
+        # Pass clone -1 (outlier)
+        if "clone_-1" in file_name:
             continue
 
-        match = re.search(r'cluster_(\d+)', file_name)
+        match = re.search(r'clone_(-?\d+)', file)
         if match:
-            cluster = int(match.group(1))
+            clone = int(match.group(1))
         else:
-            raise ValueError(f"No cluster number found in filename: {file_name}")
-        clone = cluster_to_clone[cluster]
+            raise ValueError(f"No clone number found in filename: {file_name}")
         
         sample_df = pd.read_table(file)
         
-        subset_df = sample_df[['ID', 'gene_hgnc', 'gene', 'consequence', 'impact']]
+        subset_df = sample_df[['ID', 'gene_hgnc', 'gene', 'consequence', 'impact']].copy()
         
         subset_df['clone_id'] = clone
     
@@ -114,7 +109,7 @@ def build_drug_prioritization(gene_alterations, pandrugs_dir, out_dir):
     """
 
     # Search all files that match the gene-drug file pattern
-    gd_path = f"{pandrugs_dir}/cluster_*/*_gene-drug.csv"
+    gd_path = f"{pandrugs_dir}/clone_*/*_gene-drug.csv"
     
     # Globbing the pattern
     gd_files = glob.glob(gd_path)

@@ -25,7 +25,7 @@ def pandrugs_query(vep_vcf,output_dir):
     """
 
     if os.path.exists(vep_vcf):
-        os.makedirs(output_dir, exist_ok=True)
+#        os.makedirs(output_dir, exist_ok=True)
         sample_id = os.path.splitext(os.path.basename(vep_vcf))[0]
         dict_computations = {}
 
@@ -113,6 +113,7 @@ def pandrugs_query(vep_vcf,output_dir):
 
                 filename = os.path.join(output_dir,  f"{sample_id}_vscore.vcf")
                 print('      Download of the VScore file --> {}'.format(filename))
+                os.makedirs(output_dir, exist_ok=True)
                 f_output = open(filename, 'wb').write(r.content)
 
                 # GET - drug-gene

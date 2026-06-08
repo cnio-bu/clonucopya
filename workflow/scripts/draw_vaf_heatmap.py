@@ -41,14 +41,13 @@ def even_distribution_tolerant(df_heatmap, n_samples=100):
 
 
 
-def build_heatmap_df(tree_df, pvi_out, mut_dir, gene_alterations):
+def build_heatmap_df(tree_df, mut_dir, gene_alterations):
 
     """
     Build Daframe for VAF Heatmap, one per sample.
 
     Args:
         tree_df (str): Path to the phyclone TSV output
-        pvi_out (str): Path to the pyclone-vi TSV output
         mut_dir (str): Path to the files from mutation_prep study.
         gene_alterations (str): Path to the gene alterations file of the study
 
@@ -65,21 +64,22 @@ def build_heatmap_df(tree_df, pvi_out, mut_dir, gene_alterations):
     phy_df = phy_df[phy_df["clone_id"] != -1] 
 
     # Obtain cluter-clone equivalences
-    phy_clones = phy_df[['clone_id', 'cluster_id']].drop_duplicates()
-    cluster_to_clone = dict(zip(phy_clones['cluster_id'], phy_clones['clone_id']))
+ #   phy_clones = phy_df[['clone_id', 'cluster_id']].drop_duplicates()
+  #  cluster_to_clone = dict(zip(phy_clones['cluster_id'], phy_clones['clone_id']))
     
     # PYCLONE-VI INFO
     # Load Pyclone-VI output
-    try:
-        pvi_df = pd.read_table(pvi_out)
-    except Exception as e:
-        raise ValueError(f"Error reading Pyclone-VI file: {e}")
+   # try:
+  #      pvi_df = pd.read_table(pvi_out)
+ #   except Exception as e:
+#        raise ValueError(f"Error reading Pyclone-VI file: {e}")
     
     # Subset Pyclone-VI dataframe by samples
-    pvi_dict = {sample_id: sub_df for sample_id, sub_df in pvi_df.groupby('sample_id')}
+    #pvi_dict = {sample_id: sub_df for sample_id, sub_df in pvi_df.groupby('sample_id')}
+    phy_dict = {sample_id: sub_df for sample_id, sub_df in phy_df.groupby('sample_id')}
     
     # Track all possible mutations that have been taken into account in Pyclone-VI inference
-    all_muts = pvi_df[['mutation_id']].drop_duplicates()
+    all_muts = phy_df[['mutation_id']].drop_duplicates()
     all_muts_list = all_muts['mutation_id'].tolist()
     
     
@@ -117,10 +117,10 @@ def build_heatmap_df(tree_df, pvi_out, mut_dir, gene_alterations):
     
     for sample_id in mut_dict:
         merged = mut_dict[sample_id][['mutation_id', 'VAF']].merge(
-            pvi_dict[sample_id][['mutation_id', 'cluster_id']],
+            phy_dict[sample_id][['mutation_id', 'clone_id']],
             on='mutation_id',
             how='inner')
-        heatmap_dict[sample_id] = merged[['mutation_id', 'cluster_id', 'VAF']]
+        heatmap_dict[sample_id] = merged[['mutation_id', 'clone_id', 'VAF']]
     
     
     # FORMAT DATAFRAMES AND INPUT VALUES
@@ -129,8 +129,8 @@ def build_heatmap_df(tree_df, pvi_out, mut_dir, gene_alterations):
     
         # Reshape dataframe and input NA values with 0
         df = heatmap_dict[sample_id]
-        pivoted = df.pivot(index='mutation_id', columns='cluster_id', values='VAF')
-        pivoted.columns = [cluster for cluster in pivoted.columns]
+        pivoted = df.pivot(index='mutation_id', columns='clone_id', values='VAF')
+        pivoted.columns = [clone for clone in pivoted.columns]
         pivoted = pivoted.fillna(0)
         
         # Add mutations that are absent in each sample and reindex
@@ -176,14 +176,14 @@ def build_heatmap_df(tree_df, pvi_out, mut_dir, gene_alterations):
 
         
         # Transform cluster to clones
-        df_renamed = mut_gene_idx_df.rename(columns=cluster_to_clone)
+        #df_renamed = mut_gene_idx_df.rename(columns=cluster_to_clone)
     
         # Reorder clones. Sometimes, clusters and clones dont have the same order
-        ordered_cols = sorted(df_renamed.columns)
+        ordered_cols = sorted(mut_gene_idx_df.columns)
     
         # Update original dataframes
-        heatmap_dict[sample_id] = df_renamed[ordered_cols]
-        heatmap_dict_sampled[sample_id] = even_distribution_tolerant(df_renamed[ordered_cols])
+        heatmap_dict[sample_id] = mut_gene_idx_df[ordered_cols]
+        heatmap_dict_sampled[sample_id] = even_distribution_tolerant(mut_gene_idx_df[ordered_cols])
 
     heatmap_data = {
         'complete': heatmap_dict,
@@ -254,7 +254,7 @@ def plot_heatmaps(heatmap_dicts, out_dir):
 if __name__ == '__main__':
     input_parser = argparse.ArgumentParser()
     input_parser.add_argument("--tree_df", action='store', required=True)
-    input_parser.add_argument("--pvi_out", action='store', required=True)
+#    input_parser.add_argument("--pvi_out", action='store', required=True)
     input_parser.add_argument("--mut_dir", action='store', required=True)
     input_parser.add_argument("--gene_alterations", action='store', required=True)
     input_parser.add_argument("--out_dir", action='store', required=True)
@@ -263,5 +263,5 @@ if __name__ == '__main__':
     args = input_parser.parse_args()
 
 
-    heatmap_data = build_heatmap_df(args.tree_df, args.pvi_out, args.mut_dir, args.gene_alterations)
+    heatmap_data = build_heatmap_df(args.tree_df, args.mut_dir, args.gene_alterations)
     plot_heatmaps(heatmap_data, args.out_dir)

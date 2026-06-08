@@ -59,12 +59,10 @@ def process_vcf_mutations(input_vcf, just_snv, output_file, sample):
 
     #Load VCF (skip comment lines)
     try:
-#        mut_vcf = pd.read_csv(
-#            input_vcf, sep='\t', comment='#', header=None,
-#            usecols=range(len(fixed_cols) + len(sample_cols))
-#        )
-        # Only use columns matching the header
-#        mut_vcf = mut_vcf.iloc[:, :len(vcf_cols)]
+        mut_vcf = pd.read_csv(
+            input_vcf, sep='\t', comment='#', header=None,
+            usecols=range(len(vcf_cols))
+        )
         mut_vcf.columns = vcf_cols
     except Exception as e:
         raise ValueError(f"Error reading VCF file: {e}")
@@ -100,10 +98,6 @@ def process_vcf_mutations(input_vcf, just_snv, output_file, sample):
         for vaf_field in ['FA', 'AF', 'VAF', 'FREQ']:
             vaf_raw = extract_format_field(
                 mut_vcf_filt['_genotype'], mut_vcf_filt['_format'], vaf_field)
-            # Some callers express FREQ as "33.33%"
-#            vaf_parsed = pd.to_numeric(
-#                vaf_raw.astype(str).str.rstrip('%').replace('NA', pd.NA),
-#                errors='coerce')
             vaf_parsed = pd.to_numeric(vaf_raw.astype(str).str.rstrip('%'), errors='coerce')
             if vaf_parsed.notna().any():
                 # Normalize percentage to fraction if needed

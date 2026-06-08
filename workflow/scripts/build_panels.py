@@ -28,7 +28,7 @@ def get_study_panels(study, samplesheet, mut_dir, intersect_combined, out_file):
     except Exception as e:
         raise ValueError(f"Error reading samplesheet file: {e}")
 
-    study_filt = sheet.loc[sheet['study'] == study, ['sample_id', 'sex', 'tumour_content', 'cnvs']]
+    study_filt = sheet.loc[sheet['study'] == study, ['sample_id', 'sex', 'tumour_content', 'cnas']]
     samplesheet_stats = study_filt[['sample_id', 'sex', 'tumour_content']]
 
 
@@ -58,13 +58,13 @@ def get_study_panels(study, samplesheet, mut_dir, intersect_combined, out_file):
 
 
     # COUNT CNVS
-    cnvs = study_filt[['sample_id', 'cnvs']]
+    cnas = study_filt[['sample_id', 'cnas']]
     try:
-        cnv_df = pd.DataFrame(
-           [(sampleid, pd.read_table(file).shape[0]) for sampleid, file in cnvs.values],
-           columns=['sample_id', 'cnvs'])
+        cna_df = pd.DataFrame(
+           [(sampleid, pd.read_table(file).shape[0]) for sampleid, file in cnas.values],
+           columns=['sample_id', 'cnas'])
     except Exception as e:
-        raise ValueError(f"Error reading cnv file of sample {sampleid} of study {study}: {e}")
+        raise ValueError(f"Error reading cna file of sample {sampleid} of study {study}: {e}")
         
     # COUNT INTERSECTS
     try:
@@ -78,7 +78,7 @@ def get_study_panels(study, samplesheet, mut_dir, intersect_combined, out_file):
 
     panel = (samplesheet_stats
              .merge(mut_df, on='sample_id', how='inner')
-             .merge(cnv_df, on='sample_id', how='inner')
+             .merge(cna_df, on='sample_id', how='inner')
              .merge(intersect_counts, on='sample_id', how='inner'))
 
     
