@@ -30,7 +30,7 @@ The CNA file is straight from Battemberg output, so a light preprocessing is req
 Clonucopya provides a few script to format CNA calling output for caller such as Battemberg, ascat3 or Facets. If your file does not meet none of those format, you can custom the script to suit your case. In this example, we will use the Battemberg preprocessing script `workflow/scripts/process_cna_battemberg.py` as follows:
 
 ```python
-python workflow/scripts/process_cna_battemberg.py --input_file tutorial/data/P3.txt --output_file tutorial/data/P3_cna.tsv
+python workflow/scripts/process_cna_battemberg.py --input_file tutorial/test/P3.txt --output_file tutorial/test/P3_cna.tsv
 ```
 
 ## Settings
@@ -54,7 +54,7 @@ The we have to set following parameters at config.yaml:
 We need to fill the csv file which has the following format:
 | study 	| sample_id     	| sex       	| mutations 	| cnas 	| tumour_content 	|
 |-------	|-----------	|-----------	|----------	|----------	|-----------	|
-| dream_P3  	| tumour 	| female 	| ../tutorial/data/P3.vcf        	| tutorial/data/P3_cna.tsv        	| 0.85         	|
+| dream_P3  	| tumour 	| female 	| ../tutorial/test/P3.vcf        	| tutorial/test/P3_cna.tsv        	| 0.85         	|
 
 
 ## Execution
