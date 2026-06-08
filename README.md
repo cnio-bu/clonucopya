@@ -133,7 +133,7 @@ comparative analysis (read [Main applications](#main-applications) section for f
 │   └── stats/ 
 │       └── {study}_clone_*_summary.html
 ├── query_pandrugs/
-│   └── cluster_*/
+│   └── clone_*/
 │       ├── {study}_clone_*_computation.tsv
 │       ├── {study}_clone_*_vscore.vcf
 │       ├── {study}_clone_*_gene-drug.json
@@ -144,6 +144,7 @@ comparative analysis (read [Main applications](#main-applications) section for f
         ├── clonal_tree.png
         ├── drug_prioritization.tsv
         ├── drug_summary.tsv
+        ├── clonal_histogram.png
         ├── gene_alterations.tsv
         ├── report_panel.tsv
         ├── spheres_of_clones/
@@ -207,14 +208,14 @@ comparative analysis (read [Main applications](#main-applications) section for f
 │   ├── tree.nwk
 │   └── tree_table.tsv
 ├── pvi_vep_prep
-│   └── {study}_cluster_*.tsv
+│   └── {study}_clone_*.tsv
 ├── vep_annotation/
 │   ├── annotations/
 │   │   └── {study}_clone_*.vcf
 │   └── stats/ 
 │       └── {study}_clone_*_summary.html
 ├── query_pandrugs/
-│   └── cluster_*/
+│   └── clone_*/
 │       ├── {study}_clone_*_computation.tsv
 │       ├── {study}_clone_*_vscore.vcf
 │       ├── {study}_clone_*_gene-drug.json
