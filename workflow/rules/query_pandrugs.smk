@@ -15,10 +15,13 @@ rule query_pandrugs:
     shell:
         """
         for clone in {input.vep_dir}/*.vcf; do
-            clone_id=$(basename $clone | grep -o 'cluster_-*[0-9]\+')
+            clone_id=$(basename "$clone" | grep -oE 'clone_-*[0-9]+')
             mkdir -p {output.pandrugs_dir}/"$clone_id"  
             python scripts/query_pandrugs.py \
                        --vep_vcf $clone \
                        --out_dir {output.pandrugs_dir}/"$clone_id" > {log} 2>&1
         done
         """
+
+
+#            clone_id=$(basename $clone | grep -o 'cluster_-*[0-9]\+')
