@@ -1,6 +1,6 @@
 rule vep_annotation:
     input:
-        pvi_prep="results/{study}/mut_vep_prep"
+        vep_prep="results/{study}/mut_vep_prep"
     output:
         stats=directory("results/{study}/vep_annotation/stats"),
         annotations=directory("results/{study}/vep_annotation/annotations"),
@@ -19,7 +19,7 @@ rule vep_annotation:
         """
         mkdir -p {output.annotations} {output.stats}
 
-        for clone in {input.pvi_prep}/*; do
+        for clone in {input.vep_prep}/*; do
 
         vcf_file=$(echo $clone | sed 's/\.tsv$/.vcf/' | xargs basename -a)
         stat_file=$(echo $clone | sed 's/\.tsv$/_summary.html/' | xargs basename -a)
