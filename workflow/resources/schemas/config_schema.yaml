@@ -8,13 +8,13 @@ properties:
     pattern: ".+\\.csv$"
     description: Path to samplesheet CSV file
 
-  bam_files:
-    type: string
-    description: Path to the directory where indexed bam files are placed
-
   bam_check:
     type: boolean
     description: Whether to check mutation positions with bam files or not (True/False)
+
+  bam_files:
+    type: string
+    description: Path to the directory where indexed bam files are placed
 
   just_snv:
     type: boolean
