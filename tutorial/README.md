@@ -3,6 +3,7 @@ In this tutorial, we present an step-by-step guide to run Clonucopya with sample
 
 **P3.vcf**
 - File type: Simulated VCF (Variant Call Format) file containing genomic variants generated for testing purposes.
+- Size: 184 Kb.
 - Reference genome: GRCh38/hg38.
 - Samples included: One tumour sample.
 - Variant content: 1647 SNVs.
@@ -10,6 +11,7 @@ In this tutorial, we present an step-by-step guide to run Clonucopya with sample
 
 **P3.txt**
 - File type: Simulated CNA calling (Copy Number Aberration) file containing genomic variants generated for testing purposes.
+- Size: 19 Kb.
 - Reference genome: GRCh38/hg38.
 - Samples included: One tumour sample.
 - Variant content: 29 CNAs.
