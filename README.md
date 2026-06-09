@@ -4,7 +4,7 @@
 
 Cancer heterogeneity presents significant challenges in developing antitumoral effective treatments, as diverse clonal and subclonal populations can exhibit varied therapeutic responses. While advanced sequencing technologies enable detailed tumor genomic alterations characterization, translating subclonal inference analyses into clinical applications remains challenging. Here we present Clonucopya, a comprehensive snakemake workflow that bridges this gap by combining subclonal inference algorithms with silico drug prioritization. Using whole-genome or whole-exome sequencing data, Clonucopya reconstructs clonal and subclonal evolutionary trees of tumor cells also identifying FDA/EMA approved and candidate drugs targeting the specific genomic alterations within each population. The software offers easy configuration, detailed tables of drug response results associated with tumor clonality, clonality plots and intuitive reports integrating tumor heterogeneity and anticancer drug treatments. This integrated approach enables the design of therapeutic strategies that effectively target tumor clonality, guiding the selection of personalized therapies and providing an accessible tool that translates clonality data into actionable clinical insights for precision oncology.
 
-<img src="./.img/graphical_abstract_V3.png" width="900">
+<img src="./.img/graphical_abstract.png" width="900">
 
 
 # Workflow overview
