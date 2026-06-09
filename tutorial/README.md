@@ -1,5 +1,20 @@
 # Hands-on tutorial
-In this tutorial, we present an step-by-step guide to run Clonucopya with sample data obtained from Pyclone-VI supplementary files, specifically from Dream Challenge dataset (ICGC-TCGA DREAM Somatic Mutation Calling – Tumor Heterogeneity (SMC-Het) Challenge). For this demonstration, we will perform an study we sample P3. To lauch the analysis, there are a paired SNV (data/P3.vcf) and CNA (data/P3.txt) variant calling obtained from Mutec and Battemberg, repectively. 
+In this tutorial, we present an step-by-step guide to run Clonucopya with sample data obtained from [Pyclone_VI](https://zenodo.org/record/4268826) supplementary files, specifically from Dream Challenge dataset (ICGC-TCGA DREAM Somatic Mutation Calling – Tumor Heterogeneity (SMC-Het) Challenge). For this demonstration, we will perform an study we sample P3. To lauch the analysis, there are a paired SNV (data/P3.vcf) and CNA (data/P3.txt) variant calling obtained from Mutec and Battemberg, repectively. These files have the following features:
+
+**P3.vcf**
+- File type: Simulated VCF (Variant Call Format) file containing genomic variants generated for testing purposes.
+- Reference genome: GRCh38/hg38.
+- Samples included: One tumour sample.
+- Variant content: 1647 SNVs.
+- Available information: For each variant, the VCF provides genomic position, reference and alternative alleles, and sample-level metrics such as genotype, read depth, and variant allele - frequency, which are used in downstream analyses.
+
+**P3.txt**
+- File type: Simulated CNA calling (Copy Number Aberration) file containing genomic variants generated for testing purposes.
+- Reference genome: GRCh38/hg38.
+- Samples included: One tumour sample.
+- Variant content: 29 CNAs.
+- Available information: For each variant, the VCF provides chromosome, start position, end position, major copy number, ninor Copy Number, and other calling-realted information.
+
 
 ## Installation
 
