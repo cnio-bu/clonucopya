@@ -29,7 +29,7 @@ Clonucopya is a snakemake workflow that combines the clone inference of Pyclone-
 * Enable evolutionary-informed precision oncology analyses.
 
 
-# Installation:
+# Installation
 
 ```bash
 # Clone Clonucopya repository
@@ -247,7 +247,6 @@ comparative analysis (read [Main applications](#main-applications) section for f
 > Be carefull with the name of the config and samplesheet file. Remove the suffix '_template' or change the name at the snakefile pvi-start or Snakefile (full-set mode). 
 
 
-Clonucopya Frequently Asked Questions (FAQs) is available [here](https://github.com/cnio-bu/clonucopya/tree/main/FAQs).
 
 # Authors
 
@@ -255,3 +254,10 @@ Clonucopya Frequently Asked Questions (FAQs) is available [here](https://github.
 * Carlos León-Ramos
 * Gonzalo Gómez-López
 * Fátima Al-Shahrour
+
+
+# Support
+
+a) If you have any questions regarding the use of Clonucopya, feel free to submit an [issue](https://github.com/cnio-bu/clonucopya/issues).
+b) Clonucopya Frequently Asked Questions (FAQs) is available [here](https://github.com/cnio-bu/clonucopya/tree/main/FAQs).
+
