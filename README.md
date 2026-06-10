@@ -258,6 +258,6 @@ comparative analysis (read [Main applications](#main-applications) section for f
 
 # Support
 
-- a) If you have any questions regarding the use of Clonucopya, feel free to submit an [issue](https://github.com/cnio-bu/clonucopya/issues).
-- b) Clonucopya Frequently Asked Questions (FAQs) is available [here](https://github.com/cnio-bu/clonucopya/tree/main/FAQs).
+1. If you have any questions regarding the use of Clonucopya, feel free to submit an [issue](https://github.com/cnio-bu/clonucopya/issues).
+2. Clonucopya Frequently Asked Questions (FAQs) is available [here](https://github.com/cnio-bu/clonucopya/tree/main/FAQs).
 
