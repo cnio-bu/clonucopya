@@ -249,7 +249,6 @@ Clonucopya Frequently Asked Questions (FAQs) is available [here](https://github.
 # Authors
 
 * Guillermo Sánchez-Cid
-* Gonzalo Gómez-López
 * Carlos León-Ramos
-* Ester Arroba
+* Gonzalo Gómez-López
 * Fátima Al-Shahrour
