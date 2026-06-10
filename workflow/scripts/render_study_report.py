@@ -127,6 +127,8 @@ def prepare_report_data(study_path):
     
     # Absolute paths to images
     clonal_tree_image = os.path.abspath(str(components_path / "clonal_tree.png"))
+
+    clonal_histogram_image = os.path.abspath(str(components_path / "clonal_histogram.png"))
     
     clonal_proportions_images = {}
     clone_alterations_images = {}
@@ -173,6 +175,7 @@ def prepare_report_data(study_path):
         'gene_alterations_df': gene_alterations_top,
         'drug_prioritization_df': drugs_df_compact,
         'clonal_tree_image': clonal_tree_image,
+        'clonal_histogram_image': clonal_histogram_image,
         'clonal_proportions_images': clonal_proportions_images,
         'clone_alterations_images': clone_alterations_images
     }
@@ -191,6 +194,7 @@ def render_report_to_pdf(study_path, output_path, template_path="template.html",
     panels_path = components_path / "report_panel.tsv"
     drug_summary_path = components_path / "drug_summary.tsv"
     clonal_tree_path = components_path / "clonal_tree.png"
+    clonal_histogram_path = components_path / "clonal_histogram.png"
     spheres_path = components_path / "spheres_of_clones" / "{sample_id}_sphere_of_clones.png"
     heatmaps_path = components_path / "vaf_heatmaps" / "sampled" / "{sample_id}_sampled_vaf_heatmap.png"
     gene_alterations_path = components_path / "gene_alterations.tsv"
@@ -256,6 +260,7 @@ def render_report_to_pdf(study_path, output_path, template_path="template.html",
         'gene_alterations_df': data['gene_alterations_df'],
         'drug_prioritization_df': data['drug_prioritization_df'],
         'clonal_proportions_images': data['clonal_proportions_images'],
+        'clonal_histogram_image': data['clonal_histogram_image'],
         'clone_alterations_images': data['clone_alterations_images'],
 
             'drug_summary_description': f"""
@@ -273,9 +278,10 @@ def render_report_to_pdf(study_path, output_path, template_path="template.html",
                 'title': 'Clonal Tree',
                 'description': f"""
                 <p>The tree is inferred using Phyclone from Pyclone-VI results. Pyclone-VI results provide an initial clustering of the clones but have no order, so they do not follow an established phylogeny.</p>
-                <p>The source files are available at: {clonal_tree_path}.</p>
+                <p>The source files are available at: {clonal_tree_path} and {clonal_histogram_path}.</p>
                 """,
-                'image': data['clonal_tree_image']
+            'image': data['clonal_tree_image'],
+            'clonal_histogram': data['clonal_histogram_image']
             },
             'clonal_proportions': {
                 'title': 'Clonal Proportions',

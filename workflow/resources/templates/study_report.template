@@ -466,18 +466,18 @@
     <p>{{ comparison_section.description }}</p>
 
     <div>
-        <h3>{{ comparison_section.subclonal_tree.title }}</h3>
-        <p>{{ comparison_section.subclonal_tree.description }}</p>
-        <div style="text-align: center; margin: 20px 0;">
-            {% if comparison_section.subclonal_tree.image %}
-            <img src="file://{{ comparison_section.subclonal_tree.image }}" alt="Subclonal Tree" style="max-width:600px;">
-            {% else %}
-            <div style="border: 1px solid #ccc; padding: 20px; background-color: #f9f9f9;">
-                Subclonal Tree Image Not Available
-            </div>
-            {% endif %}
-        </div>
+    <h3>{{ comparison_section.subclonal_tree.title }}</h3>
+    <p>{{ comparison_section.subclonal_tree.description }}</p>
+    <div style="text-align: center; margin: 20px 0;">
+        {% if comparison_section.subclonal_tree.image %}
+        <img src="file://{{ comparison_section.subclonal_tree.image }}" alt="Subclonal Tree" style="max-width:600px;">
+        {% endif %}
+
+        {% if comparison_section.subclonal_tree.clonal_histogram %}
+        <img src="file://{{ comparison_section.subclonal_tree.clonal_histogram }}" alt="Clonal Histogram" style="max-width:600px;">
+        {% endif %}
     </div>
+</div>
 
 <div>
     <h3>{{ comparison_section.clonal_proportions.title }}</h3>

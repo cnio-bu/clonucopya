@@ -19,6 +19,7 @@ rule render_report:
         report_panel        = "results/{study}/report/components/report_panel.tsv",
         drug_summary        = "results/{study}/report/components/drug_summary.tsv",
         clonal_tree         = "results/{study}/report/components/clonal_tree.png",
+        clonal_histogram    = "results/{study}/report/components/clonal_histogram.png",
         spheres_of_clones   = get_spheres_files,
         vaf_heatmaps        = get_heatmap_files,
         gene_alterations    = "results/{study}/report/components/gene_alterations.tsv",
