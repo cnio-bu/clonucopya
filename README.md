@@ -243,6 +243,9 @@ comparative analysis (read [Main applications](#main-applications) section for f
 > Clonucopya is set to run full-set mode by default unless you specify the option `-s pvi-start` in the snakemake commnand.
 > Be carefull with the name of the config and samplesheet file. Remove the suffix '_template' or change the name at the snakefile pvi-start or Snakefile (full-set mode). 
 
+
+Clonucopya Frequently Asked Questions (FAQs) is available [here](https://github.com/cnio-bu/clonucopya/tree/main/FAQs).
+
 # Authors
 
 * Guillermo Sánchez-Cid
