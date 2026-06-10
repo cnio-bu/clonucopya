@@ -15,7 +15,7 @@ The workflow is designed primarily for bioinformaticians running the analysis, b
 Clonucopya is available as open-source software under a GPL-3.0 license at [https://github.com/cnio-bu/clonucopya](https://github.com/cnio-bu/clonucopya), including full documentation and step-by-step tutorials.
 
 **Who developed Clonucopya?**  
-Clonucopya was developed by the Bioinformatics Unit at the Spanish National Cancer Research Centre (CNIO), Madrid, Spain. Contact: falshahrour@cnio.es.
+Clonucopya was developed by the Bioinformatics Unit at the Spanish National Cancer Research Centre (CNIO), Madrid, Spain. Contact: falshahrour [at] cnio [dot] es.
 
 ## Input Files
 
