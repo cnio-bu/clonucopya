@@ -54,7 +54,7 @@ python workflow/scripts/process_cna_battemberg.py --input_file tutorial/test/P3.
 
 Once we have the sample files ready to execute clonucopya, config file (config/config_template.yaml) and samplesheet (config/samplesheet_template.csv) must be set up. 
 
-> We recommend to set the absolute path when a file or directory file is asked to avoid confussions. However, for the sake of this tutorial, we will set relative paths to simplify the explanation.
+> We recommend to set the absolute path when a file or directory is asked to avoid confussions. However, for the sake of this tutorial, we will set relative paths to simplify the explanation.
 
 ### Config file
 
