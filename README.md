@@ -168,7 +168,7 @@ Once the workflow has been downloaded, and the conda environment is ready, the p
 * pvi-start_samplesheet.csv: there is a pvi-start_samplesheet.csv available at config directory. The path to the samplesheet must be set in the config.yaml. 
 * pvi-start_config.yaml: there is a pvi-start_config_template.yaml available at config directory. Please change the name to config.yaml or use the name you desire at workflow/Snakefile. 
 
-> Generate your own seed for config.yaml as explained at [Full-Set mode](##full-set-mode). 
+> Generate your own seed for config.yaml as explained at [Full-Set mode](#full-set-mode). 
 
 ### Run Clonucopya
 
