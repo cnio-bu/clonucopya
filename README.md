@@ -72,7 +72,8 @@ Example:
 | chr1  	| 109367944 	| 109371874 	| 1        	| 0        	| 2         	|
 
 
-> Tip: to facilitate this step, there are a couple of scripts at `workflow/scripts` to carry out this task for facets and ascat3 output.
+> [!TIP]
+> To facilitate this step, there are a couple of scripts at `workflow/scripts` to carry out this task for facets and ascat3 output.
 
 
 ### Configure workflow
@@ -108,6 +109,7 @@ cd workflow/
 sbatch -p long -e error.txt -c 8 --mem=32G -t1200 --wrap "snakemake --executor slurm --software-deployment-method conda -j unlimited --cache"
 ```
 
+> [!NOTE]
 > First successful execution will last over 7-8 hours. VEP's reference needs to be cached.
 
 
