@@ -45,6 +45,10 @@ conda activate clonucopya
 mamba install snakemake apptainer snakemake-executor-plugin-slurm
 ```
 
+> [!IMPORTANT]
+> Software versions are listed at the [environment files](https://github.com/cnio-bu/clonucopya/tree/main/workflow/envs). 
+> Tested with: Python v3.12.8, Snakemake v9.20.0, PyClone-VI v0.1.6, PhyClone v0.7.0,and Ensembl VEP v113.3.
+
 # Usage
 
 ## Full-Set mode
