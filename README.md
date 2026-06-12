@@ -53,6 +53,10 @@ mamba install snakemake apptainer snakemake-executor-plugin-slurm
 
 ## Full-Set mode
 
+This execution mode uses all available workflow resources and options. It allows you to provide paired SNV and CNV calling files for each sample, along with the corresponding BAM files (optional) to enrich reference and alternative allele counts. This is particularly useful for samples lacking significant evidence of mutation at positions where mutations are detected in other samples. An indel filtering option is also included.
+
+> The SNV and CNA calling files used as input for the full-set execution mode should be pre-filtered according to user-defined criteria or the established standards of the relevant research field.
+
 ### CNA Preprocessing
 
 Due to the fact that there are many CNA callers, there are as many as output formats of called CNAs. So that, before running Clonucopya, you must make sure your CNAs has the propper format to use them as input. The expected format is a TSV file with the following columns:
