@@ -44,10 +44,15 @@ def create_pyclone_vi_input(sample_id, mutations_file, cna_file, output_file):
                     'minor_cn': int(cna_row['minor_cn']),
                     'normal_cn': int(cna_row['normal_cn'])
                 })
-
     
-    # Convert dictionary to dataframe and save it
+    
+    # Convert dictionary to dataframe
     output = pd.DataFrame(result)
+    
+    # Remove mutations wit major CN equals to 0
+    output = output[output["major_cn"] != 0]
+    
+    # Save interesect
     output.to_csv(output_file, sep='\t', index=False)
 
 
