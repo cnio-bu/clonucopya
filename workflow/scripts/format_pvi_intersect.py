@@ -27,8 +27,6 @@ def format_intersect(intersect_list, samplesheet, pvi_prep):
     # Drop artifactual duplicates
     combined_pvi_dedup = combined_pvi.drop_duplicates()
 
-    # Add mock mutations
-
     ## Scan available mutations
     mutations = set(combined_pvi_dedup['mutation_id'].unique())
     samples = set(combined_pvi_dedup['sample_id'].unique())
@@ -49,7 +47,7 @@ def format_intersect(intersect_list, samplesheet, pvi_prep):
     samplesheet = pd.read_csv(samplesheet)
     tumour_content_dict = dict(zip(samplesheet['sample_id'], samplesheet['tumour_content']))
     combined_pvi_dedup['tumour_content'] = combined_pvi_dedup['sample_id'].map(tumour_content_dict)
-
+    
     # Save pyclone-vi formatted intersect df
     combined_pvi_dedup.to_csv(pvi_prep, sep='\t', index=False)
 
