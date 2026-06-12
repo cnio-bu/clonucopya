@@ -171,6 +171,8 @@ comparative analysis (read [Main applications](#main-applications) section for f
 
 ## Pyclone-VI Start mode
 
+The PVI-start execution mode provides a streamlined alternative that begins with input data already formatted for PyClone-VI. This mode is designed to facilitate the reuse of samples previously analyzed by the user with PyClone-VI, while extending the analysis through Clonucopya. Specifically, Clonucopya reconstructs the phylogenetic tree, annotates variants, and performs candidate drug prioritization based on available clinical evidence.
+
 ### Configure workflow
 
 Once the workflow has been downloaded, and the conda environment is ready, the parameters must be set.
