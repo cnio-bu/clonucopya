@@ -17,7 +17,7 @@ params:
         num_clusters: 40
         density: "beta-binomial"
         num_grid_points: 100
-        num_restarts: 10
+        num_restarts: 100
         seed: 570655569
     phyclone:
         num_chains: 4
