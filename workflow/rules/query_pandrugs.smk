@@ -23,5 +23,3 @@ rule query_pandrugs:
         done
         """
 
-
-#            clone_id=$(basename $clone | grep -o 'cluster_-*[0-9]\+')

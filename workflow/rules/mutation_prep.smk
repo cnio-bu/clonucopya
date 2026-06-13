@@ -28,7 +28,7 @@ rule check_mutations:
     input:
         lambda wildcards: expand(
             "results/{study}/mutation_prep/{sample}_prep.mut.tsv",
-            sample=samples_df[samples_df['study'] == wildcards.study]['sample_id'],
+            sample=samplesheet[samplesheet['study'] == wildcards.study]['sample_id'],
             study=wildcards.study,
             allow_missing=True
         )

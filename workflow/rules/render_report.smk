@@ -1,5 +1,5 @@
 def get_spheres_files(wildcards):
-    samples = samples_df[samples_df['study'] == wildcards.study]['sample_id'].tolist()
+    samples = samplesheet[samplesheet['study'] == wildcards.study]['sample_id'].tolist()
     return [
         f"results/{wildcards.study}/report/components/spheres_of_clones/{sample}_sphere_of_clones.png"
         for sample in samples
@@ -7,7 +7,7 @@ def get_spheres_files(wildcards):
 
 
 def get_heatmap_files(wildcards):
-    samples = samples_df[samples_df['study'] == wildcards.study]['sample_id'].tolist()
+    samples = samplesheet[samplesheet['study'] == wildcards.study]['sample_id'].tolist()
     return [
         f"results/{wildcards.study}/report/components/vaf_heatmaps/sampled/{sample}_sampled_vaf_heatmap.png"
         for sample in samples

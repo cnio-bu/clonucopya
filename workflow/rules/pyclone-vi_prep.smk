@@ -50,7 +50,7 @@ rule format_pvi_intersect:
     input:
         lambda wildcards: expand(
             "results/{study}/pyclone-vi_prep/{sample}_intersect_pvi.tsv",
-            sample=samples_df[samples_df['study'] == wildcards.study]['sample_id'],
+            sample=samplesheet[samplesheet['study'] == wildcards.study]['sample_id'],
             study=wildcards.study
         )
     output:
