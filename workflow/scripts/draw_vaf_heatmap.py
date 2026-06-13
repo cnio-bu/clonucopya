@@ -41,147 +41,124 @@ def even_distribution_tolerant(df_heatmap, n_samples=100):
 
 
 
-def build_heatmap_df(tree_df, mut_dir, gene_alterations):
+def build_heatmap_df(tree_df, pvi_input, gene_alterations):
 
     """
-    Build Daframe for VAF Heatmap, one per sample.
+    Build DataFrame for VAF heatmap, one per sample.
 
     Args:
-        tree_df (str): Path to the phyclone TSV output
-        mut_dir (str): Path to the files from mutation_prep study.
-        gene_alterations (str): Path to the gene alterations file of the study
+        tree_df (str): Path to the PhyClone TSV output.
+        pvi_input (str): Path to the PyClone-VI input TSV.
 
-    Return:
-        Dictionary of dictioraries with complete and sampled data of samples' dataframes to plot the VAF Heatmap
-        
+    Returns:
+        dict: Dictionary with complete and sampled heatmap dataframes per sample.
     """
-    # Load Phyclone output
+
+    # Load PhyClone output
     try:
         phy_df = pd.read_table(tree_df)
     except Exception as e:
-        raise ValueError(f"Error reading Phyclone file: {e}")
+        raise ValueError(f"Error reading PhyClone file: {e}")
+
     # Remove outlier mutations
-    phy_df = phy_df[phy_df["clone_id"] != -1] 
+    phy_df = phy_df[phy_df["clone_id"] != -1].copy()
 
-    # Obtain cluter-clone equivalences
- #   phy_clones = phy_df[['clone_id', 'cluster_id']].drop_duplicates()
-  #  cluster_to_clone = dict(zip(phy_clones['cluster_id'], phy_clones['clone_id']))
-    
-    # PYCLONE-VI INFO
-    # Load Pyclone-VI output
-   # try:
-  #      pvi_df = pd.read_table(pvi_out)
- #   except Exception as e:
-#        raise ValueError(f"Error reading Pyclone-VI file: {e}")
-    
-    # Subset Pyclone-VI dataframe by samples
-    #pvi_dict = {sample_id: sub_df for sample_id, sub_df in pvi_df.groupby('sample_id')}
-    phy_dict = {sample_id: sub_df for sample_id, sub_df in phy_df.groupby('sample_id')}
-    
-    # Track all possible mutations that have been taken into account in Pyclone-VI inference
-    all_muts = phy_df[['mutation_id']].drop_duplicates()
-    all_muts_list = all_muts['mutation_id'].tolist()
-    
-    
-    # MUTATIONS INFO
-    # Load samples' mutations
-    muts_path = f"{mut_dir}/*.tsv"
-    mut_files = glob.glob(muts_path)
-    
-    # Store all mutations dataframe in a dict
-    mut_dict = {}
+    # Keep only needed columns from PhyClone
+    phy_df = phy_df[['sample_id', 'mutation_id', 'clone_id']].drop_duplicates()
 
-    for file in mut_files:
-        file_name = os.path.basename(file)
-        sampleid = file_name.split('_prep.mut.tsv')[0]
-        
-        try:
-            sample_df = pd.read_table(file)
-        except Exception as e:
-            raise ValueError(f"Error reading {file_name}: {e}")
-        
-        mut_dict[sampleid] = sample_df
-    
-    # GENE ALTERATIONS INFO
-    # Load gene alterations table from report components
+    # Load PyClone-VI input
+    try:
+        pvi_df = pd.read_table(pvi_input)
+    except Exception as e:
+        raise ValueError(f"Error reading PyClone-VI input file: {e}")
+
+    # Calculate VAF from ref_counts and alt_counts
+    total_counts = pvi_df['ref_counts'] + pvi_df['alt_counts']
+    pvi_df = pvi_df.copy()
+    pvi_df['VAF'] = np.where(total_counts > 0, pvi_df['alt_counts'] / total_counts, 0)
+
+    # Keep only needed columns from PyClone-VI input
+    pvi_df = pvi_df[['sample_id', 'mutation_id', 'VAF']].copy()
+
+    # Merge PyClone-VI input with PhyClone output to recover clone_id
+    merged_df = pvi_df.merge(
+        phy_df,
+        on=['sample_id', 'mutation_id'],
+        how='inner'
+    )
+
+    # Group by sample_id directly from merged dataframe
+    pvi_dict = {
+        sample_id: sub_df.copy()
+        for sample_id, sub_df in merged_df.groupby('sample_id')
+    }
+
+    # Track all mutations included after merge
+    all_muts_list = merged_df['mutation_id'].drop_duplicates().tolist()
+
+
+        # Load gene alterations table
     try:
         gene_alt = pd.read_table(gene_alterations)
     except Exception as e:
         raise ValueError(f"Error reading {gene_alterations}: {e}")
         
-    
-    # INNER JOINT OF MUT AND PVI
-    # Obtain a dict of samples' dataframe with ['mutation_id','cluster_id','VAF']
+    # Keep only HIGH and MODERATE impact mutations
+    gene_alt = gene_alt[gene_alt['Impact'].isin(['HIGH', 'MODERATE'])].copy()
+
     heatmap_dict = {}
     heatmap_dict_sampled = {}
-    
-    for sample_id in mut_dict:
-        merged = mut_dict[sample_id][['mutation_id', 'VAF']].merge(
-            phy_dict[sample_id][['mutation_id', 'clone_id']],
-            on='mutation_id',
-            how='inner')
-        heatmap_dict[sample_id] = merged[['mutation_id', 'clone_id', 'VAF']]
-    
-    
-    # FORMAT DATAFRAMES AND INPUT VALUES
-    
-    for sample_id in heatmap_dict:
-    
-        # Reshape dataframe and input NA values with 0
-        df = heatmap_dict[sample_id]
+
+    for sample_id, sample_df in pvi_dict.items():
+
+        # Keep only required columns
+        df = sample_df[['mutation_id', 'clone_id', 'VAF']].copy()
+
+        # If repeated mutation_id/clone_id pairs exist, aggregate them
+        df = df.groupby(['mutation_id', 'clone_id'], as_index=False)['VAF'].mean()
+
+        # Build heatmap matrix
         pivoted = df.pivot(index='mutation_id', columns='clone_id', values='VAF')
-        pivoted.columns = [clone for clone in pivoted.columns]
         pivoted = pivoted.fillna(0)
-        
-        # Add mutations that are absent in each sample and reindex
+
+        # Add absent mutations as zero-VAF rows
         df_reindexed = pivoted.reindex(all_muts_list, fill_value=0)
-        
-    	# Sort mutations by clone, chr, and pos
-        df_reindexed = df_reindexed.sort_index()
+
+        # Sort mutations by chromosome and position
         temp_df = pd.DataFrame(index=df_reindexed.index)
         temp_df['chr_num'] = temp_df.index.to_series().apply(lambda x: chr_to_num(x.split(':')[0]))
         temp_df['pos'] = temp_df.index.to_series().apply(lambda x: int(x.split(':')[1]))
-    
-        # Sort temporary Dataframe mutations by chromosome and position
         temp_df_sorted = temp_df.sort_values(by=['chr_num', 'pos'])
-        
-        # Sort the main Dataframe using sorted index from temporary DataFrame
         df_reindexed = df_reindexed.loc[temp_df_sorted.index]
 
-        ## Remove with 0 VAF in all clones
-
+        # Remove mutations with VAF 0 in all clones
         df_no_empty_muts = df_reindexed.loc[(df_reindexed != 0).any(axis=1)]
 
-        # Reset index to convert mutation_id into a column
+        # Merge with gene alteration annotations
         temp_mut_idx_df = df_no_empty_muts.reset_index()
+        mut_gene_idx_df = temp_mut_idx_df.merge(
+            gene_alt[['Mutation ID', 'Gene Symbol']],
+            left_on='mutation_id',
+            right_on='Mutation ID',
+            how='inner'
+        )
 
-        # Merge sorted index DataFrame with gene_alteration Dataframe to obtain Gene Symbol information
-        mut_gene_idx_df = temp_mut_idx_df.merge(gene_alt[['Mutation ID', 'Gene Symbol', 'Impact']], 
-            left_on='mutation_id', 
-            right_on='Mutation ID', 
-            how='left')
-
-        # Only keep mutations with High or Moderate Impact annotated by vep
-        mut_gene_idx_df = mut_gene_idx_df[(mut_gene_idx_df['Impact'] == 'MODERATE') | (mut_gene_idx_df['Impact'] == 'HIGH')]
-    
-        # Create a new mutation_id index combining mutation_id and its gene symbol
+        # Create new index with mutation ID + gene symbol
         mut_gene_idx_df['mut_gene_idx'] = mut_gene_idx_df.apply(
-            lambda row: f"{row['mutation_id']} - {row['Gene Symbol']}" 
-            if pd.notna(row['Gene Symbol']) 
-            else row['mutation_id'], 
-            axis=1)
-    
-        # Set mut_gene_idx as the new index and drop auxiliary columns
-        mut_gene_idx_df = mut_gene_idx_df.set_index('mut_gene_idx').drop(['mutation_id', 'Mutation ID', 'Gene Symbol', 'Impact'], axis=1)
+            lambda row: f"{row['mutation_id']} - {row['Gene Symbol']}"
+            if pd.notna(row['Gene Symbol']) else row['mutation_id'],
+            axis=1
+        )
 
-        
-        # Transform cluster to clones
-        #df_renamed = mut_gene_idx_df.rename(columns=cluster_to_clone)
-    
-        # Reorder clones. Sometimes, clusters and clones dont have the same order
+        # Set new index and drop auxiliary columns
+        mut_gene_idx_df = mut_gene_idx_df.set_index('mut_gene_idx').drop(
+            columns=['mutation_id', 'Mutation ID', 'Gene Symbol']
+        )
+
+        # Reorder clones
         ordered_cols = sorted(mut_gene_idx_df.columns)
-    
-        # Update original dataframes
+
+        # Store complete and sampled heatmaps
         heatmap_dict[sample_id] = mut_gene_idx_df[ordered_cols]
         heatmap_dict_sampled[sample_id] = even_distribution_tolerant(mut_gene_idx_df[ordered_cols])
 
@@ -254,8 +231,7 @@ def plot_heatmaps(heatmap_dicts, out_dir):
 if __name__ == '__main__':
     input_parser = argparse.ArgumentParser()
     input_parser.add_argument("--tree_df", action='store', required=True)
-#    input_parser.add_argument("--pvi_out", action='store', required=True)
-    input_parser.add_argument("--mut_dir", action='store', required=True)
+    input_parser.add_argument("--pvi_input", action='store', required=True)
     input_parser.add_argument("--gene_alterations", action='store', required=True)
     input_parser.add_argument("--out_dir", action='store', required=True)
 
@@ -263,5 +239,5 @@ if __name__ == '__main__':
     args = input_parser.parse_args()
 
 
-    heatmap_data = build_heatmap_df(args.tree_df, args.mut_dir, args.gene_alterations)
+    heatmap_data = build_heatmap_df(args.tree_df, args.pvi_input, args.gene_alterations)
     plot_heatmaps(heatmap_data, args.out_dir)
