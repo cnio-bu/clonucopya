@@ -15,42 +15,42 @@ os.environ["SNAKEMAKE_OUTPUT_CACHE"] = f"{os.getcwd()}/resources/vep/cache"
 
 ##### Target rules #####
 
-samples_df = pd.read_csv(config["samplesheet"])
+samplesheet = pd.read_csv(config["samplesheet"])
 
-samples = samples_df.set_index(["study", "sample_id"], drop=False)
+samples = samplesheet.set_index(["study", "sample_id"], drop=False)
 
 validate(samples, "resources/schemas/samplesheet_schema.yaml")
 
 
-sample_study_pairs = list(zip(samples_df["study"], samples_df["sample_id"]))
+sample_study_pairs = list(zip(samplesheet["study"], samplesheet["sample_id"]))
 
 print("Sample-Study pairs:", sample_study_pairs)
 
 
 # Check files exist
-missing_files = samples_df[~samples_df["mutations"].apply(os.path.exists) | 
-                          ~samples_df["cnas"].apply(os.path.exists)]
+missing_files = samplesheet[~samplesheet["mutations"].apply(os.path.exists) | 
+                          ~samplesheet["cnas"].apply(os.path.exists)]
 if not missing_files.empty:
     raise FileNotFoundError(f"Missing input files in the samplesheet:\n{missing_files}")
 
 rule all:
     input:
-        expand("results/{study}/mutation_prep/{sample}_prep.mut.tsv", zip, study=samples_df["study"], sample=samples_df["sample_id"]),
-        expand("results/{study}/pyclone-vi_prep/{sample}_intersect_pvi.tsv", zip, study=samples_df["study"], sample=samples_df["sample_id"]),
-        expand("results/{study}/pyclone-vi_prep/combined_intersect_pvi.tsv", study=samples_df["study"].unique()),
-        expand("results/{study}/pyclone-vi/pvi_out.tsv", study=samples_df["study"].unique()),
-        expand("results/{study}/mut_vep_prep", study=samples_df["study"].unique()),
+        expand("results/{study}/mutation_prep/{sample}_prep.mut.tsv", zip, study=samplesheet["study"], sample=samplesheet["sample_id"]),
+        expand("results/{study}/pyclone-vi_prep/{sample}_intersect_pvi.tsv", zip, study=samplesheet["study"], sample=samplesheet["sample_id"]),
+        expand("results/{study}/pyclone-vi_prep/combined_intersect_pvi.tsv", study=samplesheet["study"].unique()),
+        expand("results/{study}/pyclone-vi/pvi_out.tsv", study=samplesheet["study"].unique()),
+        expand("results/{study}/mut_vep_prep", study=samplesheet["study"].unique()),
         "resources/vep/cache",
-        expand("results/{study}/vep_annotation/annotations", study=samples_df["study"].unique()),
-        expand("results/{study}/query_pandrugs", study=samples_df["study"].unique()),
-        expand("results/{study}/phyclone/tree.nwk", study=samples_df["study"].unique()),
-        expand("results/{study}/report/components/report_panel.tsv", study=samples_df["study"].unique()),
-        expand("results/{study}/report/components/clonal_tree.png", study=samples_df["study"].unique()),
-        expand("results/{study}/report/components/spheres_of_clones/{sample}_sphere_of_clones.png", zip, study=samples_df["study"], sample=samples_df["sample_id"]),
-        expand("results/{study}/report/components/vaf_heatmaps/sampled/{sample}_sampled_vaf_heatmap.png", zip, study=samples_df["study"], sample=samples_df["sample_id"]),
-        expand("results/{study}/report/components/gene_alterations.tsv", study=samples_df["study"].unique()),
-        expand("results/{study}/report/components/clonal_histogram.png", study=samples_df["study"].unique()),
-        expand("results/{study}/report/{study}_report.pdf", study=samples_df["study"].unique())
+        expand("results/{study}/vep_annotation/annotations", study=samplesheet["study"].unique()),
+        expand("results/{study}/query_pandrugs", study=samplesheet["study"].unique()),
+        expand("results/{study}/phyclone/tree.nwk", study=samplesheet["study"].unique()),
+        expand("results/{study}/report/components/report_panel.tsv", study=samplesheet["study"].unique()),
+        expand("results/{study}/report/components/clonal_tree.png", study=samplesheet["study"].unique()),
+        expand("results/{study}/report/components/spheres_of_clones/{sample}_sphere_of_clones.png", zip, study=samplesheet["study"], sample=samplesheet["sample_id"]),
+        expand("results/{study}/report/components/vaf_heatmaps/sampled/{sample}_sampled_vaf_heatmap.png", zip, study=samplesheet["study"], sample=samplesheet["sample_id"]),
+        expand("results/{study}/report/components/gene_alterations.tsv", study=samplesheet["study"].unique()),
+        expand("results/{study}/report/components/clonal_histogram.png", study=samplesheet["study"].unique()),
+        expand("results/{study}/report/{study}_report.pdf", study=samplesheet["study"].unique())
 
 
 # FORMAT MUTATION VCF AND CHECK BAM POSITIONS
