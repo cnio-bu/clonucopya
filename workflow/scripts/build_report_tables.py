@@ -4,6 +4,7 @@ import re
 import os
 import ast
 import argparse
+import numpy as np
 from clonucopya_tools import chr_to_num
 
 
@@ -24,17 +25,15 @@ def vaf_string_for_mutation(mutation_id, vaf_dict):
     return "; ".join(vaf_entries)
 
 
-
 # Build Gene Alterations dataframe with annotated information
-def build_gene_alterations(tree_df, pandrugs_dir, mut_dir, out_dir):
+def build_gene_alterations(pvi_input, pandrugs_dir, out_dir):
 
     """
     Build Daframe for sample panels of the study.
 
     Args:
-        tree_df (str): Path to the dataframe of Phyclone results of the study
+        pvi_input (str): Path to the PyClone-VI input TSV
         pandrugs_dir (str): Path to the query_pandrugs study
-        mut_dir (str): Path to the files from mutation_prep study
         out_dir (str): Path to the output directory
 
     Return:
@@ -42,12 +41,23 @@ def build_gene_alterations(tree_df, pandrugs_dir, mut_dir, out_dir):
 
     """
 
-    # Load Phyclone output
-    phy_df = pd.read_table(tree_df)
-    
-    # Remove outlier clone
-    phy_df = phy_df[phy_df["clone_id"] != -1]
+    # Load Phyclone input
+    pvi_df = pd.read_table(pvi_input)
 
+    # Calculate VAF from ref_counts and alt_counts
+    total_counts = pvi_df['ref_counts'] + pvi_df['alt_counts']
+    pvi_df = pvi_df.copy()
+    pvi_df['VAF'] = np.where(total_counts > 0, pvi_df['alt_counts'] / total_counts, 0)
+
+    # Keep only needed columns from PyClone-VI input
+    pvi_df = pvi_df[['sample_id', 'mutation_id', 'VAF']].copy()
+
+    vaf_dict = {}
+    for _, row in pvi_df.iterrows():
+        sample = row['sample_id']
+        mut_id = row['mutation_id']
+        vaf = row['VAF']
+        vaf_dict.setdefault(sample, {})[mut_id] = f"{vaf:.3f}"
     
     # Obtain relevant information about gene alterations fed to Pandrugs
     vscore_path = f"{pandrugs_dir}/clone_*/*_vscore.vcf"
@@ -70,7 +80,6 @@ def build_gene_alterations(tree_df, pandrugs_dir, mut_dir, out_dir):
             clone = int(match.group(1))
         else:
             raise ValueError(f"No clone number found in filename: {file_name}")
-
         
         sample_df = pd.read_table(file)
         
@@ -83,30 +92,10 @@ def build_gene_alterations(tree_df, pandrugs_dir, mut_dir, out_dir):
         clone_dfs.append(subset_df)
         
     study_df = pd.concat(clone_dfs, ignore_index=True)
-    
-    
-    
-    # Search all files that match the vscore pattern
-    muts_path = f"{mut_dir}/*.tsv"
-    mut_files = glob.glob(muts_path)
-    
-    
-    # Create dictionary to store some mut info with the following format format: { sample_id : { mutation_id : VAF } }
-    vaf_dict = {}
-    
-    for file in mut_files:
-        file_name = os.path.basename(file)
-        sample_id = file_name.split('_prep.mut.tsv')[0]
-        df = pd.read_table(file)
-        # Eliminar duplicados de mutation_id en cada muestra
-        df = df[['mutation_id', 'VAF']].drop_duplicates(subset='mutation_id')
-        vaf_dict[sample_id] = dict(zip(df['mutation_id'], df['VAF']))
-    
-    
-    
-    # Use vaf_string_for_mutation to give format to VAF cells with the values of each sample of the sample study in the same cell
-    study_df['VAF'] = study_df['ID'].apply(lambda mut_id: vaf_string_for_mutation(mut_id, vaf_dict))
-    
+
+    study_df['VAF'] = study_df['ID'].apply(
+    lambda mut_id: vaf_string_for_mutation(mut_id, vaf_dict)
+     )
     
     # Format Table: rename columns, sort rows and columns
     study_df.columns = ['Mutation ID', 'Gene Symbol', 'Ensembl ID', 'Consequence', 'Impact', 'Clone', 'VAF']
@@ -190,7 +179,7 @@ def build_drug_prioritization(gene_alterations, pandrugs_dir, out_dir):
         .merge(genalt_subset_formatted, on='Gene Symbol', how='inner')
     )
         # Remove duplicate queries
-        drug_prioritization = drug_prioritization.drop_duplicates(subset=['Clone', 'Mutation ID', 'Gene Symbol', 'Drug','VAF'])        
+        drug_prioritization = drug_prioritization.drop_duplicates(subset=['Clone', 'Mutation ID', 'Gene Symbol', 'Drug', 'VAF'])        
         
         drug_prioritization.to_csv(f"{out_dir}/drug_prioritization.tsv", sep='\t', index=False, na_rep='-')
 
@@ -234,13 +223,12 @@ def build_drug_prioritization(gene_alterations, pandrugs_dir, out_dir):
     
 if __name__ == '__main__':
     input_parser = argparse.ArgumentParser()
-    input_parser.add_argument("--tree_df", action='store', required=True)
+    input_parser.add_argument("--pvi_input", action='store', required=True)
     input_parser.add_argument("--pandrugs_dir", action='store', required=True)
-    input_parser.add_argument("--mut_dir", action='store', required=True)
     input_parser.add_argument("--out_dir", action='store', required=True)
 
     args = input_parser.parse_args()
 
 
-    gene_alterations = build_gene_alterations(args.tree_df,args.pandrugs_dir, args.mut_dir, args.out_dir)
+    gene_alterations = build_gene_alterations(args.pvi_input, args.pandrugs_dir, args.out_dir)
     build_drug_prioritization(gene_alterations, args.pandrugs_dir, args.out_dir)
