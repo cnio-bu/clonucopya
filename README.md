@@ -171,7 +171,10 @@ comparative analysis (read [Main applications](#main-applications) section for f
 
 ## Pyclone-VI Start mode
 
-The PVI-start execution mode provides a streamlined alternative that begins with input data already formatted for PyClone-VI. This mode is designed to facilitate the reuse of samples previously analyzed by the user with PyClone-VI, while extending the analysis through Clonucopya. Specifically, Clonucopya reconstructs the phylogenetic tree, annotates variants, and performs candidate drug prioritization based on available clinical evidence.
+The pvi-start execution mode provides a streamlined alternative that begins with input data already formatted for PyClone-VI. This mode is designed to facilitate the reuse of samples previously analyzed by the user with PyClone-VI, while extending the analysis through Clonucopya. Specifically, Clonucopya reconstructs the phylogenetic tree, annotates variants, and performs candidate drug prioritization based on available clinical evidence.
+
+> [!IMPORTANT]
+> To run the pvi-start execution mode, mutation_id values must follow the format chromosome:start_position:reference_base:alternative_base (e.g., 15:48241561:G:T). The pipeline relies on this format to execute properly.  
 
 ### Configure workflow
 
@@ -240,10 +243,10 @@ comparative analysis (read [Main applications](#main-applications) section for f
     └── components/
         ├── clonal_tree.png
         ├── clonal_histogram.png
-        ├── drug_prioritization_wf2.tsv
-        ├── drug_summary_wf2.tsv
-        ├── gene_alterations_wf2.tsv
-        ├── report_panel.tsv
+        ├── drug_prioritization_wf.tsv
+        ├── drug_summary_wf.tsv
+        ├── gene_alterations_wf.tsv
+        ├── report_panel_wf2.tsv
         ├── spheres_of_clones/
         │   └── {sample_id}_sphere_of_clones.png
         └── vaf_heatmaps/

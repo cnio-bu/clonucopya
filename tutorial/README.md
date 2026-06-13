@@ -120,10 +120,10 @@ dream_P3/
     └── components/
         ├── clonal_tree.png
         ├── clonal_histogram.png
-        ├── drug_prioritization_wf2.tsv
-        ├── drug_summary_wf2.tsv
-        ├── gene_alterations_wf2.tsv
-        ├── report_panel.tsv
+        ├── drug_prioritization.tsv
+        ├── drug_summary.tsv
+        ├── gene_alterations.tsv
+        ├── report_panel_wf2.tsv
         ├── spheres_of_clones/
         │   └── tumour_sphere_of_clones.png
         └── vaf_heatmaps/
