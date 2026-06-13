@@ -538,4 +538,4 @@ if __name__ == '__main__':
 
     args = input_parser.parse_args()
 
-    renderization = render_report_to_pdf(args.study, args.output_pdf, args.template, args.logo)
+    render_report_to_pdf(args.study, args.output_pdf, args.template, args.logo)
