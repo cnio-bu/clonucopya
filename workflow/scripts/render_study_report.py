@@ -118,12 +118,14 @@ def prepare_report_data(study_path):
 
                 # Colapse repeated key columns for readability
                 collapse_cols = ["Clone", "Mutation ID", "Gene Symbol", "VAF"]
+                drugs_df_compact[collapse_cols] = drugs_df_compact[collapse_cols].astype("string")
                 is_dup = ~drugs_df_compact[collapse_cols].ne(drugs_df_compact[collapse_cols].shift()).any(axis=1)
                 drugs_df_compact.loc[is_dup, collapse_cols] = ""
             
             
-        except:
-            drug_hits = None
+        except Exception as e:
+            print(f"[ERROR] fail to process drug_prioritization results: {repr(e)}")
+            drugs_df_compact = None
     
     # Absolute paths to images
     clonal_tree_image = os.path.abspath(str(components_path / "clonal_tree.png"))
@@ -293,7 +295,7 @@ def render_report_to_pdf(study_path, output_path, template_path="template.html",
             'clone_alterations': {
                 'title': 'Clonal Alterations',
                 'description': f"""
-                <p>The Variant Allele Frequencies (VAF) heatmaps of each sample represent the evolutionary dynamics within the tumor(s). The distribution of VAF intensity patterns for each mutation in the different clones evidences how certain mutations are shared in the same clone from different samples or produce divergence and give rise to different evolutionary branches, representing the temporal sequence of mutational events. It allows to understand tumor heterogeneity among cell populations, with the aim of highlighting which clones may influence cancer progression or therapy resistance.</p>
+                <p>The Variant Allele Frequencies (VAF) heatmaps of each sample represent the evolutionary dynamics within the tumor(s). The distribution of VAF intensity patterns for each mutation in the different clones evidences how certain mutations are shared in the same clone from different samples or produce divergence and give rise to different evolutionary branches, representing the temporal sequence of mutational events. It allows to understand tumor heterogeneity among cell populations, with the aim of highlighting which clones may influence cancer progression or therapy resistance.By default, only MODERATE and HIGH impact mutations are considered.</p>
                 <p>The source files are available at: {heatmaps_path}.</p>
                 """
             }
