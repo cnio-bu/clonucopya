@@ -208,8 +208,8 @@ def build_drug_prioritization(gene_alterations, pandrugs_dir, out_dir):
         )
         
         drug_summary = drug_summary.sort_values(
-            ['n_clones', 'Status'],
-            ascending=[False, True]
+            ['n_clones', 'Status', 'max_dScore'],
+            ascending=[False, True, False]
         )
 
         
