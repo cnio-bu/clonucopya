@@ -74,7 +74,7 @@ rule all:
         vaf_heatmaps,
         expand("results/{study}/report/components/gene_alterations.tsv", study=samplesheet["study"].unique()),
         expand("results/{study}/report/components/clonal_histogram.png", study=samplesheet["study"].unique()),
-#        expand("results/{study}/report/{study}_report.pdf", study=samplesheet["study"].unique())
+        expand("results/{study}/report/{study}_report_wf2.pdf", study=samplesheet["study"].unique())
 
 
 
@@ -114,6 +114,6 @@ include: "rules/phyclone.smk"
 include: "rules/report_components.smk"
 
 
-## RENDER STUDY REPORT TO PDF
-#
-#include: "rules/render_report.smk"
+# RENDER STUDY REPORT TO PDF
+
+include: "rules/render_report_wf2.smk"
