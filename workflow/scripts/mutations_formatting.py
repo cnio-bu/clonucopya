@@ -92,25 +92,6 @@ def process_vcf_mutations(input_vcf, just_snv, output_file, sample):
             ad_raw.str.split(',').str[0], errors='coerce')
         mut_vcf_filt['alt_counts'] = pd.to_numeric(
             ad_raw.str.split(',').str[1], errors='coerce')
-
-        # VAF: try multiple field names used by different callers
-        mut_vcf_filt['VAF'] = pd.NA
-        for vaf_field in ['FA', 'AF', 'VAF', 'FREQ']:
-            vaf_raw = extract_format_field(
-                mut_vcf_filt['_genotype'], mut_vcf_filt['_format'], vaf_field)
-            vaf_parsed = pd.to_numeric(vaf_raw.astype(str).str.rstrip('%'), errors='coerce')
-            if vaf_parsed.notna().any():
-                # Normalize percentage to fraction if needed
-                if (vaf_parsed.dropna() > 1).any():
-                    vaf_parsed = vaf_parsed / 100
-                mut_vcf_filt['VAF'] = vaf_parsed
-                break
-
-        if mut_vcf_filt['VAF'].isna().all():
-            # Fallback: compute VAF from ref/alt counts
-            total = mut_vcf_filt['ref_counts'] + mut_vcf_filt['alt_counts']
-            mut_vcf_filt['VAF'] = (mut_vcf_filt['alt_counts'] / total).round(4)
-
     except Exception as e:
         raise ValueError(f"Error parsing read counts: {e}")
 
