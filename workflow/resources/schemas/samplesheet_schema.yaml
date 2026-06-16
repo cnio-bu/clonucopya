@@ -17,7 +17,7 @@ columns:
     type: string
     rules:
       not_empty: true
-      in_array: [male, female]
+      in_array: [male, female, unknown]
     description: sex of the patient who belongs the sample
   - name: mutations
     type: string
