@@ -44,8 +44,19 @@ def prepare_report_data(study_path):
     study_name = os.path.basename(study_path)
     components_path = Path(study_path) / "report" / "components"
     
+
     # Load report panel
-    samples_df = pd.read_csv(components_path / "report_panel.tsv", sep='\t')
+    rp1 = components_path / "report_panel.tsv"
+    rp2 = components_path / "report_panel_wf2.tsv"
+
+    if rp1.is_file():
+        rp_path = rp1
+    elif rp2.is_file():
+        rp_path = rp2
+    else:
+        raise FileNotFoundError("No se encontraron report_panel*.tsv")
+
+    samples_df = pd.read_csv(rp_path, sep='\t')
 
     # Drug Summary
     drug_sum_path = components_path / "drug_summary.tsv"
@@ -192,8 +203,7 @@ def render_report_to_pdf(study_path, output_path, template_path="template.html",
 
     study_name = os.path.basename(study_path)
     components_path = Path(study_path) / "report" / "components"
-    
-    panels_path = components_path / "report_panel.tsv"
+    panels_path = components_path / "report_panel*.tsv"
     drug_summary_path = components_path / "drug_summary.tsv"
     clonal_tree_path = components_path / "clonal_tree.png"
     clonal_histogram_path = components_path / "clonal_histogram.png"
@@ -320,11 +330,7 @@ def render_report_to_pdf(study_path, output_path, template_path="template.html",
                 'description': f"""
                     <p>The small variant analysis performed by PanDrugs2 displays only mutations deemed clinically relevant.</p>
                     <p>The filtering criteria are as follows:</p>
-                    <ul>
-                        <li>GMAF/gnomAD population frequency less than 0.01.</li>
-                        <li>Predicted moderate or high functional impact, including variant types such as missense, nonsense, frameshift, and splice site mutations.</li>
-                        <li>Affection of relevant isoforms. Priority is given to canonical or unknown isoforms.</li>
-                    </ul>
+                    <p>Somatic alterations were analyzed with PanDrugs2 using the tumour VCF as input. The tool annotates all variants, retains genes carrying variants with moderate or high functional impact, and then prioritizes drugs according to two scores: the GScore, which reflects the biological relevance and druggability of the altered gene, and the DScore, which estimates drug suitability based on available evidence, type of drug–gene interaction and clinical development status. Results can be filtered by drug status (approved, in clinical trials or experimental), by interaction type (direct vs indirect) and by tumour indication; treatments with DScore ≥ 0.7 and GScore ≥ 0.6 are considered Best Therapeutic Candidates (BTCs).</p>
                     <p>The table below provides a simplified overview of the drugs targeting the affected genes, with the top 3 drugs selected per genetic alteration and ranked by Status and dScore.</p>
                     <p> Drugs are sorted using the following criteria:</p>
                     <ul>
