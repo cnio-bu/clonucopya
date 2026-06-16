@@ -27,20 +27,20 @@ def format_intersect(intersect_list, samplesheet, pvi_prep):
     # Drop artifactual duplicates
     combined_pvi_dedup = combined_pvi.drop_duplicates()
 
-    ## Scan available mutations
+    # Scan available mutations
     mutations = set(combined_pvi_dedup['mutation_id'].unique())
     samples = set(combined_pvi_dedup['sample_id'].unique())
 
-    ## Get all hypothetical combinations 
+    # Get all hypothetical combinations 
     mutations_complete = set(itertools.product(mutations, samples))
 
-    ## Get existing mutations
+    # Get existing mutations
     true_mutations = set(zip(combined_pvi_dedup['mutation_id'], combined_pvi_dedup['sample_id']))
 
-    ## Get missing mutations
+    # Get missing mutations
     missing_mutations = mutations_complete - true_mutations
 
-    ## Sort completed df by mutation_id and sample_id
+    # Sort completed df by mutation_id and sample_id
     combined_pvi_dedup.sort_values(by=['mutation_id', 'sample_id'], inplace=True)
 
     # Add tumour_content aka purity
