@@ -196,9 +196,12 @@ rule plot_histogram:
 
 rule report_panels_wf2:
     input:
-        phy_out = "results/{study}/phyclone/tree_table.tsv"
+        phy_out = "results/{study}/phyclone/tree_table.tsv",
+        pvi_input = get_pyclone_input
     output:
         "results/{study}/report/components/report_panel_wf2.tsv"
+    params:
+        study = lambda wildcards: wildcards.study
     log:
         "logs/{study}/report/report_panels_wf2.log"
     benchmark:
@@ -212,7 +215,9 @@ rule report_panels_wf2:
         runtime=config["resources"]["default"]["walltime"]
     shell:
         """
-        python scripts/build_panels_wf2.py --phy_out {input.phy_out} \\
+        python scripts/build_panels_wf2.py --study {params.study} \\
+                                           --phy_out {input.phy_out} \\
+                                           --pvi_input {input.pvi_input} \\
                                            --out_file {output} > {log} 2>&1
         """
 
