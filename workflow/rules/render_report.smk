@@ -14,6 +14,9 @@ def get_heatmap_files(wildcards):
     ]
 
 
+
+
+
 rule render_report:
     input:
         report_panel        = "results/{study}/report/components/report_panel.tsv",
