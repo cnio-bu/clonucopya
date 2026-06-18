@@ -2,16 +2,6 @@
 
 samplesheet: "/path/to/samplesheet/config/samplesheet.csv"
 
-# True / False
-bam_check: False
-
-# Indexed bam files of study's samples. Leave it empty "" if you dont have bam files
-bam_files: "/path/to/bam/files/directory"
-
-# True / False
-just_snv: True
-
-
 params:
     pyclone-vi:
         num_clusters: 40
@@ -35,7 +25,7 @@ resources:
         mem: 4000
         walltime: 480
     pyclone-vi:
-        threads: 2
+        threads: 8
         mem: 4000
         walltime: 480
     pandrugs:
