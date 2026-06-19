@@ -110,11 +110,13 @@ def prepare_report_data(study_path):
 
                 interaction_type_order = ["DIRECT_TARGET", "BIOMARKER", "PATHWAY_MEMBER"]
                 drug_hits["Interaction Type"] = pd.Categorical(drug_hits["Interaction Type"], categories=interaction_type_order, ordered=True)
+
+                drug_hits_clinical_mode = drug_hits[(drug_hits['Status'] != 'EXPERIMENTAL') & (drug_hits['Interaction Type'] != 'PATHWAY_MEMBER')]
                 
                 # Grouping key
                 group_keys = ["Clone", "Mutation ID", "Gene Symbol", "VAF"]
                 
-                drugs_df_sorted = drug_hits.sort_values(
+                drugs_df_sorted = drug_hits_clinical_mode.sort_values(
                     by=group_keys + ["Status", "dScore", "Interaction Type"],
                     ascending=[True, True, True, True, True, False, True]
                 )
@@ -279,6 +281,7 @@ def render_report_to_pdf(study_path, output_path, template_path="template.html",
             <p>The Drug Summary provides a high-level overview of the therapeutic candidates identified across the entire study. For each drug, the table reports the number of genetic alterations supporting its prioritization, its regulatory approval status (APPROVED, CLINICAL_TRIALS, or EXPERIMENTAL), and the type of interaction with the affected genes
             (DIRECT_TARGET, BIOMARKER, or PATHWAY_MEMBER).</p>
             <p>This table summarizes up to 25 top-ranked drug candidates derived from the mutational landscape of all samples included in the study. A detailed per-clone breakdown is available in the Drug Prioritization section.</p>
+            <p>The DScore in PanDrugs2 can be negative. Its range spans from –1 to 1, where negative values indicate drug resistance and positive values indicate drug sensitivity.</p>
             
             <p>The source files are available at: {drug_summary_path}.</p>
             """,
