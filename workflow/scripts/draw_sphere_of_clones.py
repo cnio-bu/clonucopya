@@ -77,12 +77,19 @@ def draw_sphere_of_clones(tree_df, palette, out_dir):
         
         # Assign nodes based on proportions
         total_circles = len(positions)
-        clone_counts = {clone: int(proportion * total_circles) for clone, proportion in proportions.items()}
-    
+
+        clone_counts = {}
+        assigned = 0
+        items = list(proportions.items())
+        for clone, proportion in items[:-1]:
+            count = int(proportion * total_circles)
+            clone_counts[clone] = count
+            assigned += count
+            clone_counts[items[-1][0]] = total_circles - assigned
         
         # Create a list of colors for each node
         population_names = sorted([clone for clone in proportions if clone != 'unknown'])
-        clone_color = {'unknown': '#8c543f'}
+        clone_color = {'unknown': '#808080'}
         clone_color.update({clone: colors[i + 1] for i, clone in enumerate(population_names)})
         
         color_list = []
@@ -97,10 +104,11 @@ def draw_sphere_of_clones(tree_df, palette, out_dir):
         
         # Sort the color list to group similar colors together
         sorted_colored_circles = []
-        for color in colors:
+
+        sort_order = ['#808080'] + colors
+        for color in sort_order:
             sorted_colored_circles.extend([c for c in color_list if c == color])
-        
-        
+
         # Draw circles
         for i, (x, y) in enumerate(reversed(positions)):
             # Calculate distance from center
