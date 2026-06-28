@@ -38,7 +38,6 @@ def plot(counts, clone_colors, output):
     GRID_COLOR = "#e8e8e8"
     FONT       = "DejaVu Sans"
 
-    # ~half A4 page width at 300 dpi — fits cleanly in a PDF report
     FIGSIZE = (8.0, 5.0)
     DPI     = 300
 
@@ -77,7 +76,7 @@ def plot(counts, clone_colors, output):
     ]
     ax.set_xticks(x)
     ax.set_xticklabels(xlabels, fontsize=9, fontfamily=FONT,
-                       color="#444", multialignment="center")
+                       color="#444", multialignment="center", rotation=45, ha="right", rotation_mode="anchor")
     ax.tick_params(axis="x", length=0, pad=6)
 
     # Y axis
