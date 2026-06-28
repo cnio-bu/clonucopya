@@ -1,5 +1,6 @@
 import pandas as pd
 import argparse
+import pysam
 
 
 def get_vcf_columns(input_vcf):
@@ -24,6 +25,7 @@ def extract_format_field(genotype_series, format_series, field):
     return pd.Series(results, index=genotype_series.index)
 
     
+
 def process_vcf_mutations(input_vcf, just_snv, output_file, sample):
     """
     Process VCF file to extract mutation information and read counts.
@@ -38,6 +40,17 @@ def process_vcf_mutations(input_vcf, just_snv, output_file, sample):
     Returns:
         pandas.DataFrame: Processed mutations data
     """
+    # Check vcf integrity
+    try:
+        vcf = pysam.VariantFile(input_vcf)
+        # Check every snv entry
+        for rec in vcf.fetch():
+            pass
+        vcf.close()
+    except (ValueError, OSError, RuntimeError) as e:
+        raise ValueError(f"Truncated VCF file: {input_vcf} -> {e}")
+
+
     # Read header to get column names
     vcf_cols = get_vcf_columns(input_vcf)
 
