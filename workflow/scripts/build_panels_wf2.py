@@ -25,6 +25,7 @@ def get_study_panels(study, phy_out, pvi_input, out_file):
     except Exception as e:
         raise ValueError(f"Error reading PyClone-VI input file: {e}")
 
+
     tumour_panel = (
         cluster_df
         .groupby("sample_id", as_index=False)
@@ -37,6 +38,9 @@ def get_study_panels(study, phy_out, pvi_input, out_file):
     except Exception as e:
         raise ValueError(f"Error reading PyClone-VI tree file: {e}")
 
+
+    tree_df = tree_df[tree_df['clone_id'] != -1].reset_index(drop=True)
+    
     # sample statistics
     study_filt = tree_df[["mutation_id", "clone_id", "sample_id"]].copy()
     study_filt["clone_id"] = study_filt["clone_id"].astype(int).astype(str)
