@@ -117,8 +117,8 @@ def prepare_report_data(study_path):
                 group_keys = ["Clone", "Mutation ID", "Gene Symbol", "VAF"]
                 
                 drugs_df_sorted = drug_hits_clinical_mode.sort_values(
-                    by=group_keys + ["Status", "dScore", "Interaction Type"],
-                    ascending=[True, True, True, True, True, False, True]
+                    by=group_keys + ["Status", "dScore", "gScore","Interaction Type"],
+                    ascending=[True, True, True, True, True, False, False, True]
                 )
                 
                 # Top 3 drugs for "each mutation of the clone" (an specific mutation may be targeted by one or more drugs)
