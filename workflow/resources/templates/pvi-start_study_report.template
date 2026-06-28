@@ -573,7 +573,11 @@
                 </thead>
                 <tbody>
                     {% for row in drug_prioritization_df.to_dict('records') %}
-                    <tr>
+{% set is_btc = row['dScore'] is not none 
+                and row['gScore'] is not none 
+                and row['dScore'] > 0.7 
+                and row['gScore'] > 0.6 %}
+<tr{% if is_btc %} style="font-weight: bold;"{% endif %}>
                         <td>{{ row['Clone'] }}</td>
                         <td>{{ row['Mutation ID'] }}</td>
                         <td>{{ row['Gene Symbol'] }}</td>
