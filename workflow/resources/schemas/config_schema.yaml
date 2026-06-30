@@ -8,6 +8,16 @@ properties:
     pattern: ".+\\.csv$"
     description: Path to samplesheet CSV file
 
+  drug_filter:
+    type: string
+    description: Threshold of drug hit results at the report. Clinical is more restrictive (No experimental or pathway members), and Discovery is unrestricted.
+    enum: ["clinical", "discovery"]
+
+  genome_reference:
+    type: string
+    description: Genome reference used for the anotation of mutations (SNVs and CNAs)
+    enum: ["GRCh38", "GRCh37"]
+
   bam_check:
     type: boolean
     description: Whether to check mutation positions with bam files or not (True/False)

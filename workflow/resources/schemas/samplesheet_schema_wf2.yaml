@@ -14,3 +14,8 @@ columns:
       not_empty: true
       is_file: true
     description: path to Pyclone-vi input file
+  - name: metadata
+    type: string
+    rules:
+      not_empty: true
+    description: path to the alias metadata file
