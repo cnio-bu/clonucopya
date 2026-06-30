@@ -37,7 +37,7 @@ def create_jinja_env(template_dir="."):
 
 
 
-def prepare_report_data(study_path):
+def prepare_report_data(study_path, drug_filter):
     """
     Prepare data for the template injection with absolute paths
     """
@@ -65,7 +65,9 @@ def prepare_report_data(study_path):
         try:
             drug_sum = pd.read_csv(drug_sum_path, sep='\t')
             if not drug_sum.empty:
-                drug_sum_top = drug_sum.head(25)
+                if drug_filter == 'clinical':
+                     drug_sum = drug_sum[(drug_sum['Status'] != 'EXPERIMENTAL') & (drug_sum['Interaction_Type'] != 'PATHWAY_MEMBER')]
+                drug_sum_top = drug_sum.head(25)  
         except:
             drug_sum_top = None
     
@@ -111,12 +113,13 @@ def prepare_report_data(study_path):
                 interaction_type_order = ["DIRECT_TARGET", "BIOMARKER", "PATHWAY_MEMBER"]
                 drug_hits["Interaction Type"] = pd.Categorical(drug_hits["Interaction Type"], categories=interaction_type_order, ordered=True)
 
-                drug_hits_clinical_mode = drug_hits[(drug_hits['Status'] != 'EXPERIMENTAL') & (drug_hits['Interaction Type'] != 'PATHWAY_MEMBER')]
+                if drug_filter == 'clinical':
+                    drug_hits = drug_hits[(drug_hits['Status'] != 'EXPERIMENTAL') & (drug_hits['Interaction Type'] != 'PATHWAY_MEMBER')]
                 
                 # Grouping key
                 group_keys = ["Clone", "Mutation ID", "Gene Symbol", "VAF"]
                 
-                drugs_df_sorted = drug_hits_clinical_mode.sort_values(
+                drugs_df_sorted = drug_hits.sort_values(
                     by=group_keys + ["Status", "dScore", "gScore","Interaction Type"],
                     ascending=[True, True, True, True, True, False, False, True]
                 )
@@ -134,8 +137,7 @@ def prepare_report_data(study_path):
                 drugs_df_compact[collapse_cols] = drugs_df_compact[collapse_cols].astype("string")
                 is_dup = ~drugs_df_compact[collapse_cols].ne(drugs_df_compact[collapse_cols].shift()).any(axis=1)
                 drugs_df_compact.loc[is_dup, collapse_cols] = ""
-            
-            
+                
         except Exception as e:
             print(f"[ERROR] fail to process drug_prioritization results: {repr(e)}")
             drugs_df_compact = None
@@ -196,7 +198,7 @@ def prepare_report_data(study_path):
     }
 
 
-def render_report_to_pdf(study_path, output_path, template_path="template.html", logo_path=None):
+def render_report_to_pdf(study_path, drug_filter, output_path, template_path="template.html", logo_path=None):
     """
     Render template to PDF directly
     """
@@ -217,7 +219,7 @@ def render_report_to_pdf(study_path, output_path, template_path="template.html",
     
     
     # Format data
-    data = prepare_report_data(study_path)
+    data = prepare_report_data(study_path, drug_filter)
     
     # Prepare logo as base64
     logo_data_uri = None
@@ -278,8 +280,8 @@ def render_report_to_pdf(study_path, output_path, template_path="template.html",
         'clone_alterations_images': data['clone_alterations_images'],
 
             'drug_summary_description': f"""
-            <p>The Drug Summary provides a high-level overview of the therapeutic candidates identified across the entire study. For each drug, the table reports the number of genetic alterations supporting its prioritization, its regulatory approval status (APPROVED, CLINICAL_TRIALS, or EXPERIMENTAL), and the type of interaction with the affected genes
-            (DIRECT_TARGET, BIOMARKER, or PATHWAY_MEMBER).</p>
+            <p>The Drug Summary provides a high-level overview of the therapeutic candidates identified across the entire study. For each drug, the table reports the number of genetic alterations supporting its prioritization, its regulatory approval status (APPROVED, CLINICAL_TRIALS, or EXPERIMENTAL), and the type of interaction with the affected genes (DIRECT_TARGET, BIOMARKER, or PATHWAY_MEMBER).</p>
+            <p>This report was generated in {drug_filter} mode. In clinical mode, results are filtered more stringently, excluding drugs with experimental status and pathway member interaction type. In discovery mode, no filters are applied, and all drug hits identified are displayed regardless of their experimental status or interaction type.</p>
             <p>This table summarizes up to 25 top-ranked drug candidates derived from the mutational landscape of all samples included in the study. A detailed per-clone breakdown is available in the Drug Prioritization section.</p>
             <p>The DScore in PanDrugs2 can be negative. Its range spans from –1 to 1, where negative values indicate drug resistance and positive values indicate drug sensitivity.</p>
             
@@ -292,7 +294,7 @@ def render_report_to_pdf(study_path, output_path, template_path="template.html",
             'subclonal_tree': {
                 'title': 'Clonal Tree',
                 'description': f"""
-                <p>The tree is inferred using Phyclone from Pyclone-VI results. Pyclone-VI results provide an initial clustering of the clones but have no order, so they do not follow an established phylogeny.</p>
+                <p>The phylogenetic tree is inferred using PhyClone, based on PyClone-VI results. PyClone-VI first clusters mutations according to their variant allele frequencies and copy number evidence, and PhyClone then uses these clusters to reconstruct the clonal evolutionary hierarchy.</p>
                 <p>The source files are available at: {clonal_tree_path} and {clonal_histogram_path}.</p>
                 """,
             'image': data['clonal_tree_image'],
@@ -342,6 +344,7 @@ def render_report_to_pdf(study_path, output_path, template_path="template.html",
                         <li>Status: APPROVED, CLINICAL_TRIALS, and EXPERIMENTAL.</li>
                         <li>Interaction type: DIRECT_TARGET, BIOMARKER, and PATHWAY_MEMBER.</li>
                     </ul>
+                    <p>This report was generated in {drug_filter} mode. In clinical mode, results are filtered more stringently, excluding drugs with experimental status and pathway member interaction type. In discovery mode, no filters are applied, and all drug hits identified are displayed regardless of their experimental status or interaction type.</p>
                     <p>The source files are available at: {gene_alterations_path}.</p>
 """
             }
@@ -541,10 +544,11 @@ def render_report_to_pdf(study_path, output_path, template_path="template.html",
 if __name__ == '__main__':
     input_parser = argparse.ArgumentParser()
     input_parser.add_argument("--study", action='store', required=True)
+    input_parser.add_argument("--drug_filter", action='store', required=True, choices=["clinical", "discovery"], help="Filter drugs: 'clinical' or 'discovery'.")
     input_parser.add_argument("--output_pdf", action='store', required=True)
     input_parser.add_argument("--template", action='store', required=True)
     input_parser.add_argument("--logo", action='store', required=True)
 
     args = input_parser.parse_args()
 
-    render_report_to_pdf(args.study, args.output_pdf, args.template, args.logo)
+    render_report_to_pdf(args.study, args.drug_filter, args.output_pdf, args.template, args.logo)
