@@ -19,15 +19,14 @@ def load_palette(path):
 
 
 def load_data(path):
-    df = pd.read_csv(path, sep="\t")
-
+    phy_df = pd.read_csv(path, sep="\t")
+    # Remove outlier mutations
+    phy_df = phy_df[phy_df["clone_id"] != -1].copy()
     counts = (
-        df.groupby("clone_id")["mutation_id"]
+        phy_df.groupby("clone_id")["mutation_id"]
           .count().reset_index()
           .rename(columns={"mutation_id": "n_alterations"})
     )
-    meta = df.groupby("clone_id")[["ccf", "clonal_prev"]].mean().reset_index()
-    counts = counts.merge(meta, on="clone_id")
     counts["pct"] = counts["n_alterations"] / counts["n_alterations"].sum() * 100
     counts = counts.sort_values("clone_id").reset_index(drop=True)
     return counts
@@ -71,12 +70,12 @@ def plot(counts, clone_colors, output):
 
     # X axis
     xlabels = [
-        f"Clone {int(r.clone_id)}\nCCF {r.ccf:.2f} · prev {r.clonal_prev:.0%}"
+        f"Clone {int(r.clone_id)}"
         for r in counts.itertuples()
     ]
     ax.set_xticks(x)
     ax.set_xticklabels(xlabels, fontsize=9, fontfamily=FONT,
-                       color="#444", multialignment="center", rotation=45, ha="right", rotation_mode="anchor")
+                       color="#444", multialignment="center")
     ax.tick_params(axis="x", length=0, pad=6)
 
     # Y axis
