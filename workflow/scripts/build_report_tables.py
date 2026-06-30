@@ -193,6 +193,7 @@ def build_drug_prioritization(gene_alterations, pandrugs_dir, out_dir):
         .groupby('Drug')
         .agg(
             Status=('Status', 'first'),
+            Interaction_Type=('Interaction Type', 'first'),
             max_dScore=('dScore', lambda x: round(x.max(), 4)),
             Clones=('Clone', lambda x: ', '.join(sorted(x.unique().astype(str)))),
             Genes=('Gene Symbol', lambda x: ', '.join(sorted(x.unique().astype(str)))),
