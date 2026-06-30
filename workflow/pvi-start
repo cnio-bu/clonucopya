@@ -26,8 +26,15 @@ validate(studies, "resources/schemas/samplesheet_schema_wf2.yaml")
 study_to_pvi = {}
 study_to_samples = defaultdict(set)
 
+# Precargar alias por estudio
+study_to_alias = {}
 for _, row in samplesheet.iterrows():
-    study = row["study"]
+    if pd.notna(row.get("metadata", None)) and os.path.exists(row["metadata"]):
+        meta = pd.read_csv(row["metadata"])
+        study_to_alias[row["study"]] = dict(zip(meta["sample_id"], meta["alias"]))
+
+for _, row in samplesheet.iterrows():
+    study    = row["study"]
     pvi_path = row["pyclone_vi"]
 
     if pd.isna(pvi_path) or pvi_path == "":
@@ -38,12 +45,15 @@ for _, row in samplesheet.iterrows():
     if not os.path.exists(pvi_path):
         raise FileNotFoundError(f"Missing input file: {pvi_path}")
 
-    pvi_df = pd.read_csv(pvi_path, sep="\t")
+    pvi_df     = pd.read_csv(pvi_path, sep="\t")
+    alias_dict = study_to_alias.get(study, {})  # vacío si no hay metadata
+
     for s in pvi_df["sample_id"].unique():
-        study_to_samples[study].add(s)
+        # Sustituir por alias si existe, conservar original si no
+        resolved = alias_dict.get(s, s)
+        study_to_samples[study].add(resolved)
 
 study_to_samples = {k: sorted(list(v)) for k, v in study_to_samples.items()}
-
 studies = sorted(list(study_to_samples.keys()))
 
 print("Processing studies:", studies)
@@ -77,6 +87,16 @@ rule all:
         expand("results/{study}/report/{study}_report_wf2.pdf", study=samplesheet["study"].unique())
 
 
+
+
+# CHANGE SAMPLE_ID OF PYCLONE-VI
+
+include: "rules/apply_alias.smk"
+
+
+# LIFTOVER OF MUTATIONS FOR PYCLONE-VI INPUT
+
+include: "rules/mutation_liftover.smk"
 
 
 # RUN PYCLONE-VI CLONAL INFERENCE
