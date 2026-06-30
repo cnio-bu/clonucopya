@@ -1,0 +1,6 @@
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - bioconda::pyliftover =0.4.1
+  - conda-forge::pandas =2.2.2
