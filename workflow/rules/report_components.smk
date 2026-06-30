@@ -2,22 +2,12 @@ def get_mutation_files(wildcards):
     samples = samplesheet[samplesheet['study'] == wildcards.study]['sample_id'].tolist()
     return [f"results/{wildcards.study}/mutation_prep/{sample}_prep.mut.tsv" for sample in samples]
 
-def get_pyclone_input(wildcards):
-    study_to_pvi = globals().get("study_to_pvi", None)
-
-    if study_to_pvi:
-        pvi_path = study_to_pvi.get(wildcards.study, None)
-        if pvi_path:
-            return pvi_path.format(study=wildcards.study)
-
-    return f"results/{wildcards.study}/pyclone-vi_prep/combined_intersect_pvi.tsv"
-
 
 
 rule report_panels:
     input:
         samplesheet = config["samplesheet"],
-        intersect = "results/{study}/pyclone-vi_prep/combined_intersect_pvi.tsv",
+        pvi_input = "results/{study}/mutation_liftover/pvi_checked.tsv",
     output:
         "results/{study}/report/components/report_panel.tsv"
     params:
@@ -40,7 +30,7 @@ rule report_panels:
              --study {params.study} \\
              --samplesheet {input.samplesheet} \\
              --mut_dir {params.mut_dir} \\
-             --intersect_combined {input.intersect} \\
+             --intersect_combined {input.pvi_input} \\
              --out_file {output} > {log} 2>&1
         """
 
@@ -105,7 +95,7 @@ rule plot_sphere:
 rule plot_vaf_heatmap:
     input:
         tree_df = "results/{study}/phyclone/tree_table.tsv",
-        pvi_input = get_pyclone_input,
+        pvi_input = "results/{study}/mutation_liftover/pvi_checked.tsv",
         gene_alt = "results/{study}/report/components/gene_alterations.tsv"
     output:
         "results/{study}/report/components/vaf_heatmaps/sampled/{sample}_sampled_vaf_heatmap.png"
@@ -136,7 +126,7 @@ rule plot_vaf_heatmap:
 
 rule report_tables:
     input:
-        pvi_input = get_pyclone_input,
+        pvi_input = "results/{study}/mutation_liftover/pvi_checked.tsv",
         pandrugs_dir = "results/{study}/query_pandrugs"
     output:
         "results/{study}/report/components/gene_alterations.tsv",
@@ -197,7 +187,7 @@ rule plot_histogram:
 rule report_panels_wf2:
     input:
         phy_out = "results/{study}/phyclone/tree_table.tsv",
-        pvi_input = get_pyclone_input
+        pvi_input = "results/{study}/mutation_liftover/pvi_checked.tsv"
     output:
         "results/{study}/report/components/report_panel_wf2.tsv"
     params:

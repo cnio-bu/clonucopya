@@ -15,8 +15,6 @@ def get_heatmap_files(wildcards):
 
 
 
-
-
 rule render_report:
     input:
         report_panel        = "results/{study}/report/components/report_panel.tsv",
@@ -32,7 +30,8 @@ rule render_report:
     output:
         "results/{study}/report/{study}_report.pdf"
     params:
-        study_path = "results/{study}"
+        study_path = "results/{study}",
+        drug_filter = config["drug_filter"]
     log:
         "logs/{study}/report/render_report.log"
     benchmark:
@@ -48,6 +47,7 @@ rule render_report:
         """
         python scripts/render_study_report.py \\
              --study {params.study_path} \\
+             --drug_filter {params.drug_filter} \\
              --output_pdf {output} \\
              --template {input.template} \\
              --logo {input.logo} \\

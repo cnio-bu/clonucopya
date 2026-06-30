@@ -1,18 +1,6 @@
-def get_pyclone_input(wildcards):
-    study_to_pvi = globals().get("study_to_pvi", None)
-
-    if study_to_pvi:
-        pvi_path = study_to_pvi.get(wildcards.study, None)
-        if pvi_path:
-            return pvi_path.format(study=wildcards.study)
-
-    return f"results/{wildcards.study}/pyclone-vi_prep/combined_intersect_pvi.tsv"
-
-
-
 rule pyclone_vi:
     input:
-        get_pyclone_input
+        "results/{study}/mutation_liftover/pvi_checked.tsv"
     output:
         fit = "results/{study}/pyclone-vi/pvi_out.h5",
         result = "results/{study}/pyclone-vi/pvi_out.tsv"
