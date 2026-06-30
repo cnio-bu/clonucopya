@@ -61,6 +61,9 @@ include: "rules/mutation_prep.smk"
 
 include: "rules/pyclone-vi_prep.smk"
 
+# Liftover of mutations of PYCLONE-VI INPUT
+
+include: "rules/mutation_liftover.smk"
 
 # RUN PYCLONE-VI CLONAL INFERENCE
 
