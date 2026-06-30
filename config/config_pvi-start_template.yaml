@@ -2,6 +2,14 @@
 
 samplesheet: "/path/to/samplesheet/config/samplesheet.csv"
 
+# Analysis parameters
+## Drug Analysis Filter [string]: clinical | discovery
+drug_filter: "clinical"
+
+## Genome LiftOver GRch37/hg19 --> GRch38 [string]: GRCh37 | GRCh38
+##It must be done if your mutation were anotated with the previous genome reference
+genome_reference: "GRCh37"
+
 params:
     pyclone-vi:
         num_clusters: 40
