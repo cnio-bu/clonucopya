@@ -1,3 +1,10 @@
+def get_mutation_contributions(wildcards):
+    samples = samplesheet[samplesheet['study'] == wildcards.study]['sample_id'].tolist()
+    return [
+        f"results/{wildcards.study}/report/components/mutation_contribution/{sample}_mutation_contribution.png"
+        for sample in samples
+    ]
+
 def get_spheres_files(wildcards):
     samples = samplesheet[samplesheet['study'] == wildcards.study]['sample_id'].tolist()
     return [
@@ -20,7 +27,7 @@ rule render_report:
         report_panel        = "results/{study}/report/components/report_panel.tsv",
         drug_summary        = "results/{study}/report/components/drug_summary.tsv",
         clonal_tree         = "results/{study}/report/components/clonal_tree.png",
-        clonal_histogram    = "results/{study}/report/components/clonal_histogram.png",
+        clonal_histogram    = get_mutation_contributions,
         spheres_of_clones   = get_spheres_files,
         vaf_heatmaps        = get_heatmap_files,
         gene_alterations    = "results/{study}/report/components/gene_alterations.tsv",
