@@ -58,10 +58,14 @@ studies = sorted(list(study_to_samples.keys()))
 
 print("Processing studies:", studies)
 
+mutation_contribution = []
 sphere_clones = []
 vaf_heatmaps = []
 for study, sample_list in study_to_samples.items():
     for sample in sample_list:
+        mutation_contribution.append(
+            f"results/{study}/report/components/mutation_contribution/{sample}_mutation_contribution.png"
+        )
         sphere_clones.append(
             f"results/{study}/report/components/spheres_of_clones/{sample}_sphere_of_clones.png"
         )
@@ -80,10 +84,10 @@ rule all:
         expand("results/{study}/query_pandrugs", study=samplesheet["study"].unique()),
         expand("results/{study}/report/components/report_panel_wf2.tsv", study=samplesheet["study"].unique()),
         expand("results/{study}/report/components/clonal_tree.png", study=samplesheet["study"].unique()),
+        mutation_contribution,
         sphere_clones,
         vaf_heatmaps,
         expand("results/{study}/report/components/gene_alterations.tsv", study=samplesheet["study"].unique()),
-        expand("results/{study}/report/components/clonal_histogram.png", study=samplesheet["study"].unique()),
         expand("results/{study}/report/{study}_report_wf2.pdf", study=samplesheet["study"].unique())
 
 
