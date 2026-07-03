@@ -155,17 +155,18 @@ rule report_tables:
 
 
 
-rule plot_histogram:
+rule mutation_contribution:
     input:
         tree_df = "results/{study}/phyclone/tree_table.tsv"
     output:
-        "results/{study}/report/components/clonal_histogram.png"
+        "results/{study}/report/components/mutation_contribution/{sample}_mutation_contribution.png"
     params:
-        palette = "resources/clonucopya_palette.txt"
+        palette = "resources/clonucopya_palette.txt",
+        out_dir = lambda wildcards: f"results/{wildcards.study}/report/components/mutation_contribution"
     log:
-        "logs/{study}/report/plot_histogram.log"
+        "logs/{study}/report/{sample}_plot_histogram.log"
     benchmark:
-        "logs/{study}/report/plot_histogram.bmk"
+        "logs/{study}/report/{sample}_plot_histogram.bmk"
     conda:
         "../envs/report_components.yaml"
     threads:
@@ -175,10 +176,11 @@ rule plot_histogram:
         runtime=config["resources"]["default"]["walltime"]
     shell:
         """
+        mkdir -p {params.out_dir}
         python scripts/draw_clone_histogram.py \\
-            --input {input.tree_df} \\
+            --tree_df {input.tree_df} \\
             --palette {params.palette} \\
-            --output {output} > {log} 2>&1
+            --out_dir {params.out_dir} > {log} 2>&1
         """
 
 
