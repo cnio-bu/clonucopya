@@ -148,7 +148,7 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             width: 95%;
             max-width: 1000px;
-            overflow: hidden;
+            overflow: visible;
         }
         
         .panel h2 {
@@ -447,8 +447,9 @@
             </tr>
         </thead>
         <tbody>
-            {% for _, row in drug_summary.iterrows() %}
-            <tr>
+            {% for row in drug_summary.to_dict('records') %}
+            {% set is_btc = row['max_dScore'] is not none and row['max_dScore'] > 0.7 %}
+            <tr{% if is_btc %} style="font-weight: bold;"{% endif %}>
                 <td>{{ row['Drug'] }}</td>
                 <td>{{ row['Status'] }}</td>
                 <td>{{ row['Interaction_Type'] }}</td>
@@ -467,18 +468,31 @@
     <h2>{{ comparison_section.title }}</h2>
     <p>{{ comparison_section.description }}</p>
 
-    <div>
+<div>
     <h3>{{ comparison_section.subclonal_tree.title }}</h3>
     <p>{{ comparison_section.subclonal_tree.description }}</p>
-    <div style="text-align: center; margin: 20px 0;">
-        {% if comparison_section.subclonal_tree.image %}
-        <img src="file://{{ comparison_section.subclonal_tree.image }}" alt="Subclonal Tree" style="max-width:600px;">
-        {% endif %}
 
-        {% if comparison_section.subclonal_tree.clonal_histogram %}
-        <img src="file://{{ comparison_section.subclonal_tree.clonal_histogram }}" alt="Clonal Histogram" style="max-width:600px;">
-        {% endif %}
+    {% if comparison_section.subclonal_tree.image %}
+    <div style="text-align: center; margin: 20px 0;">
+        <img src="file://{{ comparison_section.subclonal_tree.image }}"
+             alt="Subclonal Tree"
+             style="max-width:600px; margin: 0 auto;">
     </div>
+    {% endif %}
+
+    {% if clonal_histogram_images %}
+    <div class="histogram-grid">
+        {% for sample in samples_df.itertuples() %}
+        {% if sample.sample_id in clonal_histogram_images %}
+        <div class="histogram-container">
+            <img src="file://{{ clonal_histogram_images[sample.sample_id] }}"
+                 alt="Clonal Histogram - {{ sample.sample_id }}"
+                 class="histogram-image">
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
 </div>
 
 <div>
