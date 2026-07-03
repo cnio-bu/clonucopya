@@ -3,7 +3,7 @@ rule render_report_wf2:
         report_panel        = "results/{study}/report/components/report_panel_wf2.tsv",
         drug_summary        = "results/{study}/report/components/drug_summary.tsv",
         clonal_tree         = "results/{study}/report/components/clonal_tree.png",
-        clonal_histogram    = "results/{study}/report/components/clonal_histogram.png",
+        clonal_histogram    = mutation_contribution,
         spheres_of_clones   = sphere_clones,
         vaf_heatmaps        = vaf_heatmaps,
         gene_alterations    = "results/{study}/report/components/gene_alterations.tsv",
