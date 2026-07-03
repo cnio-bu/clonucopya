@@ -145,18 +145,9 @@ def prepare_report_data(study_path, drug_filter):
     # Absolute paths to images
     clonal_tree_image = os.path.abspath(str(components_path / "clonal_tree.png"))
 
-    clonal_histogram_image = os.path.abspath(str(components_path / "clonal_histogram.png"))
-    
+    clonal_histogram_images = {}
     clonal_proportions_images = {}
     clone_alterations_images = {}
-
-    # Candidate locations / filename patterns for VAF heatmaps.
-    heatmap_candidates = [
-        ("vaf_heatmaps", "sampled", "{sample_id}_sampled_vaf_heatmap.png"),
-        ("vaf_heatmaps", "{sample_id}_sampled_vaf_heatmap.png"),
-        ("vaf_heatmaps", "{sample_id}_vaf_heatmap.png"),
-        ("vaf_heatmaps", "sampled", "{sample_id}_vaf_heatmap.png"),
-    ]
 
     for _, sample in samples_df.iterrows():
         sample_id = sample['sample_id']
@@ -168,23 +159,23 @@ def prepare_report_data(study_path, drug_filter):
         else:
             print(f"[WARN] sphere of clones not found for {sample_id}: {sphere_path}")
 
-        # VAF heatmap — try several known locations/patterns
-        found_heatmap = None
-        tried = []
-        for parts in heatmap_candidates:
-            resolved_parts = [p.format(sample_id=sample_id) for p in parts]
-            candidate = components_path.joinpath(*resolved_parts)
-            tried.append(str(candidate))
-            if candidate.exists():
-                found_heatmap = candidate
-                break
-
-        if found_heatmap is not None:
-            clone_alterations_images[sample_id] = os.path.abspath(str(found_heatmap))
+            # Clonal histogram
+        histogram_path = components_path / "mutation_contribution" / f"{sample_id}_mutation_contribution.png"
+        if histogram_path.exists():
+            clonal_histogram_images[sample_id] = os.path.abspath(str(histogram_path))
         else:
-            print(f"[WARN] VAF heatmap not found for {sample_id}. Tried:")
-            for t in tried:
-                print(f"        - {t}")
+            print(f"[WARN] clonal histogram not found for {sample_id}: {histogram_path}")
+
+        # VAF heatmap
+        heatmap_path = components_path / "vaf_heatmaps" / "sampled" / f"{sample_id}_sampled_vaf_heatmap.png"
+        if heatmap_path.exists():
+            clone_alterations_images[sample_id] = os.path.abspath(str(heatmap_path))
+        else:
+            print(f"[WARN] VAF heatmap not found for {sample_id}: {heatmap_path}")
+    
+    print("DEBUG clonal_histogram_images:")
+    for k, v in clonal_histogram_images.items():
+        print(" ", k, "->", v)
     
     return {
         'samples_df': samples_df,
@@ -192,7 +183,7 @@ def prepare_report_data(study_path, drug_filter):
         'gene_alterations_df': gene_alterations_top,
         'drug_prioritization_df': drugs_df_compact,
         'clonal_tree_image': clonal_tree_image,
-        'clonal_histogram_image': clonal_histogram_image,
+        'clonal_histogram_images': clonal_histogram_images,
         'clonal_proportions_images': clonal_proportions_images,
         'clone_alterations_images': clone_alterations_images
     }
@@ -210,7 +201,7 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
     panels_path = components_path / "report_panel*.tsv"
     drug_summary_path = components_path / "drug_summary.tsv"
     clonal_tree_path = components_path / "clonal_tree.png"
-    clonal_histogram_path = components_path / "clonal_histogram.png"
+    clonal_histogram_path = components_path / "mutation_contribution" / "{sample_id}_mutation_contribution.png"
     spheres_path = components_path / "spheres_of_clones" / "{sample_id}_sphere_of_clones.png"
     heatmaps_path = components_path / "vaf_heatmaps" / "sampled" / "{sample_id}_sampled_vaf_heatmap.png"
     gene_alterations_path = components_path / "gene_alterations.tsv"
@@ -275,15 +266,15 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
         'drug_summary': data['drug_summary'],
         'gene_alterations_df': data['gene_alterations_df'],
         'drug_prioritization_df': data['drug_prioritization_df'],
+        'clonal_histogram_images': data['clonal_histogram_images'],
         'clonal_proportions_images': data['clonal_proportions_images'],
-        'clonal_histogram_image': data['clonal_histogram_image'],
         'clone_alterations_images': data['clone_alterations_images'],
 
             'drug_summary_description': f"""
             <p>The Drug Summary provides a high-level overview of the therapeutic candidates identified across the entire study. For each drug, the table reports the number of genetic alterations supporting its prioritization, its regulatory approval status (APPROVED, CLINICAL_TRIALS, or EXPERIMENTAL), and the type of interaction with the affected genes (DIRECT_TARGET, BIOMARKER, or PATHWAY_MEMBER).</p>
             <p>This report was generated in {drug_filter} mode. In clinical mode, results are filtered more stringently, excluding drugs with experimental status and pathway member interaction type. In discovery mode, no filters are applied, and all drug hits identified are displayed regardless of their experimental status or interaction type.</p>
             <p>This table summarizes up to 25 top-ranked drug candidates derived from the mutational landscape of all samples included in the study. A detailed per-clone breakdown is available in the Drug Prioritization section.</p>
-            <p>The DScore in PanDrugs2 can be negative. Its range spans from –1 to 1, where negative values indicate drug resistance and positive values indicate drug sensitivity.</p>
+            <p>The DScore in PanDrugs2 can be negative. Its range spans from –1 to 1, where negative values indicate drug resistance and positive values indicate drug sensitivity. Drugs with a DScore greater than 0.7 will be highlighted in bold.</p>
             
             <p>The source files are available at: {drug_summary_path}.</p>
             """,
@@ -298,7 +289,7 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
                 <p>The source files are available at: {clonal_tree_path} and {clonal_histogram_path}.</p>
                 """,
             'image': data['clonal_tree_image'],
-            'clonal_histogram': data['clonal_histogram_image']
+            'clonal_histogram_images': data['clonal_histogram_images']
             },
             'clonal_proportions': {
                 'title': 'Clonal Proportions',
@@ -335,7 +326,7 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
                 'description': f"""
                     <p>The small variant analysis performed by PanDrugs2 displays only mutations deemed clinically relevant.</p>
                     <p>The filtering criteria are as follows:</p>
-                    <p>Somatic alterations were analyzed with PanDrugs2 using the tumour VCF as input. The tool annotates all variants, retains genes carrying variants with moderate or high functional impact, and then prioritizes drugs according to two scores: the GScore, which reflects the biological relevance and druggability of the altered gene, and the DScore, which estimates drug suitability based on available evidence, type of drug–gene interaction and clinical development status. Results can be filtered by drug status (approved, in clinical trials or experimental), by interaction type (direct vs indirect) and by tumour indication; treatments with DScore ≥ 0.7 and GScore ≥ 0.6 are considered Best Therapeutic Candidates (BTCs).</p>
+                    <p>Somatic alterations were analyzed with PanDrugs2 using the tumour VCF as input. The tool annotates all variants, retains genes carrying variants with moderate or high functional impact, and then prioritizes drugs according to two scores: the GScore, which reflects the biological relevance and druggability of the altered gene, and the DScore, which estimates drug suitability based on available evidence, type of drug–gene interaction and clinical development status. Results can be filtered by drug status (approved, in clinical trials or experimental), by interaction type (direct vs indirect) and by tumour indication; treatments with DScore ≥ 0.7 and GScore ≥ 0.6 are considered Best Therapeutic Candidates (BTCs) and will be highlighted in bold.</p>
                     <p>The table below provides a simplified overview of the drugs targeting the affected genes, with the top 3 drugs selected per genetic alteration and ranked by Status and dScore.</p>
                     <p> Drugs are sorted using the following criteria:</p>
                     <ul>
@@ -404,6 +395,7 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
             
 ]
     }
+
     
     try:
         html_content = template.render(**template_data)
@@ -430,7 +422,7 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
         width: 100% !important;
         text-align: center !important;
         margin: 20px 0 !important;
-        font-size: 0 !important; /* removes whitespace gaps between inline-blocks */
+        font-size: 0 !important; 
     }
 
     .sphere-image {
@@ -467,6 +459,40 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
     .image-grid .image-container img {
         max-width: 100% !important;
         height: auto !important;
+    }
+
+    .histogram-grid {
+    display: block !important;
+    width: 100% !important;
+    text-align: center !important;
+    font-size: 0 !important;
+    margin-top: 12px !important;
+    }
+    
+    .histogram-container {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 0 10px 0 !important;
+        text-align: center !important;
+        box-sizing: border-box !important;
+        font-size: 12px !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        page-break-before: auto !important;
+        page-break-after: auto !important;
+    }
+    
+    .histogram-image {
+        display: block !important;
+        width: 65% !important;
+        max-width: 65% !important;
+        max-height: 95mm !important;
+        height: auto !important;
+        margin: 0 auto !important;
+        object-fit: contain !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
     }
 
     .heatmap-grid .image-container {
