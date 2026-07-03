@@ -17,9 +17,9 @@ def apply_alias(pvi_path, metadata_path, output_path):
 
 if __name__ == '__main__':
     input_parser = argparse.ArgumentParser()
-    input_parser.add_argument("--pvi_input",    action='store', required=True)
-    input_parser.add_argument("--metadata",     action='store', required=True)
-    input_parser.add_argument("--output_file",  action='store', required=True)
+    input_parser.add_argument("--pvi_input", action='store', required=True)
+    input_parser.add_argument("--metadata", action='store', required=True)
+    input_parser.add_argument("--output_file", action='store', required=True)
 
     args = input_parser.parse_args()
 
