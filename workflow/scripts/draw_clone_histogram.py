@@ -108,9 +108,8 @@ def plot_one_sample(sample_df, sample_id, clone_colors, output_file):
         label="% mutations"
     )
 
-    xmax = max(sample_df["clonal_prev_pct"].max(), sample_df["pct_mutations"].max())
-    xmax = 100 if xmax <= 0 else min(100, xmax * 1.18)
-
+    xmax = 75
+    
     ax.set_xlim(0, xmax)
     ax.xaxis.set_major_locator(mticker.MultipleLocator(10))
     ax.xaxis.set_major_formatter(mticker.PercentFormatter(xmax=100, decimals=0))
@@ -146,11 +145,11 @@ def plot_one_sample(sample_df, sample_id, clone_colors, output_file):
             fontfamily=FONT
         )
 
-    for bar, val, c in zip(bars_mut, sample_df["pct_mutations"], sample_df["clone_color"]):
+    for bar, val, nmut, c in zip(bars_mut, sample_df["pct_mutations"], sample_df["n_mutations"], sample_df["clone_color"]):
         ax.text(
             bar.get_width() + xmax * 0.01,
             bar.get_y() + bar.get_height() / 2,
-            f"{val:.1f}%",
+            f"{val:.1f}% #mut={int(nmut)}",
             ha="left",
             va="center",
             fontsize=6,
