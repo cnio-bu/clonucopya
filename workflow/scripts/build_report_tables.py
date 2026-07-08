@@ -158,7 +158,7 @@ def build_drug_prioritization(gene_alterations, pandrugs_dir, out_dir):
         gene_drugs = concatenated_df.copy()
 
         # Subset gen-drug concat file of all clones to resume information of the each query
-        genalt_subset = gene_drugs[['gene', 'drug', 'status', 'interactionType', 'dScore', 'gScore' , 'cancer', 'source']].copy()
+        genalt_subset = gene_drugs[['gene', 'drug', 'status', 'interactionType', 'dScore', 'gScore' , 'cancer', 'source', 'sensitivity']].copy()
 
         # Format source column to clear the dataframe
         genalt_subset['source'] = genalt_subset['source'].apply(lambda x: '; '.join(ast.literal_eval(x)) if isinstance(x, str) and x.startswith("[") else None)
@@ -173,18 +173,33 @@ def build_drug_prioritization(gene_alterations, pandrugs_dir, out_dir):
         genalt_subset_formatted = genalt_subset[['geneSymbol', 'drug', 'status', 'interactionType', 'driverGene', 'dScore', 'gScore' , 'cancer', 'source']]
         genalt_subset_formatted.columns = ['Gene Symbol', 'Drug', 'Status', 'Interaction Type', 'Driver Gene', 'dScore', 'gScore' , 'Cancer', 'Source']
 
+        drug_sum_prev = genalt_subset[['geneSymbol', 'drug', 'status', 'interactionType', 'driverGene', 'dScore', 'gScore' , 'cancer', 'source', 'sensitivity']].copy()
+        drug_sum_prev.columns = ['Gene Symbol', 'Drug', 'Status', 'Interaction Type', 'Driver Gene', 'dScore', 'gScore' , 'Cancer', 'Source', 'Drug_Response']
+
         # Merge subsetted Gene alterations info with drug-gene interactions files
         drug_prioritization = (
         study_subset
         .merge(genalt_subset_formatted, on='Gene Symbol', how='inner')
-    )
-        # Remove duplicate queries
-        drug_prioritization = drug_prioritization.drop_duplicates(subset=['Clone', 'Mutation ID', 'Gene Symbol', 'Drug', 'VAF'])        
+        )
+        
+        drug_sum_prev_clean = (
+            study_subset
+            .merge(drug_sum_prev, on='Gene Symbol', how='inner')
+        )
+        
+        # Remove duplicate queries on the merged dataframe (this has Clone/Mutation ID/VAF)
+        drug_prioritization = drug_prioritization.drop_duplicates(
+            subset=['Clone', 'Mutation ID', 'Gene Symbol', 'Drug', 'VAF']
+        )
+        
+        drug_sum_prev_clean = drug_sum_prev_clean.drop_duplicates(
+            subset=['Clone', 'Mutation ID', 'Gene Symbol', 'Drug', 'VAF']
+        )
         
         drug_prioritization.to_csv(f"{out_dir}/drug_prioritization.tsv", sep='\t', index=False, na_rep='-')
 
         # DRUG SUMMARY
-        drug_hits_no_outliers = drug_prioritization[drug_prioritization["Clone"] != -1] 
+        drug_hits_no_outliers = drug_sum_prev_clean[drug_sum_prev_clean["Clone"] != -1] 
 
         status_order = ["APPROVED", "CLINICAL_TRIALS", "EXPERIMENTAL"]
         
@@ -195,8 +210,9 @@ def build_drug_prioritization(gene_alterations, pandrugs_dir, out_dir):
             Status=('Status', 'first'),
             Interaction_Type=('Interaction Type', 'first'),
             max_dScore=('dScore', lambda x: round(x.max(), 4)),
-            Clones=('Clone', lambda x: ', '.join(sorted(x.unique().astype(str)))),
+            Target_Clones=('Clone', lambda x: ', '.join(sorted(x.unique().astype(str)))),
             Genes=('Gene Symbol', lambda x: ', '.join(sorted(x.unique().astype(str)))),
+            Drug_Response=('Drug_Response', 'first'),
             n_clones=('Clone', 'nunique'),
         )
         .reset_index()
@@ -211,9 +227,14 @@ def build_drug_prioritization(gene_alterations, pandrugs_dir, out_dir):
         drug_summary = drug_summary.sort_values(
             ['n_clones', 'Status', 'max_dScore'],
             ascending=[False, True, False]
-        )
+        )def parse_clones(s):
+    if pd.isna(s) or s == "":
+        return []
+    return [int(x.strip()) for x in str(s).split(",") if x.strip() != ""]
 
-        
+# Crear lista de clones y número de clones
+drug_sum["Target_Clones_list"] = drug_sum["Target_Clones"].apply(parse_clones)
+drug_sum["n_clones"] = drug_sum["Target_Clones_list"].apply(lambda xs: len(set(xs)))
         # Drop n_clones column
         drug_summary.drop(columns = ["n_clones"], axis=1, inplace=True)
 
