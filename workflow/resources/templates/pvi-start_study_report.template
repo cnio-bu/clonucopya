@@ -442,8 +442,9 @@
                 <th>Status</th>
                 <th>Interaction_Type</th>
                 <th>max_dScore</th>
-                <th>Clones</th>
+                <th>Target_Clones</th>
                 <th>Genes</th>
+                <th>Drug_Response</th>
             </tr>
         </thead>
         <tbody>
@@ -454,8 +455,9 @@
                 <td>{{ row['Status'] }}</td>
                 <td>{{ row['Interaction_Type'] }}</td>
                 <td>{{ row['max_dScore'] | safe_float(3) }}</td>
-                <td>{{ row['Clones'] }}</td>
+                <td>{{ row['Target_Clones'] }}</td>
                 <td>{{ row['Genes'] }}</td>
+                <td>{{ row['Drug_Response'] }}</td>
             </tr>
             {% endfor %}
         </tbody>
