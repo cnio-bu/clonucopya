@@ -34,7 +34,10 @@ def create_jinja_env(template_dir="."):
     env.filters['safe_int'] = safe_int_format
     return env
 
-
+def parse_clones(s):
+    if pd.isna(s) or s == "":
+        return []
+    return [int(x.strip()) for x in str(s).split(",") if x.strip() != ""]
 
 
 def prepare_report_data(study_path, drug_filter):
@@ -67,7 +70,39 @@ def prepare_report_data(study_path, drug_filter):
             if not drug_sum.empty:
                 if drug_filter == 'clinical':
                      drug_sum = drug_sum[(drug_sum['Status'] != 'EXPERIMENTAL') & (drug_sum['Interaction_Type'] != 'PATHWAY_MEMBER')]
-                drug_sum_top = drug_sum.head(25)  
+
+                # Create support columns to sort by number of target clones
+                drug_sum["Target_Clones_list"] = drug_sum["Target_Clones"].apply(parse_clones)
+                drug_sum["n_clones"] = drug_sum["Target_Clones_list"].apply(lambda xs: len(set(xs)))
+
+                # Sort interaction_type
+                interaction_order = ["DIRECT_TARGET", "BIOMARKER", "PATHWAY_MEMBER"]
+                drug_sum["Interaction_Type"] = pd.Categorical(
+                            drug_sum["Interaction_Type"],
+                            categories=interaction_order,
+                            ordered=True
+                )
+                
+                # FILTER SENSITIVITY  
+                sensitivity = (
+                    drug_sum[drug_sum["max_dScore"] > 0]
+                    .sort_values(["n_clones", "Status", 'Interaction_Type', "max_dScore"], ascending=[False, True, True, False])
+                    .head(25)
+                    .copy()
+                )
+                #sensitivity['Drug_Response'] = 'SENSITIVITY'
+
+                # FILTER RESISTANCE
+                resistance =(
+                    drug_sum[drug_sum["max_dScore"] < 0]
+                    .sort_values(["n_clones", "Status", 'Interaction_Type', "max_dScore"], ascending=[False, True, True, False])
+                    .head(25)
+                    .copy()
+                )
+                #resistance['Drug_Response'] = 'RESISTANCE'
+                drug_sum_top = pd.concat([sensitivity, resistance], axis=0)
+                drug_sum_top.drop(columns = ["n_clones", "Target_Clones_list"], axis=1, inplace=True)
+                
         except:
             drug_sum_top = None
     
@@ -131,11 +166,14 @@ def prepare_report_data(study_path, drug_filter):
                     .head(3)
                     .reset_index(drop=True)
                 )
-
+                
                 # Colapse repeated key columns for readability
                 collapse_cols = ["Clone", "Mutation ID", "Gene Symbol", "VAF"]
                 drugs_df_compact[collapse_cols] = drugs_df_compact[collapse_cols].astype("string")
-                is_dup = ~drugs_df_compact[collapse_cols].ne(drugs_df_compact[collapse_cols].shift()).any(axis=1)
+                
+                within_group_index = drugs_df_compact.groupby(collapse_cols).cumcount()
+                is_dup = within_group_index > 0
+                
                 drugs_df_compact.loc[is_dup, collapse_cols] = ""
                 
         except Exception as e:
