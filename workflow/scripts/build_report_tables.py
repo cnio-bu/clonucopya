@@ -25,6 +25,7 @@ def vaf_string_for_mutation(mutation_id, vaf_dict):
     return "; ".join(vaf_entries)
 
 
+
 # Build Gene Alterations dataframe with annotated information
 def build_gene_alterations(pvi_input, pandrugs_dir, out_dir):
 
@@ -227,17 +228,11 @@ def build_drug_prioritization(gene_alterations, pandrugs_dir, out_dir):
         drug_summary = drug_summary.sort_values(
             ['n_clones', 'Status', 'max_dScore'],
             ascending=[False, True, False]
-        )def parse_clones(s):
-    if pd.isna(s) or s == "":
-        return []
-    return [int(x.strip()) for x in str(s).split(",") if x.strip() != ""]
-
-# Crear lista de clones y número de clones
-drug_sum["Target_Clones_list"] = drug_sum["Target_Clones"].apply(parse_clones)
-drug_sum["n_clones"] = drug_sum["Target_Clones_list"].apply(lambda xs: len(set(xs)))
+        )
+        
         # Drop n_clones column
         drug_summary.drop(columns = ["n_clones"], axis=1, inplace=True)
-
+    
         drug_summary.to_csv(f"{out_dir}/drug_summary.tsv", sep='\t', index=False)
 
     
