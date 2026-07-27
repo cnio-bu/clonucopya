@@ -28,16 +28,17 @@ def process_pyclone_muts_clones(phy_out, study, out_dir):
     
     # Load Phyclone output
     try:
-        mut_info = pd.read_csv(phy_out, sep='\t')
+        phy_df = pd.read_csv(phy_out, sep='\t')
     except Exception as e:
         raise ValueError(f"Failed to read Phyclone output file: {e}")
 
-
+    phy_df = phy_df[(phy_df['clone_id'] != -1) & (phy_df['clonal_prev'] != 0)].reset_index(drop=True)
+    
     # Initialize cluster dictionary
     clone_dataframes: Dict[int, List[Dict]] = {}
     
     # Process mutations
-    for mut in mut_info['mutation_id'].unique():
+    for mut in phy_df['mutation_id'].unique():
         try:
             # Process chromosome prefix and split mutation components
             chrom, pos, ref, alt = mut.split(':')
@@ -51,7 +52,7 @@ def process_pyclone_muts_clones(phy_out, study, out_dir):
                 # Substitution
                 end = int(pos) + len(ref) - 1
 
-            clone_id = mut_info.loc[mut_info['mutation_id'] == mut, 'clone_id'].iloc[0]
+            clone_id = phy_df.loc[phy_df['mutation_id'] == mut, 'clone_id'].iloc[0]
 
             if clone_id not in clone_dataframes:
                 clone_dataframes[clone_id] = []
