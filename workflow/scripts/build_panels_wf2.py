@@ -34,30 +34,44 @@ def get_study_panels(study, phy_out, pvi_input, out_file):
 
     # Load Phyclone tree/clone dataframe
     try:
-        tree_df = pd.read_table(phy_out, sep="\t")
+        phy_df = pd.read_table(phy_out, sep="\t")
     except Exception as e:
         raise ValueError(f"Error reading PyClone-VI tree file: {e}")
 
 
-    tree_df = tree_df[tree_df['clone_id'] != -1].reset_index(drop=True)
+    phy_df = phy_df[(phy_df['clone_id'] != -1) & (phy_df['clonal_prev'] != 0)].reset_index(drop=True)
     
-    # sample statistics
-    study_filt = tree_df[["mutation_id", "clone_id", "sample_id"]].copy()
-    study_filt["clone_id"] = study_filt["clone_id"].astype(int).astype(str)
+    # sample statistics 
+    panel = (
+        phy_df.groupby("sample_id", as_index=False)
+        .agg(
+            num_mutations=("mutation_id", "nunique"),
+            num_clones=("clone_id", "nunique")
+        )
+        .reset_index()
+    )
 
     # Gathering sex information
-    tree_df["chrom"] = (
-    tree_df["mutation_id"]
+    phy_df["chrom"] = (
+        phy_df["mutation_id"]
+        .astype(str)
+        .str.split(":", n=1)
+        .str[0]
+    )
+
+    # Gathering sex information
+    phy_df["chrom"] = (
+    phy_df["mutation_id"]
     .astype(str)
     .str.split(":", n=1)
     .str[0]
     )
-    tree_df["chrom"] = tree_df["chrom"].str.replace("^chr", "", regex=True).str.upper()
+    phy_df["chrom"] = phy_df["chrom"].str.replace("^chr", "", regex=True).str.upper()
 
 
 
     sex_by_sample = (
-        tree_df
+        phy_df
         .groupby("sample_id")["chrom"]
         .agg(
             has_X=lambda s: (s == "X").any(),
@@ -72,16 +86,6 @@ def get_study_panels(study, phy_out, pvi_input, out_file):
 
     sex_by_sample = sex_by_sample[["sample_id", "sex"]]
 
-    # Aggregate number of mutations and clones per sample
-    panel = (
-        study_filt
-        .groupby("sample_id")
-        .agg(
-            num_mutations=("mutation_id", "nunique"),
-            num_clones=("clone_id", "nunique"),
-        )
-        .reset_index()
-    )
 
     # Merge sex and tumour content
     panel = panel.merge(sex_by_sample, on="sample_id", how="left")
