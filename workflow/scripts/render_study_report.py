@@ -101,7 +101,7 @@ def prepare_report_data(study_path, drug_filter):
                 )
                 #resistance['Drug_Response'] = 'RESISTANCE'
                 drug_sum_top = pd.concat([sensitivity, resistance], axis=0)
-                drug_sum_top.drop(columns = ["n_clones", "Target_Clones_list"], axis=1, inplace=True)
+                drug_sum_top.drop(columns = ["n_clones", "Target_Clones_list", "Interaction_Type"], axis=1, inplace=True)
                 
         except:
             drug_sum_top = None
@@ -309,7 +309,7 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
         'clone_alterations_images': data['clone_alterations_images'],
 
             'drug_summary_description': f"""
-            <p>The Drug Summary provides a high-level overview of the therapeutic candidates identified across the entire study. For each drug, the table reports the number of genetic alterations supporting its prioritization, its regulatory approval status (APPROVED, CLINICAL_TRIALS, or EXPERIMENTAL), and the type of interaction with the affected genes (DIRECT_TARGET, BIOMARKER, or PATHWAY_MEMBER).</p>
+            <p>The Drug Summary provides a high-level overview of the therapeutic candidates identified across the entire study. For each drug, the table reports the number of genetic alterations supporting its prioritization, its regulatory approval status (APPROVED, CLINICAL_TRIALS, or EXPERIMENTAL), and the type of interaction with the affected genes (DIRECT TARGET as DT, BIOMARKER as BM, or PATHWAY_MEMBER as PM).</p>
             <p>This report was generated in {drug_filter} mode. In clinical mode, results are filtered more stringently, excluding drugs with experimental status and pathway member interaction type. In discovery mode, no filters are applied, and all drug hits identified are displayed regardless of their experimental status or interaction type.</p>
             <p>This table summarizes up to 25 top-ranked drug candidates derived from the mutational landscape of all samples included in the study. A detailed per-clone breakdown is available in the Drug Prioritization section.</p>
             <p>The DScore in PanDrugs2 can be negative. Its range spans from –1 to 1, where negative values indicate drug resistance and positive values indicate drug sensitivity. Drugs with a DScore greater than 0.7 will be highlighted in bold.</p>
