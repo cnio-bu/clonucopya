@@ -440,11 +440,10 @@
             <tr>
                 <th>Drug</th>
                 <th>Status</th>
-                <th>Interaction_Type</th>
-                <th>max_dScore</th>
-                <th>Target_Clones</th>
-                <th>Genes</th>
-                <th>Drug_Response</th>
+                <th>Max. dScore</th>
+                <th>Target Clones</th>
+                <th>Gene Interactions</th>
+                <th>Drug Response</th>
             </tr>
         </thead>
         <tbody>
@@ -453,10 +452,9 @@
             <tr{% if is_btc %} style="font-weight: bold;"{% endif %}>
                 <td>{{ row['Drug'] }}</td>
                 <td>{{ row['Status'] }}</td>
-                <td>{{ row['Interaction_Type'] }}</td>
                 <td>{{ row['max_dScore'] | safe_float(3) }}</td>
                 <td>{{ row['Target_Clones'] }}</td>
-                <td>{{ row['Genes'] }}</td>
+                <td>{{ row['Gene_Interactions'] }}</td>
                 <td>{{ row['Drug_Response'] }}</td>
             </tr>
             {% endfor %}
