@@ -203,14 +203,43 @@ def build_drug_prioritization(gene_alterations, pandrugs_dir, out_dir):
         drug_hits_no_outliers = drug_sum_prev_clean[drug_sum_prev_clean["Clone"] != -1] 
 
         status_order = ["APPROVED", "CLINICAL_TRIALS", "EXPERIMENTAL"]
+
+
+        # Create dict to replace abbreviated format
+        it_mapping = {
+            'DIRECT_TARGET': 'DT', 
+            'BIOMARKER': 'BM', 
+            'PATHWAY_MEMBER': 'PM'
+        }
+        
+        # Group drugs by interaction type
+        interaction_types = (
+            drug_hits_no_outliers
+            .groupby(['Drug', 'Interaction Type'])['Gene Symbol']
+            .unique()
+            .apply(lambda x: ", ".join(sorted(x.astype(str))))
+            .reset_index()
+        )
+        
+        # Replace short name and format each interaction type group
+        interaction_types['Interaction Type'] = interaction_types['Interaction Type'].replace(it_mapping)
+        interaction_types['Formatted'] = interaction_types['Interaction Type'] + ": " + interaction_types['Gene Symbol']
+        
+        # Collapse all interaction types abbreviated
+        interaction_summary = (
+            interaction_types
+            .groupby('Drug')['Formatted']
+            .apply(lambda x: "; ".join(x))
+        )
+        
         
         drug_summary = (
         drug_hits_no_outliers
         .groupby('Drug')
         .agg(
             Status=('Status', 'first'),
-            Interaction_Type=('Interaction Type', 'first'),
             max_dScore=('dScore', lambda x: round(x.max(), 4)),
+            Interaction_Type=('Interaction Type', 'first'),
             Target_Clones=('Clone', lambda x: ', '.join(sorted(x.unique().astype(str)))),
             Genes=('Gene Symbol', lambda x: ', '.join(sorted(x.unique().astype(str)))),
             Drug_Response=('Drug_Response', 'first'),
@@ -218,6 +247,10 @@ def build_drug_prioritization(gene_alterations, pandrugs_dir, out_dir):
         )
         .reset_index()
         )
+
+       # Add formatted interaction type column
+        drug_summary['Gene_Interactions'] = drug_summary['Drug'].map(interaction_summary)
+        
 
         drug_summary["Status"] = pd.Categorical(
             drug_summary["Status"],
@@ -230,9 +263,13 @@ def build_drug_prioritization(gene_alterations, pandrugs_dir, out_dir):
             ascending=[False, True, False]
         )
         
-        # Drop n_clones column
+        # Drop n_clones adn Genes column
+        # drug_summary.drop(columns = ["Genes"], axis=1, inplace=True)
         drug_summary.drop(columns = ["n_clones"], axis=1, inplace=True)
-    
+
+        col_order = ['Drug', 'Status', 'Interaction_Type', 'max_dScore', 'Target_Clones', 'Gene_Interactions', 'Drug_Response']
+        drug_summary = drug_summary[col_order]
+        
         drug_summary.to_csv(f"{out_dir}/drug_summary.tsv", sep='\t', index=False)
 
     
