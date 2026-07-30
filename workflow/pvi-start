@@ -34,7 +34,7 @@ for _, row in samplesheet.iterrows():
         study_to_alias[row["study"]] = dict(zip(meta["sample_id"], meta["alias"]))
 
 for _, row in samplesheet.iterrows():
-    study    = row["study"]
+    study = row["study"]
     pvi_path = row["pyclone_vi"]
 
     if pd.isna(pvi_path) or pvi_path == "":
@@ -45,11 +45,10 @@ for _, row in samplesheet.iterrows():
     if not os.path.exists(pvi_path):
         raise FileNotFoundError(f"Missing input file: {pvi_path}")
 
-    pvi_df     = pd.read_csv(pvi_path, sep="\t")
-    alias_dict = study_to_alias.get(study, {})  # vacío si no hay metadata
+    pvi_df = pd.read_csv(pvi_path, sep="\t")
+    alias_dict = study_to_alias.get(study, {})
 
     for s in pvi_df["sample_id"].unique():
-        # Sustituir por alias si existe, conservar original si no
         resolved = alias_dict.get(s, s)
         study_to_samples[study].add(resolved)
 
