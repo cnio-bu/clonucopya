@@ -1,6 +1,19 @@
+def get_input_liftover(wildcards):
+    study_to_pvi = globals().get("study_to_pvi", None)
+
+    if study_to_pvi:
+        pvi_path = study_to_pvi.get(wildcards.study, None)
+        if pvi_path:
+            return "results/{study}/apply_alias/pvi_alias_swap.tsv".format(
+                study=wildcards.study
+            )
+    return f"results/{wildcards.study}/pyclone-vi_prep/combined_intersect_pvi.tsv"
+
+
+
 rule mutation_liftover:
     input:
-        "results/{study}/apply_alias/pvi_alias_swap.tsv"
+        get_input_liftover
     output:
         "results/{study}/mutation_liftover/pvi_checked.tsv"
     params:
