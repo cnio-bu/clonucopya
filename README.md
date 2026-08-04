@@ -86,7 +86,7 @@ Once the workflow has been downloaded, and the conda environment is ready, the p
 
 * sampleshet: there is a samplesheet_template.csv available at config directory. The path to the samplesheet must be set in the config.yaml. 
 * config.yaml: there is a config_template.yaml available at config directory. Please change the name to config.yaml or use the name you desire at workflow/Snakefile.
-  - This workflow has two special parameters: `bam_check` (True|False) and `just_snv` (True|False). If BAM files are available for each sample, we recommend setting `bam_check` to True and providing the path to the directory containing the BAM files at `bam_files` parameter (leave empty otherwise). The `just_snv` parameter controls whether indels are filtered out or retained. It is set to True by default, which is the recommended configuration, as indel support remains an experimental feature.
+  - This workflow has five special parameters: `drug_filter` (clinical|discovery), `genome_reference` (GRCh37|GRCh38), `bam_check` (True|False), `bam_files` (path to the directory the bam files),  and `just_snv` (True|False). Drug filter parameter sets the thresholds of drugs that wiil appear in the report (if clinical mode is set, drugs with pathway member interaction type or experimental status will be filtered out). Moreover, it is necessary to specify in `genome_reference` the reference used at the SNV and CNA call. If BAM files are available for each sample, we recommend setting `bam_check` to True and providing the path to the directory containing the BAM files at `bam_files` parameter (leave empty otherwise). The `just_snv` parameter controls whether indels are filtered out or retained. It is set to True by default, which is the recommended configuration, as indel support remains an experimental feature.
 
 > Generate your own seed for config.yaml. Manually chosen seeds may be too low-complexity and more stochastically dependent. Further, pseudorandom number generators from standard libraries of software like numpy in python (used in Pyclone-VI and Phyclone), often do not meet quality checks for randomness. To minimize seed bias, we instead recommend using the terminal to read four bytes from the operating system (/dev/random) to generate unpredictable 32-bit random seed values. For example, it can be easily generated on linux with this command `head -c 4 /dev/urandom | od -An -tu4`.
 
@@ -124,11 +124,11 @@ comparative analysis (read [Main applications](#main-applications) section for f
 ```
 {study}/
 ├── mutation_prep/
-│   ├──{sample_id}_prep.mut.tsv
-│   └──bam_checked/
-│      └──{sample_id}_check.mut.tsv
+│   └── {sample_id}_prep.mut.tsv
+├── mutation_liftover/
+│   └── pvi_checked.tsv
 ├── pyclone-vi_prep/
-│   ├── {sample_id}_intersect_pvi.tsv
+│   ├── {study}_intersect_pvi.tsv
 │   └── combined_intersect_pvi.tsv
 ├── pyclone-vi/
 │   ├── pvi_out.h5
@@ -138,7 +138,7 @@ comparative analysis (read [Main applications](#main-applications) section for f
 │   ├── trace.pkl.gz
 │   ├── tree.nwk
 │   └── tree_table.tsv
-├── pvi_vep_prep
+├── mut_vep_prep
 │   └── {study}_clone_*.tsv
 ├── vep_annotation/
 │   ├── annotations/
@@ -157,9 +157,10 @@ comparative analysis (read [Main applications](#main-applications) section for f
         ├── clonal_tree.png
         ├── drug_prioritization.tsv
         ├── drug_summary.tsv
-        ├── clonal_histogram.png
         ├── gene_alterations.tsv
         ├── report_panel.tsv
+        ├── mutation_contribution/
+        │   └── {sample_id}_mutation_contribution.png
         ├── spheres_of_clones/
         │   └── {sample_id}_sphere_of_clones.png
         └── vaf_heatmaps/
@@ -179,9 +180,10 @@ The pvi-start execution mode provides a streamlined alternative that begins with
 ### Configure workflow
 
 Once the workflow has been downloaded, and the conda environment is ready, the parameters must be set.
-
-* pvi-start_samplesheet.csv: there is a pvi-start_samplesheet.csv available at config directory. The path to the samplesheet must be set in the config.yaml. 
-* pvi-start_config.yaml: there is a pvi-start_config_template.yaml available at config directory. Please change the name to config.yaml or use the name you desire at workflow/Snakefile. 
+* pvi-start_config.yaml: there is a pvi-start_config_template.yaml available at config directory. Please change the name to config.yaml or use the name you desire at workflow/Snakefile.
+  - This workflow has three special parameters: `drug_filter` (clinical|discovery), `genome_reference` (GRCh37|GRCh38),  and `just_snv` (True|False). Drug filter parameter sets the thresholds of drugs that wiil appear in the report (if clinical mode is set, drugs with pathway member interaction type or experimental status will be filtered out). Moreover, it is necessary to specify in `genome_reference` the reference used at the SNV and CNA call. The `just_snv` parameter controls whether indels are filtered out or retained. It is set to True by default, which is the recommended configuration, as indel support remains an experimental feature.
+* metadata_pvi-start.csv: there is a pvi-start_samplesheet_template.csv available at config directory. The path to the samplesheet must be set in the pvi-start_samplesheet.csv.
+* pvi-start_samplesheet.csv: there is a pvi-start_samplesheet_template.csv available at config directory. The path to the samplesheet must be set in the config.yaml. 
 
 > Generate your own seed for config.yaml as explained at [Full-Set mode](#full-set-mode) section. 
 
@@ -217,6 +219,8 @@ comparative analysis (read [Main applications](#main-applications) section for f
 
 ```
 {study}/
+├── pvi-start_prep/
+│   └── pvi-start_prep.tsv
 ├── pyclone-vi/
 │   ├── pvi_out.h5
 │   └── pvi_out.tsv
@@ -225,7 +229,7 @@ comparative analysis (read [Main applications](#main-applications) section for f
 │   ├── trace.pkl.gz
 │   ├── tree.nwk
 │   └── tree_table.tsv
-├── pvi_vep_prep
+├── mut_vep_prep
 │   └── {study}_clone_*.tsv
 ├── vep_annotation/
 │   ├── annotations/
@@ -239,14 +243,15 @@ comparative analysis (read [Main applications](#main-applications) section for f
 │       ├── {study}_clone_*_gene-drug.json
 │       └── {study}_clone_*_gene-drug.csv
 └── report/
-    ├── {study}_report.pdf
+    ├── {study}_report_wf2.pdf
     └── components/
         ├── clonal_tree.png
-        ├── clonal_histogram.png
-        ├── drug_prioritization_wf.tsv
-        ├── drug_summary_wf.tsv
-        ├── gene_alterations_wf.tsv
+        ├── drug_prioritization.tsv
+        ├── drug_summary.tsv
+        ├── gene_alterations.tsv
         ├── report_panel_wf2.tsv
+        ├── mutation_contribution/
+        │   └──{sample_id}_mutation_contribution.png
         ├── spheres_of_clones/
         │   └── {sample_id}_sphere_of_clones.png
         └── vaf_heatmaps/
@@ -259,8 +264,9 @@ comparative analysis (read [Main applications](#main-applications) section for f
 
 >[!WARNING]
 > Clonucopya is set to run full-set mode by default unless you specify the option `-s pvi-start` in the snakemake commnand.
-> Be carefull with the name of the config and samplesheet file. Remove the suffix '_template' or change the name at the snakefile pvi-start or Snakefile (full-set mode). 
-
+> Be carefull with the name of the config, metadata, and samplesheet file. Remove the suffix '_template' or change the name at the snakefile pvi-start or Snakefile (full-set mode). 
+> Metadata file is only available for pvi-start executation mode because is the only way to rename the samples on the fly. However, we can specify in full-set execution mode the desired sample names at the beginning in the samplesheet file.
+> The configuration parameters related to bam files in the config file are only available at the full-set execution mode. These parameters are used with the purpose of completing the missing information related to reference and alternative reads of the specified samples. All samples musth have read information of all mutations; otherwise, they will not be included in the analysis.
 
 
 # Authors
