@@ -4,7 +4,7 @@ def get_input_liftover(wildcards):
     if study_to_pvi:
         pvi_path = study_to_pvi.get(wildcards.study, None)
         if pvi_path:
-            return "results/{study}/apply_alias/pvi_alias_swap.tsv".format(
+            return "results/{study}/pvi-start_prep/pvi-start_prep.tsv".format(
                 study=wildcards.study
             )
     return f"results/{wildcards.study}/pyclone-vi_prep/combined_intersect_pvi.tsv"
