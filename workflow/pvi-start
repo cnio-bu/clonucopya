@@ -22,6 +22,19 @@ studies = samplesheet.set_index("study", drop=False)
 validate(studies, "resources/schemas/samplesheet_schema_wf2.yaml")
 
 
+for study, row in studies.iterrows():
+    pvi_path = row["pyclone_vi"]
+    pvi_input = pd.read_csv(pvi_path, sep="\t", dtype=str)
+    pvi_input = pvi_input.where(pd.notnull(pvi_input), "NA")
+    try:
+        validate(pvi_input, "resources/schemas/pvi-start_input.yaml")
+    except Exception as e:
+        raise ValueError(
+            f"Failure validating study '{study}' "
+            f"in the file '{pvi_path}': {e}"
+        )
+
+
 
 study_to_pvi = {}
 study_to_samples = defaultdict(set)
@@ -94,7 +107,7 @@ rule all:
 
 # CHANGE SAMPLE_ID OF PYCLONE-VI
 
-include: "rules/apply_alias.smk"
+include: "rules/pvi-start_prep.smk"
 
 
 # LIFTOVER OF MUTATIONS FOR PYCLONE-VI INPUT
