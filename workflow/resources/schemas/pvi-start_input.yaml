@@ -1,0 +1,88 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+title: Pyclone-VI validation input Schema
+description: Validation schema for Clonucopya input pvi-start execution mode
+type: object
+properties:
+  mutation_id:
+    type: string
+    pattern: "^(chr)?([1-9][0-9]?|[XYM]|MT):[0-9]+:[ACGTN.-]+:[ACGTN.-]+$"
+    description: Unique identifier for the mutation in Clonucopya format
+
+  sample_id:
+    type: string
+    description: Unique identifier for the sample
+
+  ref_counts:
+    description: Number of reads matching the reference allele. NA/null allowed for missing data
+    anyOf:
+      - type: integer
+        minimum: 0
+      - type: "null"
+      - type: string
+        pattern: "^[0-9]+$"
+      - type: string
+        enum: ["NA", "nan"]
+
+  alt_counts:
+    description: Number of reads matching the alternate allele. NA/null allowed for missing data
+    anyOf:
+      - type: integer
+        minimum: 0
+      - type: "null"
+      - type: string
+        pattern: "^[0-9]+$"
+      - type: string
+        enum: ["NA", "nan"]
+
+  major_cn:
+    description: Major copy number of segment overlapping mutation. NA/null allowed for missing data
+    anyOf:
+      - type: integer
+        minimum: 0
+      - type: "null"
+      - type: string
+        pattern: "^[0-9]+$"
+      - type: string
+        enum: ["NA", "nan"]
+
+  minor_cn:
+    description: Minor copy number of segment overlapping mutation. NA/null allowed for missing data
+    anyOf:
+      - type: integer
+        minimum: 0
+      - type: "null"
+      - type: string
+        pattern: "^[0-9]+$"
+      - type: string
+        enum: ["NA", "nan"]
+
+  normal_cn:
+    description: >
+      Total copy number of segment in healthy tissue. For autosomes this will
+      be two, and for male sex chromosomes one. NA/null allowed for missing data
+    anyOf:
+      - type: integer
+        minimum: 0
+      - type: "null"
+      - type: string
+        pattern: "^[0-9]+$"
+      - type: string
+        enum: ["NA", "nan"]
+
+  tumour_content:
+    description: The tumour content (cellularity) of the sample. Default value must be 1 if unknown
+    anyOf:
+      - type: number
+        minimum: 0
+        maximum: 1
+      - type: string
+        pattern: '^(0(\.[0-9]+)?|1(\.0+)?)$'
+
+required:
+  - mutation_id
+  - sample_id
+  - ref_counts
+  - alt_counts
+  - major_cn
+  - minor_cn
+  - normal_cn
