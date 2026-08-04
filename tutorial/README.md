@@ -4,7 +4,7 @@ In this tutorial, we present an step-by-step guide to run Clonucopya with sample
 **P10.vcf**
 - File type: Simulated VCF (Variant Call Format) file containing genomic variants generated for testing purposes.
 - Size: 883 Kb.
-- Reference genome: GRCh38/hg38.
+- Reference genome: GRCh37/hg37.
 - Samples included: One tumour sample.
 - Variant content: 8192 SNVs.
 - Available information: For each variant, the VCF provides genomic position, reference and alternative alleles, and sample-level metrics such as genotype, read depth, and variant allele - frequency, which are used in downstream analyses.
@@ -12,7 +12,7 @@ In this tutorial, we present an step-by-step guide to run Clonucopya with sample
 **P10.txt**
 - File type: Simulated CNA calling (Copy Number Aberration) file containing genomic variants generated for testing purposes.
 - Size: 37 Kb.
-- Reference genome: GRCh38/hg38.
+- Reference genome: GRCh37/hg37.
 - Samples included: One tumour sample.
 - Variant content: 75 CNAs.
 - Available information: For each variant, the VCF provides chromosome, start position, end position, major copy number, ninor Copy Number, and other calling-realted information.
@@ -95,7 +95,9 @@ Once the workflow execution is completed, you can check the results of the study
 ```
 dream_P10/
 ├── mutation_prep/
-│   └──dream_P10_prep.mut.tsv
+│   └── tumour_prep.mut.tsv
+│   mutation_liftover/
+│   └── pvi_checked.tsv
 ├── pyclone-vi_prep/
 │   ├── dream_P10_intersect_pvi.tsv
 │   └── combined_intersect_pvi.tsv
@@ -107,7 +109,7 @@ dream_P10/
 │   ├── trace.pkl.gz
 │   ├── tree.nwk
 │   └── tree_table.tsv
-├── pvi_vep_prep
+├── mut_vep_prep
 │   └── dream_P10_clone_*.tsv
 ├── vep_annotation/
 │   ├── annotations/
@@ -124,32 +126,38 @@ dream_P10/
     ├── dream_P10_report.pdf
     └── components/
         ├── clonal_tree.png
-        ├── clonal_histogram.png
         ├── drug_prioritization.tsv
         ├── drug_summary.tsv
         ├── gene_alterations.tsv
-        ├── report_panel_wf.tsv
+        ├── report_panel.tsv
+        ├── mutation_contribution/
+        │   └── tumour_mutation_contribution.png
         ├── spheres_of_clones/
         │   └── tumour_sphere_of_clones.png
         └── vaf_heatmaps/
             ├── complete/
-            │   └── dream_P10_complete_vaf_heatmap.png
+            │   └── tumour_complete_vaf_heatmap.png
             └── sampled/
-                └── dream_P10_sampled_vaf_heatmap.png
+                └── tumour_sampled_vaf_heatmap.png
 ```
 
 > [!IMPORTANT]
 > In the directory report_results you have a file `dream_P10_report.pdf` to check how would look like the results of the execution.
 
 # Hands-on tutorial: PVI-Start Execution Mode
-In this tutorial, we present an step-by-step guide to run Clonucopya with sample data obtained from [Pyclone_VI](https://zenodo.org/record/4268826) supplementary files, specifically from from an ovarian adenocarcinoma patient (ID: 0009b464-b376-4fbc-8a56-da538269a02f, S1) in the PCAWG cohort. To launch the analysis, there is a file containing all the information of the mutations required to start from Pyclone-VI. This file have the following features:
+In this tutorial, we present an step-by-step guide to run Clonucopya with PEACE cohort data data obtained from [Hessey, S. et al. Nature, 2026](https://doi.org/10.1038/s41586-023-05729-x) supplementary files, specifically from from an LUAD patient (woman, 71 years) (ID: CRUKP7127) in the PEACE/TRACERx cohort. To launch the analysis, there is a file containing all the information of the mutations required to start from Pyclone-VI. This file have the following features:
 
-**0009b464-b376-4fbc-8a56-da538269a02f.tsv (S1)**
+**CRUKP7127_peace.tsv**
 - File type: Pyclone-VI input file containing genomic variants generated for testing purposes.
-- Size: 586 Kb.
-- Reference genome: GRCh38/hg38.
-- Samples included: One tumour sample.
-- Variant content: 15469 mutations.
+- Size: 120 Kb.
+- Reference genome: GRCh37/hg37.
+- Samples included:
+  - CRUKP7127_SU_T1-R1 - Primary (CRUKP7127_SU_T1-R1--df37093bhhy7)
+  - CRUKP7127_SU_T1-R2 - Primary (CRUKP7127_SU_T1-R2--ff616f1ahhy7)
+  - CRUKP7127_SU_T1-R3 - Primary (CRUKP7127_SU_T1-R3--6f2c7730hhy7)
+  - CRUKP7127_SU_T1-R4 - Primary (CRUKP7127_SU_T1-R4--9ab5e2c1hhy7)
+  - CRUKP7127_BR_LN01 - Lymph node relapse (CRUKP7127_BR_LN01--2a2a4b4dhwcg)
+- Variant content: 1,819 mutations.
 - Available information: For each mutation, the file provides mutation id with chromosome, genomic position, reference and alternative alleles, sample id, reference counts, alternative counts, normal copy number, major copy number, minor copy number, and tumor content.
 
 
@@ -171,7 +179,7 @@ mamba install snakemake apptainer snakemake-executor-plugin-slurm pandas
 
 ## Settings
 
-Once we have the sample files ready to execute Clonucopya, config file (config/config_pvi-start_template.yaml) and samplesheet (config/samplesheet_pvi-start_template.csv) must be set up. 
+Once we have the sample files ready to execute Clonucopya, config file (config/config_pvi-start_template.yaml),  alias metadata file (metadata_pvi-start_template.csv), and samplesheet (config/samplesheet_pvi-start_template.csv) must be set up. 
 
 > We recommend to set the absolute path when a file or directory is asked to avoid confussions. However, for the sake of this tutorial, we will set relative paths to simplify the explanation.
 
@@ -182,12 +190,24 @@ This time we will be running Clonucopya with default execution parameters. So we
 The we have to set following parameters at config.yaml:
 * samplesheet: "../config/samplesheet_pvi-start.csv"
 
+### Metadata alias file
+
+To abbreviate and improve the readability, we can customize the sample names of the stud filling the csv file which has the following format:
+| sample_id 	| alias     |
+|-------	|-----------	|
+| CRUKP7127_SU_T1-R1--df37093bhhy7  	| SU_T1-R1 	|
+| CRUKP7127_SU_T1-R2--ff616f1ahhy7  	| SU_T1-R2 	|
+| CRUKP7127_SU_T1-R3--6f2c7730hhy7  	| SU_T1-R3 	|
+| CRUKP7127_SU_T1-R4--9ab5e2c1hhy7  	| SU_T1-R4 	|
+| CRUKP7127_BR_LN01--2a2a4b4dhwcg  	| BR_LN01 	|
+
 ### Samplesheet file
 
 We need to fill the csv file which has the following format:
-| study 	| pyclone_vi     |
-|-------	|-----------	|
-| dream_P10  	| ../tutorial/test/0009b464-b376-4fbc-8a56-da538269a02f.tsv 	|
+| study 	| pyclone_vi     | metadata |
+|-------	|-----------	|-----------	|
+| CRUKP7127  	| ../tutorial/test/CRUKP7127_peace.tsv 	| ../config/metadata_pvi-start.csv |
+
 
 
 ## Execution
@@ -209,7 +229,9 @@ snakemake -s pvi-start --software-deployment-method conda -j unlimited --cache
 Once the workflow execution is completed, you can check the results of the study at clonucopya/workflow/results. For this use case, the output will look like this:
 
 ```
-pcawg_S1/
+CRUKP7127/
+├── pvi-start_prep/
+│   └── pvi-start_prep.tsv
 ├── pyclone-vi/
 │   ├── pvi_out.h5
 │   └── pvi_out.tsv
@@ -218,36 +240,37 @@ pcawg_S1/
 │   ├── trace.pkl.gz
 │   ├── tree.nwk
 │   └── tree_table.tsv
-├── pvi_vep_prep
-│   └── pcawg_S1_clone_*.tsv
+├── mut_vep_prep
+│   └── CRUKP7127_clone_*.tsv
 ├── vep_annotation/
 │   ├── annotations/
-│   │   └── pcawg_S1_clone_*.vcf
+│   │   └── CRUKP7127_clone_*.vcf
 │   └── stats/ 
-│       └── pcawg_S1_clone_*_summary.html
+│       └── CRUKP7127_clone_*_summary.html
 ├── query_pandrugs/
 │   └── clone_*/
-│       ├── pcawg_S1_clone_*_computation.tsv
-│       ├── pcawg_S1_clone_*_vscore.vcf
-│       ├── pcawg_S1_clone_*_gene-drug.json
-│       └── pcawg_S1_clone_*_gene-drug.csv
+│       ├── CRUKP7127_clone_*_computation.tsv
+│       ├── CRUKP7127_clone_*_vscore.vcf
+│       ├── CRUKP7127_clone_*_gene-drug.json
+│       └── CRUKP7127_clone_*_gene-drug.csv
 └── report/
-    ├── pcawg_S1_report_wf2.pdf
+    ├── CRUKP7127_report_wf2.pdf
     └── components/
         ├── clonal_tree.png
-        ├── clonal_histogram.png
         ├── drug_prioritization.tsv
         ├── drug_summary.tsv
         ├── gene_alterations.tsv
         ├── report_panel_wf2.tsv
+        ├── mutation_contribution/
+        │   └──{sample_id}_mutation_contribution.png
         ├── spheres_of_clones/
-        │   └── tumour_sphere_of_clones.png
+        │   └── {sample_id}_sphere_of_clones.png
         └── vaf_heatmaps/
             ├── complete/
-            │   └── tumour_complete_vaf_heatmap.png
+            │   └── {sample_id}_complete_vaf_heatmap.png
             └── sampled/
-                └── tumour_sampled_vaf_heatmap.png
+                └── {sample_id}_sampled_vaf_heatmap.png
 ```
 
 > [!IMPORTANT]
-> In the directory report_results you have a file `pcawg_S1_report_wf2.pdf` to check how would look like the results of the execution.
+> In the directory report_results you have a file `CRUKP7127_report_wf2.pdf` to check how would look like the results of the execution.
