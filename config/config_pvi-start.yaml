@@ -1,0 +1,49 @@
+# Remove '_template' from config_template.yaml or change the path in Snakefile
+
+samplesheet: "../config/samplesheet_pvi-start.csv"
+
+# Analysis parameters
+## Drug Analysis Filter [string]: clinical | discovery
+drug_filter: "clinical"
+
+## Genome LiftOver GRch37/hg19 --> GRch38 [string]: GRCh37 | GRCh38
+##It must be done if your mutation were anotated with the previous genome reference
+genome_reference: "GRCh37"
+
+# True / False
+just_snv: True
+
+params:
+    pyclone-vi:
+        num_clusters: 20
+        density: "beta-binomial"
+        num_grid_points: 100
+        num_restarts: 100
+        seed: 570655569
+    phyclone:
+        num_chains: 4
+        density: "beta-binomial"
+        proposal: "fully-adapted"
+        burnin: 100
+        num_iters: 5000
+        seed: 570655569
+        grid_size: 101
+
+
+resources:
+    default:
+        threads: 1
+        mem: 4000
+        walltime: 480
+    pyclone-vi:
+        threads: 8
+        mem: 4000
+        walltime: 480
+    pandrugs:
+        threads: 2
+        mem: 4000
+        walltime: 480
+    phyclone:
+        threads: 1
+        mem: 4000
+        walltime: 480
