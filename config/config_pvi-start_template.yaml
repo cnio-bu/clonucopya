@@ -10,6 +10,9 @@ drug_filter: "clinical"
 ##It must be done if your mutation were anotated with the previous genome reference
 genome_reference: "GRCh37"
 
+# True / False
+just_snv: True
+
 params:
     pyclone-vi:
         num_clusters: 40
