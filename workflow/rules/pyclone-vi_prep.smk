@@ -43,9 +43,6 @@ rule pvi_intesersect:
 
 
 
-
-
-
 rule format_pvi_intersect:
     input:
         lambda wildcards: expand(
