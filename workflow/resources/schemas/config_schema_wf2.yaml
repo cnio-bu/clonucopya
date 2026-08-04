@@ -17,6 +17,10 @@ properties:
     type: string
     description: Genome reference used for the anotation of mutations (SNVs and CNAs)
     enum: ["GRCh38", "GRCh37"]
+    
+  just_snv:
+    type: boolean
+    description: Whether to process only SNVs or keep Indels (True/False)
 
   params:
     type: object
