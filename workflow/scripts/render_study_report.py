@@ -309,11 +309,20 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
         'clone_alterations_images': data['clone_alterations_images'],
 
             'drug_summary_description': f"""
-            <p>The Drug Summary provides a high-level overview of the therapeutic candidates identified across the entire study. For each drug, the table reports the number of genetic alterations supporting its prioritization, its regulatory approval status (APPROVED, CLINICAL_TRIALS, or EXPERIMENTAL), and the type of interaction with the affected genes (DIRECT TARGET as DT, BIOMARKER as BM, or PATHWAY_MEMBER as PM).</p>
+            <p>The Drug Summary provides a high-level overview of the therapeutic candidates identified across the entire study. For each drug, the table reports the number of genetic alterations supporting its prioritization, its regulatory approval status (APPROVED, CLINICAL_TRIALS, or EXPERIMENTAL), and the type of interaction with the affected genes (DIRECT TARGET, BIOMARKER, or PATHWAY_MEMBER).</p>
             <p>This report was generated in {drug_filter} mode. In clinical mode, results are filtered more stringently, excluding drugs with experimental status and pathway member interaction type. In discovery mode, no filters are applied, and all drug hits identified are displayed regardless of their experimental status or interaction type.</p>
             <p>This table summarizes up to 25 top-ranked drug candidates derived from the mutational landscape of all samples included in the study. A detailed per-clone breakdown is available in the Drug Prioritization section.</p>
-            <p>The DScore in PanDrugs2 can be negative. Its range spans from –1 to 1, where negative values indicate drug resistance and positive values indicate drug sensitivity. Drugs with a DScore greater than 0.7 will be highlighted in bold.</p>
-            
+            <p>The response of each drug is evaluated using the DScore (range -1 to +1):</p>
+            <ul>
+            <li>Sensitivity (DScore > 0): Positive values indicate that the mutations confer sensitivity to the drug (optimal candidates with a DScore > 0.7 are highlighted in bold).</li>
+            <li>Resistance (DScore < 0): Negative values suggest that the clone possesses mutations associated with therapeutic resistance.</li>
+            </ul>
+            <p>Drug-Gene Interactions:</p>
+            <ul>
+            <li>DT (Direct Target): The drug acts directly on the mutated protein.</li>
+            <li>BM (Biomarker): The alteration acts as a biomarker predictive of response.</li>
+            <li>PM (Pathway Member): The mutation affects the signaling pathway targeted by the drug.</li>
+            </ul>            
             <p>The source files are available at: {drug_summary_path}.</p>
             """,
         
@@ -323,7 +332,7 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
             'subclonal_tree': {
                 'title': 'Clonal Tree',
                 'description': f"""
-                <p>The phylogenetic tree is inferred using PhyClone, based on PyClone-VI results. PyClone-VI first clusters mutations according to their variant allele frequencies and copy number evidence, and PhyClone then uses these clusters to reconstruct the clonal evolutionary hierarchy.</p>
+                <p> Based on the variant allele frequency (VAF) and changes in copy number, the evolutionary hierarchy of the tumor has been inferred. The phylogenetic tree illustrates the relationships among the different cellular subpopulations (clones). The spherical representations show the distribution and percentage of each clone across the different biopsies or time points, allowing us to visualize which clones dominate the tumor tissue.</p>
                 <p>The source files are available at: {clonal_tree_path} and {clonal_histogram_path}.</p>
                 """,
             'image': data['clonal_tree_image'],
@@ -332,14 +341,14 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
             'clonal_proportions': {
                 'title': 'Clonal Proportions',
                 'description': f"""
-                <p>Based on the phylogeny results obtained by Phyclone, the spheres of clones show the distribution of the clonal population in each sample.</p>
+                <p>Based on the phylogeny results obtained by Phyclone, the spheres of clones and the show the distribution of the clonal population in each sample.</p>
                 <p>The source files are available at: {spheres_path}.</p>
                 """
             },
             'clone_alterations': {
                 'title': 'Clonal Alterations',
                 'description': f"""
-                <p>The Variant Allele Frequencies (VAF) heatmaps of each sample represent the evolutionary dynamics within the tumor(s). The distribution of VAF intensity patterns for each mutation in the different clones evidences how certain mutations are shared in the same clone from different samples or produce divergence and give rise to different evolutionary branches, representing the temporal sequence of mutational events. It allows to understand tumor heterogeneity among cell populations, with the aim of highlighting which clones may influence cancer progression or therapy resistance.By default, only MODERATE and HIGH impact mutations are considered.</p>
+                <p>Heat maps illustrate the spatial or temporal evolution of mutations within clones. Observing how the frequency of a mutation varies across different samples allows us to distinguish early “trunk” events (present in all cells and responsible for the origin of the tumor) from later “branch” events. Identifying these branches is essential for understanding intratumoral heterogeneity and detecting emerging clones that may be driving disease progression or treatment resistance. Only variants with moderate or high predictive impact are shown.</p>
                 <p>The source files are available at: {heatmaps_path}.</p>
                 """
             }
@@ -362,11 +371,14 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
             'drug_prioritization': {
                 'title': 'Drug Prioritization',
                 'description': f"""
-                    <p>The small variant analysis performed by PanDrugs2 displays only mutations deemed clinically relevant.</p>
-                    <p>The filtering criteria are as follows:</p>
-                    <p>Somatic alterations were analyzed with PanDrugs2 using the tumour VCF as input. The tool annotates all variants, retains genes carrying variants with moderate or high functional impact, and then prioritizes drugs according to two scores: the GScore, which reflects the biological relevance and druggability of the altered gene, and the DScore, which estimates drug suitability based on available evidence, type of drug–gene interaction and clinical development status. Results can be filtered by drug status (approved, in clinical trials or experimental), by interaction type (direct vs indirect) and by tumour indication; treatments with DScore ≥ 0.7 and GScore ≥ 0.6 are considered Best Therapeutic Candidates (BTCs) and will be highlighted in bold.</p>
-                    <p>The table below provides a simplified overview of the drugs targeting the affected genes, with the top 3 drugs selected per genetic alteration and ranked by Status and dScore.</p>
-                    <p> Drugs are sorted using the following criteria:</p>
+                    <p>The small variant analysis performed by PanDrugs2 displays only mutations classified as clinically relevant.</p>
+                    <p>The vulnerability of each tumor clone to different drugs is assessed by considering only mutations with a relevant functional impact. Therapeutic options are prioritized by evaluating two fundamental dimensions:</p>
+                    <ul>
+                        <li>GScore (Biological Target): Quantifies the relevance of the mutated gene in cancer development and its viability as a pharmacological target (druggability).</li>
+                        <li>DScore (Clinical Evidence): Estimates the suitability of the drug based on the current level of evidence, the type of interaction, and the phase of clinical development.</li>
+                    </ul>
+                    <p>We consider drugs with high clinical potential (DScore ≥ 0.7) that target key driver genes (GScore ≥ 0.6) to be Top Therapeutic Candidates (BTC), highlighted in bold.</p>
+                    <p>The table below provides a simplified overview of the drugs targeting the affected genes, with the top 3 drugs selected per genetic alteration and ranked by Status and dScore. Drugs are sorted using the following criteria:</p>
                     <ul>
                         <li>Clone.</li>
                         <li>Mutation positon.</li>
