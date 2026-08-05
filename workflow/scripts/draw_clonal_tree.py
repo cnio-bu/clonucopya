@@ -11,6 +11,14 @@ def make_branches_thicker(node, new_size):
 
 
 def draw_subclonal_tree(nwk_file, palette, out_file):
+    """
+    Plot clonal tree,  one per study.
+    Args:
+        nwk_file (str): Path to the file of the schema representation of the tree (NWK).
+        palette (str): Path to clonucopya's color palette (TXT)
+        out_file (str): Path to output file (PNG).
+        
+    """
     with open(palette, 'r') as palette:
         colors = palette.readlines()
         color_palette = [color.strip() for color in colors]

@@ -264,7 +264,6 @@ def build_drug_prioritization(gene_alterations, pandrugs_dir, out_dir):
         )
         
         # Drop n_clones adn Genes column
-        # drug_summary.drop(columns = ["Genes"], axis=1, inplace=True)
         drug_summary.drop(columns = ["n_clones"], axis=1, inplace=True)
 
         col_order = ['Drug', 'Status', 'Interaction_Type', 'max_dScore', 'Target_Clones', 'Gene_Interactions', 'Drug_Response']

@@ -69,6 +69,15 @@ def sanitize_filename(text):
 
 
 def plot_one_sample(sample_df, sample_id, clone_colors, output_file):
+    """
+    Plot clonal histogram,  one per sample.
+    Args:
+        sample_df (str): Pandas dataframe with sample_id, clones, colors and clonal prevalence.
+        sample_id (str): sample_id for the plot title.
+        clone colors (str): Dictionary with the colors asigned to clones (Dict).
+        out_file (str): Path to output file (PNG).
+        
+    """
     BG_COLOR = "white"
     GRID_COLOR = "#e8e8e8"
     FONT = "DejaVu Sans"

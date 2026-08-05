@@ -18,10 +18,10 @@ def pandrugs_query(vep_vcf,output_dir):
         output_dir (str): Directory where output files will be stored
 
     Output:
-        - {sample_id}_vscore.vcf: Variant scores file
-        - {sample_id}_gene-drug.json: Drug-gene interactions in JSON format
-        - {sample_id}_gene-drug.csv: Drug-gene interactions in CSV format
-        - {sample_id}_computation.tsv: Computation tracking information
+        {sample_id}_vscore.vcf: Variant scores file
+        {sample_id}_gene-drug.json: Drug-gene interactions in JSON format
+        {sample_id}_gene-drug.csv: Drug-gene interactions in CSV format
+        {sample_id}_computation.tsv: Computation tracking information
     """
 
     if os.path.exists(vep_vcf):
