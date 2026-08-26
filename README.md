@@ -47,7 +47,7 @@ mamba install snakemake apptainer snakemake-executor-plugin-slurm
 
 > [!IMPORTANT]
 > Software versions are listed at the [environment files](https://github.com/cnio-bu/clonucopya/tree/main/workflow/envs). 
-> This workflow has been tested with: [Python](https://www.python.org/downloads/release/python-3128/) v3.12.8, [Snakemake](https://snakemake.readthedocs.io/en/stable/) v9.20.0, [PyClone-VI](https://doi.org/10.1186/s12859-020-03919-2) v0.1.6, [PhyClone](https://doi.org/10.1093/bioinformatics/btaf344) v0.7.0, and [Ensembl VEP](https://link.springer.com/article/10.1186/s13059-016-0974-4) v113.3.
+> This workflow has been tested with: [Python](https://www.python.org/downloads/release/python-3128/) v3.12.8, [Snakemake](https://snakemake.readthedocs.io/en/stable/) v9.20.0, [PyClone-VI](https://doi.org/10.1186/s12859-020-03919-2) v0.1.6, [PhyClone](https://doi.org/10.1093/bioinformatics/btaf344) v0.7.0, and [Ensembl VEP](https://link.springer.com/article/10.1186/s13059-016-0974-4) v116.1.
 
 # Usage
 
