@@ -1,6 +1,7 @@
 rule vep_annotation:
     input:
         vep_prep="results/{study}/mut_vep_prep"
+#        cache_dir="resources/vep/cache"
     output:
         stats=directory("results/{study}/vep_annotation/stats"),
         annotations=directory("results/{study}/vep_annotation/annotations"),
@@ -25,7 +26,7 @@ rule vep_annotation:
             stat_file=$(echo "$clone" | sed 's/.tsv$/_summary.html/' | xargs basename -a)
     
             vep --cache \
-                --cache_version 113 \
+                --cache_version 116 \
                 --offline \
                 --format ensembl \
                 --vcf \
