@@ -4,7 +4,7 @@ rule get_vep_cache:
     params:
         species="homo_sapiens",
         build="GRCh38",
-        release="113",
+        release="116",
         type="merged"
     log:
         "logs/get_vep_cache/cache.log"
@@ -15,5 +15,5 @@ rule get_vep_cache:
         disk_mb=40000,
         runtime=config["resources"]["default"]["walltime"]
     wrapper:
-        "v5.5.0/bio/vep/cache"
+        "v9.16.0/bio/vep/cache"
 
