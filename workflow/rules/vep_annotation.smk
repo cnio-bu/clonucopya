@@ -1,12 +1,11 @@
 rule vep_annotation:
     input:
-        vep_prep="results/{study}/mut_vep_prep"
-#        cache_dir="resources/vep/cache"
+        vep_prep="results/{study}/mut_vep_prep",
+        cache_dir="resources/vep/cache"
     output:
         stats=directory("results/{study}/vep_annotation/stats"),
         annotations=directory("results/{study}/vep_annotation/annotations"),
     params:
-        cache_dir="resources/vep/cache"
     log:
         "logs/{study}/vep_annotation/annotation.log"
     benchmark:
@@ -31,7 +30,7 @@ rule vep_annotation:
                 --format ensembl \
                 --vcf \
                 --force_overwrite \
-                --dir_cache {params.cache_dir} \
+                --dir_cache {input.cache_dir} \
                 --species homo_sapiens \
                 --input_file "$clone" \
                 --output_file "{output.annotations}/$vcf_file" \
