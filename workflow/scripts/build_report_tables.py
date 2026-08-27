@@ -118,6 +118,23 @@ def build_gene_alterations(pvi_input, pandrugs_dir, out_dir):
     return study_sorted
 
 
+
+DRUG_PRIORITIZATION_COLS = ['Clone', 'Mutation ID', 'Gene Symbol', 'VAF',
+                            'Drug', 'Status', 'Interaction Type',
+                            'Driver Gene', 'dScore', 'gScore', 'Cancer', 'Source']
+
+DRUG_SUMMARY_COLS = ['Drug', 'Status', 'Interaction_Type', 'max_dScore',
+                     'Target_Clones', 'Gene_Interactions', 'Drug_Response']
+
+def save_empty_tables(out_dir):
+    pd.DataFrame(columns=DRUG_PRIORITIZATION_COLS).to_csv(
+        f"{out_dir}/drug_prioritization.tsv", sep='\t', index=False
+    )
+    pd.DataFrame(columns=DRUG_SUMMARY_COLS).to_csv(
+        f"{out_dir}/drug_summary.tsv", sep='\t', index=False
+    )
+
+
 def build_drug_prioritization(gene_alterations, pandrugs_dir, out_dir):
 
     """
@@ -152,7 +169,8 @@ def build_drug_prioritization(gene_alterations, pandrugs_dir, out_dir):
 
     
     if concatenated_df.empty:
-        concatenated_df.to_csv(f"{out_dir}/drug_prioritization.tsv", sep='\t', index=False)
+        save_empty_tables(out_dir)
+        return
     else:
         # Subset Gene Alterations dataframe to get relevant columns for Drug Prioritizaton datataframe
         study_subset = gene_alterations[['Clone', 'Mutation ID', 'Gene Symbol', 'VAF']]
