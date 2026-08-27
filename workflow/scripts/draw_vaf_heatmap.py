@@ -11,7 +11,7 @@ from clonucopya_tools import chr_to_num
 
 def even_distribution_tolerant(df_heatmap, n_samples=100):
     """
-    Sampling using even distribution that deals with al sizes of heatmaps.
+    Sampling using even distribution that deals with all sizes of heatmaps.
     If the Dataframe has less rows than n_sampes, it returns the whole dataframe.
 
     Args:
@@ -104,7 +104,16 @@ def build_heatmap_df(tree_df, pvi_input, gene_alterations):
         raise ValueError(f"Error reading {gene_alterations}: {e}")
         
     # Keep only HIGH and MODERATE impact mutations
-    gene_alt = gene_alt[gene_alt['Impact'].isin(['HIGH', 'MODERATE'])].copy()
+    high_moderate = gene_alt[gene_alt['Impact'].isin(['HIGH', 'MODERATE'])].copy()
+
+    # If there are fewer than 10 HIGH/MODERATE mutations, add lower-impact ones to reach 10
+    if len(high_moderate) < 10:
+        remaining_needed = 10 - len(high_moderate)
+        lower_impact = gene_alt[~gene_alt['Impact'].isin(['HIGH', 'MODERATE'])].copy()
+        extra_muts = lower_impact.head(remaining_needed)
+        gene_alt = pd.concat([high_moderate, extra_muts], ignore_index=True)
+    else:
+        gene_alt = high_moderate
 
     heatmap_dict = {}
     heatmap_dict_sampled = {}
