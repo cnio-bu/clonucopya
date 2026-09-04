@@ -368,6 +368,10 @@
 </head>
 <body>
 
+<p style="text-align:right; margin: 0; padding: 0; font-size: 9px; line-height: 1; color: #555;">
+    {{ report_footer_line }}
+</p>
+
 <header>
     <div class="header-content">
         <div class="logo-container">
