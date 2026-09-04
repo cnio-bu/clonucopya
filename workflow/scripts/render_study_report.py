@@ -1,11 +1,12 @@
 import os
 import argparse
+import subprocess
 import pandas as pd
 import numpy as np
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader, Template
+from datetime import datetime
 import weasyprint
-
 
 
 def safe_float_format(value, decimals=2):
@@ -39,6 +40,14 @@ def parse_clones(s):
         return []
     return [int(x.strip()) for x in str(s).split(",") if x.strip() != ""]
 
+def get_clonucopya_version():
+    try:
+        return subprocess.check_output(
+            ["git", "describe", "--tag"],
+            text=True, stderr=subprocess.DEVNULL
+        ).strip()
+    except subprocess.CalledProcessError:
+        return "no information available"
 
 def prepare_report_data(study_path, drug_filter):
     """
@@ -177,7 +186,7 @@ def prepare_report_data(study_path, drug_filter):
                 drugs_df_compact.loc[is_dup, collapse_cols] = ""
                 
         except Exception as e:
-            print(f"[ERROR] fail to process drug_prioritization results: {repr(e)}")
+            print(f"[ERROR] fail to process drug prioritization results: {repr(e)}")
             drugs_df_compact = None
     
     # Absolute paths to images
@@ -211,9 +220,6 @@ def prepare_report_data(study_path, drug_filter):
         else:
             print(f"[WARN] VAF heatmap not found for {sample_id}: {heatmap_path}")
     
-    print("DEBUG clonal_histogram_images:")
-    for k, v in clonal_histogram_images.items():
-        print(" ", k, "->", v)
     
     return {
         'samples_df': samples_df,
@@ -245,7 +251,9 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
     gene_alterations_path = components_path / "gene_alterations.tsv"
     drug_prioritization_path = components_path / "drug_prioritization.tsv"
     
-    
+    # GET EXECUTION INFORMATION
+    clonucopya_version = get_clonucopya_version().split('-')[0]
+    report_timestamp = datetime.now().strftime("%m/%d/%Y %H:%M:%S")
     
     # Format data
     data = prepare_report_data(study_path, drug_filter)
@@ -285,6 +293,7 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
     template_data = {
         'system_name': 'Clonucopya',
         'report_title': 'Clonal Evolution & Treatment Report',
+        'report_footer_line': f"Clonucopya v{clonucopya_version} | Generated: {report_timestamp}",
         'study_id': study_name,
         'study_description': f"""
         <p>Overview of study {study_name}'s key statistics by sample, including the number of sample's name, sex, number of mutations such as Single Nucleotide Variation (SNVs) or small Indels, Copy Number Variations (CNVs), and the number of intersections between mutations and CNVs.</p>
@@ -459,6 +468,7 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
     @page {
         size: A4;
         margin: 0.8cm;
+        margin-top: 0.3cm;
     }
 
     img {
