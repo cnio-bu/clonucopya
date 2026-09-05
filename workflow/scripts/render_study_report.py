@@ -296,13 +296,8 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
         'report_footer_line': f"Clonucopya v{clonucopya_version} | Generated: {report_timestamp}",
         'study_id': study_name,
         'study_description': f"""
-        <p>Overview of study {study_name}'s key statistics by sample, including the number of sample's name, sex, number of mutations such as Single Nucleotide Variation (SNVs) or small Indels, Copy Number Variations (CNVs), and the number of intersections between mutations and CNVs.</p>
-        <p>The intersection statistics indicate the number of matches that occurred between SNVs and/or small indels contained in CNVs during preprocessing prior to clonal inference using Pyclone-VI and Phyclone. Intersections that have passed the Pyclone-VI filter can be found in the Clonal Alterations and Gene Alterations sections.</p>
-        <p>The Pyclone-VI filter is based on the following aspects:</p>
-        <ul>
-            <li>Mutations that have a major copy number equals to 0.</li>
-            <li>Mutations with missing coverage data (ref and/or alt counts).</li>
-        </ul>
+        <p>Overview of study {study_name}'s key statistics by sample, including the number of sample's name, sex, number of mutations such as Single Nucleotide Variation (SNVs) or small Indels, Copy Number Variations (CNVs), the number of intersections between mutations and CNVs, total number of drugs, and the Best Therapeutic Candidates (BTCs).</p>
+        <p>This report was generated in {drug_filter} mode. In clinical mode, results are filtered more stringently, excluding drugs with experimental status and pathway member interaction type. In discovery mode, no filters are applied, and all drug hits identified are displayed regardless of their experimental status or interaction type.</p>
 
         <p>The source files are available at: {panels_path}.</p>
 """,
@@ -394,7 +389,6 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
                         <li>Status: APPROVED, CLINICAL_TRIALS, and EXPERIMENTAL.</li>
                         <li>Interaction type: DIRECT_TARGET, BIOMARKER, and PATHWAY_MEMBER.</li>
                     </ul>
-                    <p>This report was generated in {drug_filter} mode. In clinical mode, results are filtered more stringently, excluding drugs with experimental status and pathway member interaction type. In discovery mode, no filters are applied, and all drug hits identified are displayed regardless of their experimental status or interaction type.</p>
                     <p>The source files are available at: {gene_alterations_path}.</p>
 """
             }
