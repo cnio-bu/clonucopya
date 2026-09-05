@@ -8,11 +8,13 @@ rule report_panels:
     input:
         samplesheet = config["samplesheet"],
         pvi_input = "results/{study}/mutation_liftover/pvi_checked.tsv",
+        drug_prior = "results/{study}/report/components/drug_prioritization.tsv"
     output:
         "results/{study}/report/components/report_panel.tsv"
     params:
         study = lambda wildcards: wildcards.study,
-        mut_dir = lambda wildcards: f"results/{wildcards.study}/mutation_prep"
+        mut_dir = lambda wildcards: f"results/{wildcards.study}/mutation_prep",
+        drug_filter = config["drug_filter"]
     log:
         "logs/{study}/report/report_panels.log"
     benchmark:
@@ -31,6 +33,8 @@ rule report_panels:
              --samplesheet {input.samplesheet} \\
              --mut_dir {params.mut_dir} \\
              --intersect_combined {input.pvi_input} \\
+             --drug_prioritization {input.drug_prior} \\
+             --drug_filter {params.drug_filter} \\
              --out_file {output} > {log} 2>&1
         """
 
@@ -189,11 +193,13 @@ rule mutation_contribution:
 rule report_panels_wf2:
     input:
         phy_out = "results/{study}/phyclone/tree_table.tsv",
-        pvi_input = "results/{study}/mutation_liftover/pvi_checked.tsv"
+        pvi_input = "results/{study}/mutation_liftover/pvi_checked.tsv",
+        drug_prior = "results/{study}/report/components/drug_prioritization.tsv"
     output:
         "results/{study}/report/components/report_panel_wf2.tsv"
     params:
-        study = lambda wildcards: wildcards.study
+        study = lambda wildcards: wildcards.study,
+        drug_filter = config["drug_filter"]
     log:
         "logs/{study}/report/report_panels_wf2.log"
     benchmark:
@@ -210,6 +216,8 @@ rule report_panels_wf2:
         python scripts/build_panels_wf2.py --study {params.study} \\
                                            --phy_out {input.phy_out} \\
                                            --pvi_input {input.pvi_input} \\
+                                           --drug_prioritization {input.drug_prior} \\
+                                           --drug_filter {params.drug_filter} \\
                                            --out_file {output} > {log} 2>&1
         """
 
