@@ -81,7 +81,7 @@ def prepare_report_data(study_path, drug_filter):
                      drug_sum = drug_sum[(drug_sum['Status'] != 'EXPERIMENTAL') & (drug_sum['Interaction_Type'] != 'PATHWAY_MEMBER')]
 
                 # Create support columns to sort by number of target clones
-                drug_sum["Target_Clones_list"] = drug_sum["Target_Clones"].apply(parse_clones)
+                drug_sum["Target_Clones_list"] = drug_sum["clone_list"].apply(parse_clones)
                 drug_sum["n_clones"] = drug_sum["Target_Clones_list"].apply(lambda xs: len(set(xs)))
 
                 # Sort interaction_type
@@ -99,7 +99,6 @@ def prepare_report_data(study_path, drug_filter):
                     .head(25)
                     .copy()
                 )
-                #sensitivity['Drug_Response'] = 'SENSITIVITY'
 
                 # FILTER RESISTANCE
                 resistance =(
@@ -108,9 +107,9 @@ def prepare_report_data(study_path, drug_filter):
                     .head(25)
                     .copy()
                 )
-                #resistance['Drug_Response'] = 'RESISTANCE'
+                
                 drug_sum_top = pd.concat([sensitivity, resistance], axis=0)
-                drug_sum_top.drop(columns = ["n_clones", "Target_Clones_list", "Interaction_Type"], axis=1, inplace=True)
+                drug_sum_top.drop(columns = ["n_clones", "Target_Clones_list", "Interaction_Type", "clone_list"], axis=1, inplace=True)
                 
         except:
             drug_sum_top = None
