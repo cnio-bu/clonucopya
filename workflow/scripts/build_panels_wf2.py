@@ -3,7 +3,7 @@ import argparse
 
 
 
-def get_study_panels(study, phy_out, pvi_input, out_file):
+def get_study_panels(study, phy_out, pvi_input, drug_prior, drug_filter, out_file):
 
     """
     Build Dataframe for sample panels of the study.
@@ -12,6 +12,8 @@ def get_study_panels(study, phy_out, pvi_input, out_file):
         study (str): Name of the study of interest
         phy_out (str): Path to the Phyclone of the study
         pvi_input (str): Path to the Pyclone-VI of the study
+        drug_prior(str): Path to drug prioritization file
+        drug_filter(str): Drug Analysis Filter: clinical | discovery
         out_file (str): Path to the output file (TSV)
 
     Return:
@@ -87,14 +89,58 @@ def get_study_panels(study, phy_out, pvi_input, out_file):
     sex_by_sample = sex_by_sample[["sample_id", "sex"]]
 
 
+    # GET DRUG PRIORITIZATION: Total drugs and BTC
+    try:
+        drugs = pd.read_table(drug_prior)
+    except Exception as e:
+        raise ValueError(f"Error reading drug prioritization of study {study}: {e}")
+    
+    drugs = drugs[drugs["Clone"] != -1]
+    drugs["dScore"] = pd.to_numeric(drugs["dScore"], errors="coerce")
+
+    # Sort Status and Intereaction type column
+    status_order = ["APPROVED", "CLINICAL_TRIALS", "EXPERIMENTAL"]
+    drugs["Status"] = pd.Categorical(drugs["Status"], categories=status_order, ordered=True)
+    
+    interaction_type_order = ["DIRECT_TARGET", "BIOMARKER", "PATHWAY_MEMBER"]
+    drugs["Interaction Type"] = pd.Categorical(drugs["Interaction Type"], categories=interaction_type_order, ordered=True)
+
+     # Apply Drug filter if clinical mode was set up
+    if drug_filter == 'clinical':
+        drugs = drugs[(drugs['Status'] != 'EXPERIMENTAL') & (drugs['Interaction Type'] != 'PATHWAY_MEMBER')]
+
+    # Disaggregate samples by VAF values  
+    df_expanded = (
+    drugs.assign(VAF=drugs["VAF"].str.split("; "))
+      .explode("VAF")
+      .assign(
+          sample_id=lambda d: d["VAF"].str.split(": ").str[0],
+          VAF=lambda d: d["VAF"].str.split(": ").str[1].astype(float))
+     )
+
+    # Filter out drug occurrences with zero VAF
+    drugs_hits = df_expanded[df_expanded['VAF'] != 0].copy()
+
+    # Count Total drugs and BTCs
+    drugs_hits["is_BTC"] = (drugs_hits["dScore"] > 0.7) & (drugs_hits["gScore"] > 0.6)
+    drug_stats = (
+        drugs_hits.groupby("sample_id", as_index=False)
+        .agg(
+            total_drugs=("Drug", "nunique"),
+            BTCs=("is_BTC", "sum")
+        )
+    )
+
     # Merge sex and tumour content
-    panel = panel.merge(sex_by_sample, on="sample_id", how="left")
-    panel = panel.merge(tumour_panel, on="sample_id", how="left")
+    panel = (panel
+             .merge(sex_by_sample, on="sample_id", how="left")
+             .merge(tumour_panel, on="sample_id", how="left")
+             .merge(drug_stats, on='sample_id', how='inner'))
 
     # Add study column and reorder columns
     panel["study"] = study
     panel = panel[["study", "sample_id", "sex",
-                   "tumour_content", "num_mutations", "num_clones"]]
+                   "tumour_content", "num_mutations", "num_clones", "total_drugs", "BTCs"]]
 
     panel.to_csv(out_file, sep="\t", index=False)
 
@@ -107,9 +153,11 @@ if __name__ == '__main__':
     input_parser.add_argument("--study", action='store', required=True)
     input_parser.add_argument("--phy_out", action='store', required=True)
     input_parser.add_argument("--pvi_input", action='store', required=True)
+    input_parser.add_argument("--drug_prioritization", action='store', required=True)
+    input_parser.add_argument("--drug_filter", action='store', required=True)
     input_parser.add_argument("--out_file", action='store', required=True)
 
     args = input_parser.parse_args()
 
 
-    get_study_panels(args.study, args.phy_out, args.pvi_input,args.out_file)
+    get_study_panels(args.study, args.phy_out, args.pvi_input, args.drug_prioritization, args.drug_filter, args.out_file)
