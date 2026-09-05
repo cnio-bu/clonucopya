@@ -177,7 +177,7 @@
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); 
+            grid-template-columns: repeat(4, 1fr); 
             grid-template-rows: repeat(2, 1fr);
             gap: 4px;
             width: 100%;
@@ -185,7 +185,7 @@
 
         .stat-box {
             background-color: #f9f9f9;
-            padding: 4px 6px;
+            padding: 4px 3px;
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
             text-align: center;
@@ -199,12 +199,12 @@
         .stat-box h3 {
             margin: 0 0 2px 0;
             color: #333;
-            font-size: 9px;
+            font-size: 8px;
             text-align: center;
         }
 
         .stat-box p {
-            font-size: 10px;
+            font-size: 9px;
             font-weight: bold;
             color: #666;
             margin: 0;
@@ -421,6 +421,10 @@
                 <p>{{ sample.tumour_content }}</p>
             </div>
             <div class="stat-box">
+                <h3>Total Drugs</h3>
+                <p>{{ sample.total_drugs|safe_int }}</p>
+            </div>
+            <div class="stat-box">
                 <h3>Study</h3>
                 <p>{{ sample.study }}</p>
             </div>
@@ -431,6 +435,10 @@
             <div class="stat-box">
                 <h3>Number of clones</h3>
                 <p>{{ sample.num_clones }}</p>
+            </div>
+            <div class="stat-box">
+                <h3>BTCs</h3>
+                <p>{{ sample.BTCs|safe_int }}</p>
             </div>
         </div>
     </div>
