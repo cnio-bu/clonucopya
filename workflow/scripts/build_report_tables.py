@@ -1,6 +1,7 @@
 import pandas as pd
 import glob
 import re
+import csv
 import os
 import ast
 import argparse
@@ -119,20 +120,34 @@ def build_gene_alterations(pvi_input, pandrugs_dir, out_dir):
 
 
 
-DRUG_PRIORITIZATION_COLS = ['Clone', 'Mutation ID', 'Gene Symbol', 'VAF',
+drug_prioritization_cols = ['Clone', 'Mutation ID', 'Gene Symbol', 'VAF',
                             'Drug', 'Status', 'Interaction Type',
                             'Driver Gene', 'dScore', 'gScore', 'Cancer', 'Source']
 
-DRUG_SUMMARY_COLS = ['Drug', 'Status', 'Interaction_Type', 'max_dScore',
+drug_summary_cols = ['Drug', 'Status', 'Interaction_Type', 'max_dScore',
                      'Target_Clones', 'Gene_Interactions', 'Drug_Response']
 
 def save_empty_tables(out_dir):
-    pd.DataFrame(columns=DRUG_PRIORITIZATION_COLS).to_csv(
+    pd.DataFrame(columns=drug_prioritization_cols).to_csv(
         f"{out_dir}/drug_prioritization.tsv", sep='\t', index=False
     )
-    pd.DataFrame(columns=DRUG_SUMMARY_COLS).to_csv(
+    pd.DataFrame(columns=drug_summary_cols).to_csv(
         f"{out_dir}/drug_summary.tsv", sep='\t', index=False
     )
+
+
+def format_target_clones(row):
+    """Retrieve 'DT: 1, 2; PM: 3' format per drug"""
+    parts = []
+    total = set()
+    for _, r in row.iterrows():
+        it_mapping = {'DIRECT_TARGET': 'DT', 'BIOMARKER': 'BM', 'PATHWAY_MEMBER': 'PM'
+        }
+        abbr = it_mapping.get(r['Interaction Type'], r['Interaction Type'])
+        clones_sorted = sorted(int(c) for c in r['Clone'])
+        total.update(clones_sorted)
+        parts.append(f"{abbr}: {', '.join(map(str, clones_sorted))}")
+    return f"Total: {len(total)} | " + "; ".join(parts)
 
 
 def build_drug_prioritization(gene_alterations, pandrugs_dir, out_dir):
@@ -238,6 +253,23 @@ def build_drug_prioritization(gene_alterations, pandrugs_dir, out_dir):
             .apply(lambda x: ", ".join(sorted(x.astype(str))))
             .reset_index()
         )
+
+        clones_it = (
+            drug_hits_no_outliers
+            .dropna(subset=['Clone', 'Interaction Type'])
+            .groupby(['Drug', 'Interaction Type'])['Clone']
+            .unique()
+            .reset_index()
+        )
+
+        # Format Target Clones
+        formatted_clones = (
+            clones_it
+            .groupby('Drug')
+            .apply(format_target_clones)
+            .reset_index(name='Target_Clones')
+        )
+        
         
         # Replace short name and format each interaction type group
         interaction_types['Interaction Type'] = interaction_types['Interaction Type'].replace(it_mapping)
@@ -258,7 +290,8 @@ def build_drug_prioritization(gene_alterations, pandrugs_dir, out_dir):
             Status=('Status', 'first'),
             max_dScore=('dScore', lambda x: round(x.max(), 4)),
             Interaction_Type=('Interaction Type', 'first'),
-            Target_Clones=('Clone', lambda x: ', '.join(sorted(x.unique().astype(str)))),
+            # Target_Clones=('Clone', lambda x: ', '.join(sorted(x.unique().astype(str)))),
+            clone_list=('Clone', lambda x: ', '.join(sorted(x.unique().astype(str)))),
             Genes=('Gene Symbol', lambda x: ', '.join(sorted(x.unique().astype(str)))),
             Drug_Response=('Drug_Response', 'first'),
             n_clones=('Clone', 'nunique'),
@@ -269,7 +302,9 @@ def build_drug_prioritization(gene_alterations, pandrugs_dir, out_dir):
        # Add formatted interaction type column
         drug_summary['Gene_Interactions'] = drug_summary['Drug'].map(interaction_summary)
         
-
+        # Add formatted clone column
+        drug_summary = drug_summary.merge(formatted_clones, on='Drug', how='left')
+        
         drug_summary["Status"] = pd.Categorical(
             drug_summary["Status"],
             categories=status_order,
@@ -284,12 +319,10 @@ def build_drug_prioritization(gene_alterations, pandrugs_dir, out_dir):
         # Drop n_clones adn Genes column
         drug_summary.drop(columns = ["n_clones"], axis=1, inplace=True)
 
-        col_order = ['Drug', 'Status', 'Interaction_Type', 'max_dScore', 'Target_Clones', 'Gene_Interactions', 'Drug_Response']
+        col_order = ['Drug', 'Status', 'Interaction_Type', 'max_dScore', 'Target_Clones', 'Gene_Interactions', 'Drug_Response', 'clone_list']
         drug_summary = drug_summary[col_order]
         
-        drug_summary.to_csv(f"{out_dir}/drug_summary.tsv", sep='\t', index=False)
-
-    
+        drug_summary.to_csv(f"{out_dir}/drug_summary.tsv", sep='\t', index=False, quoting=csv.QUOTE_ALL)
 
     
 if __name__ == '__main__':
