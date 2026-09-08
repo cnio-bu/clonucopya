@@ -326,6 +326,7 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
             <li>BM (Biomarker): The alteration acts as a biomarker predictive of response.</li>
             <li>PM (Pathway Member): The mutation affects the signaling pathway targeted by the drug.</li>
             </ul>            
+            <p>The table below provides a simplified overview of the drugs targeting the affected clones and the specific genes. Drugs are prioritizited using the following criteria: (1) clone coverage, (2) maximum dScore of the drug regarding the targeted genes (dScore), and (3) interaction type importance (DT>BM>PM).</p>
             <p>The source files are available at: {drug_summary_path}.</p>
             """,
         
