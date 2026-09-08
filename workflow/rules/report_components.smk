@@ -188,6 +188,38 @@ rule mutation_contribution:
         """
 
 
+
+rule study_composition:
+    input:
+        tree_df = "results/{study}/phyclone/tree_table.tsv"
+    output:
+        "results/{study}/report/components/{study}_clonal_composition.png"
+    params:
+        study = lambda wildcards: wildcards.study,
+        palette = "resources/clonucopya_palette.txt",
+        out_dir = lambda wildcards: f"results/{wildcards.study}/report/components"
+    log:
+        "logs/{study}/report/plot_study_composition.log"
+    benchmark:
+        "logs/{study}/report/plot_study_composition.bmk"
+    conda:
+        "../envs/report_components.yaml"
+    threads:
+        config["resources"]["default"]["threads"]
+    resources:
+        mem_mb=config["resources"]["default"]["mem"],
+        runtime=config["resources"]["default"]["walltime"]
+    shell:
+        """
+        mkdir -p {params.out_dir}
+        python scripts/draw_study_clonal_composition.py \\
+            --tree_df {input.tree_df} \\
+            --study {params.study} \\
+            --palette {params.palette} \\
+            --out_dir {params.out_dir} > {log} 2>&1
+        """
+
+
 ######################### TABLES FOR ALTERNATIVE WORKFLOW ###############################
 
 rule report_panels_wf2:
