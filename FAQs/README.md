@@ -58,7 +58,7 @@ The main tools integrated in the workflow are:
 - **Snakemake** v9.20.0 → workflow management  
 - **PyClone-VI** v0.1.6 → clonal inference and clustering  
 - **PhyClone** v0.7.0 → phylogenetic tree reconstruction  
-- **Ensembl VEP** v113.3 → functional variant annotation  
+- **Ensembl VEP** v116.1 → functional variant annotation  
 - **PanDrugs2 API** v2.3.0 → drug prioritization  
 - **snakemake-executor-plugin-slurm** v2.6.1 → Snakemake cluster execution  
 - **pandas** v2.2.2 → parse dataframes  
