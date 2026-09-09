@@ -97,6 +97,7 @@ rule all:
         expand("results/{study}/report/components/report_panel_wf2.tsv", study=samplesheet["study"].unique()),
         expand("results/{study}/report/components/clonal_tree.png", study=samplesheet["study"].unique()),
         mutation_contribution,
+        expand("results/{study}/report/components/{study}_clonal_composition.png", study=samplesheet["study"].unique()),
         sphere_clones,
         vaf_heatmaps,
         expand("results/{study}/report/components/gene_alterations.tsv", study=samplesheet["study"].unique()),
