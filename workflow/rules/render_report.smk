@@ -25,6 +25,7 @@ def get_heatmap_files(wildcards):
 rule render_report:
     input:
         report_panel        = "results/{study}/report/components/report_panel.tsv",
+        study_composition   = "results/{study}/report/components/{study}_clonal_composition.png",
         drug_summary        = "results/{study}/report/components/drug_summary.tsv",
         clonal_tree         = "results/{study}/report/components/clonal_tree.png",
         clonal_histogram    = get_mutation_contributions,
