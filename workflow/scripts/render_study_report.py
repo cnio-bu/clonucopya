@@ -190,7 +190,7 @@ def prepare_report_data(study_path, drug_filter):
     
     # Absolute paths to images
     clonal_tree_image = os.path.abspath(str(components_path / "clonal_tree.png"))
-
+    study_clonal_composition = os.path.abspath(str(components_path / f"{study_name}_clonal_composition.png"))
     clonal_histogram_images = {}
     clonal_proportions_images = {}
     clone_alterations_images = {}
@@ -222,6 +222,7 @@ def prepare_report_data(study_path, drug_filter):
     
     return {
         'samples_df': samples_df,
+        'study_clonal_composition': study_clonal_composition,
         'drug_summary': drug_sum_top,
         'gene_alterations_df': gene_alterations_top,
         'drug_prioritization_df': drugs_df_compact,
@@ -242,6 +243,7 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
     study_name = os.path.basename(study_path)
     components_path = Path(study_path) / "report" / "components"
     panels_path = components_path / "report_panel*.tsv"
+    study_composition_path = components_path / "study_name}_clonal_composition.png"
     drug_summary_path = components_path / "drug_summary.tsv"
     clonal_tree_path = components_path / "clonal_tree.png"
     clonal_histogram_path = components_path / "mutation_contribution" / "{sample_id}_mutation_contribution.png"
@@ -301,9 +303,9 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
         <p>The source files are available at: {panels_path}.</p>
 """,
         'logo_path': logo_data_uri,
-        
     
         'samples_df': data['samples_df'],
+        'study_clonal_composition': data['study_clonal_composition'],
         'drug_summary': data['drug_summary'],
         'gene_alterations_df': data['gene_alterations_df'],
         'drug_prioritization_df': data['drug_prioritization_df'],
@@ -311,7 +313,26 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
         'clonal_proportions_images': data['clonal_proportions_images'],
         'clone_alterations_images': data['clone_alterations_images'],
 
-            'drug_summary_description': f"""
+
+            'study_composition_description': f"""
+            <p> This is a rose of nightgale plot. It represents clonal and mutational composition at study level. Each bar represents a clone and its genetics features: the width of the bar is the clonal prevalence (weight of the clone in the clonal structure of the study), and the height is related to the number of mutations contributing to the clone identity.</p>
+            <p>It is important to remark that there is no direct correlation between the number of mutations and the clonal prevalence. The impact of each mutation leads to different grades of importance in the representacion at the clonal structure of the study.</p>
+            <p>Note that sometimes the total sum of the clonal prevalence proportions it not 1 (100%). This missing percentage of clonal prevelence represents the unknown or undetermined part of the clonal phylogeny due to diferent reasons: Contamination of the sample with normal (nontumor) cells, which PhyClone already correct for using the tumor purity parameter, statistical uncertainty or rounding in the estimate of prevalences, or other causes.</p>
+            <ul>           
+            <p>The source files are available at: {study_composition_path}.</p>
+            """,
+        
+            'image': data['clonal_proportions_images'],
+
+        'subclonal_tree': {
+            'title': 'Tumor Phylogeny',
+            'description': f"""
+                <p>Based on the variant allele frequency (VAF) and changes in copy number, the evolutionary hierarchy of the tumor has been inferred. The phylogenetic tree illustrates the relationships among the different cellular subpopulations (clones).</p>
+                <p>The source files are available at: {clonal_tree_path}.</p>
+            """,
+            'image': data['clonal_tree_image'],
+        },
+         'drug_summary_description': f"""
             <p>The Drug Summary provides a high-level overview of the therapeutic candidates identified across the entire study. For each drug, the table reports the number of genetic alterations supporting its prioritization, its regulatory approval status (APPROVED, CLINICAL_TRIALS, or EXPERIMENTAL), and the type of interaction with the affected genes (DIRECT TARGET, BIOMARKER, or PATHWAY_MEMBER).</p>
             <p>This report was generated in {drug_filter} mode. In clinical mode, results are filtered more stringently, excluding drugs with experimental status and pathway member interaction type. In discovery mode, no filters are applied, and all drug hits identified are displayed regardless of their experimental status or interaction type.</p>
             <p>This table summarizes up to 25 top-ranked drug candidates derived from the mutational landscape of all samples included in the study. A detailed per-clone breakdown is available in the Drug Prioritization section.</p>
@@ -329,31 +350,27 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
             <p>The table below provides a simplified overview of the drugs targeting the affected clones and the specific genes. Drugs are prioritizited using the following criteria: (1) clone coverage, (2) maximum dScore of the drug regarding the targeted genes (dScore), and (3) interaction type importance (DT>BM>PM).</p>
             <p>The source files are available at: {drug_summary_path}.</p>
             """,
-        
+
         'comparison_section': {
-            'title': 'Clonal Evolution Analysis',
-            'description': 'Analysis of clonal evolution patterns and proportions across samples.',
-            'subclonal_tree': {
-                'title': 'Clonal Tree',
-                'description': f"""
-                <p> Based on the variant allele frequency (VAF) and changes in copy number, the evolutionary hierarchy of the tumor has been inferred. The phylogenetic tree illustrates the relationships among the different cellular subpopulations (clones). The spherical representations show the distribution and percentage of each clone across the different biopsies or time points, allowing us to visualize which clones dominate the tumor tissue.</p>
-                <p>The source files are available at: {clonal_tree_path} and {clonal_histogram_path}.</p>
-                """,
-            'image': data['clonal_tree_image'],
-            'clonal_histogram_images': data['clonal_histogram_images']
-            },
+            'title': 'Sample-Level Clonal Structure Analysis',
+            'description': f"""
+            <p>Analysis of clonal evolution patterns and proportions across samples.</p>
+            <p>The source files are available at: {clonal_histogram_path}.</p>
+            """,
+            'clonal_histogram_images': data['clonal_histogram_images'],
+
             'clonal_proportions': {
                 'title': 'Clonal Proportions',
                 'description': f"""
-                <p>Based on the phylogeny results obtained by Phyclone, the spheres of clones and the show the distribution of the clonal population in each sample.</p>
-                <p>The source files are available at: {spheres_path}.</p>
+                    <p>Based on the phylogeny results obtained by PhyClone, the spheres representations show the distribution and percentage of each clone across the different biopsies or time points, allowing us to visualize which clones dominate the tumor tissue. </p>
+                    <p>The source files are available at: {spheres_path}.</p>
                 """
             },
             'clone_alterations': {
                 'title': 'Clonal Alterations',
                 'description': f"""
-                <p>Heat maps illustrate the spatial or temporal evolution of mutations within clones. Observing how the frequency of a mutation varies across different samples allows us to distinguish early “trunk” events (present in all cells and responsible for the origin of the tumor) from later “branch” events. Identifying these branches is essential for understanding intratumoral heterogeneity and detecting emerging clones that may be driving disease progression or treatment resistance. Only variants with moderate or high predictive impact are shown.</p>
-                <p>The source files are available at: {heatmaps_path}.</p>
+                    <p>Heat maps illustrate the spatial or temporal evolution of mutations within clones. Observing how the frequency of a mutation varies across different samples allows us to distinguish early “trunk” events (present in all cells and responsible for the origin of the tumor) from later “branch” events. Identifying these branches is essential for understanding intratumoral heterogeneity and detecting emerging clones that may be driving disease progression or treatment resistance. Only variants with moderate or high predictive impact are shown.</p>
+                    <p>The source files are available at: {heatmaps_path}.</p>
                 """
             }
         },
@@ -471,32 +488,38 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
     }
 
     /* Two-per-row layout for clonal proportions spheres. */
-    .sphere-container {
-        display: block !important;
-        width: 100% !important;
-        text-align: center !important;
-        margin: 20px 0 !important;
-        font-size: 0 !important; 
+    .sphere-grid {
+        width: 80% !important;
+        margin: 4px auto !important;
+        padding: 0 !important;
+        font-size: 0 !important;
+        line-height: 0 !important;
+    
+        page-break-inside: auto !important;
+        break-inside: auto !important;
     }
-
-    .sphere-image {
+    
+    .sphere-item {
         display: inline-block !important;
         width: 48% !important;
-        max-width: 48% !important;
-        height: auto !important;
-        margin: 1% !important;
+        margin: 0 1% 8px 1% !important;
+        padding: 0 !important;
         vertical-align: top !important;
         box-sizing: border-box !important;
+    
         page-break-inside: avoid !important;
         break-inside: avoid !important;
     }
     
-    .image-grid {
+    .sphere-image {
         display: block !important;
         width: 100% !important;
-        text-align: center !important;
-        font-size: 0 !important;
+        max-width: 100% !important;
+        height: auto !important;
+        margin: 0 auto !important;
     }
+
+
 
     .image-grid .image-container {
         display: inline-block !important;
@@ -582,7 +605,6 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
         break-inside: avoid !important;
     }
     
-    /* Allow panels to split across pages */
     .panel {
         page-break-inside: auto !important;
         break-inside: auto !important;
@@ -591,6 +613,24 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
     .stats-card {
         page-break-inside: avoid !important;
         break-inside: avoid !important;
+    }
+
+    .clonal-composition-figure {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 18px auto 8px auto;
+        width: 100%;
+        page-break-inside: avoid;
+    }
+    
+    .clonal-composition-figure img {
+        display: block !important;
+        width: 75% !important;
+        max-width: 650px !important;
+        height: auto !important;
+        margin: 0 auto !important;
+        object-fit: contain !important;
     }
 
     h2, h3 {
