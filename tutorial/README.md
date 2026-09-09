@@ -204,9 +204,9 @@ To abbreviate and improve the readability, we can customize the sample names of 
 ### Samplesheet file
 
 We need to fill the csv file which has the following format:
-| study 	| pyclone_vi     | metadata |
-|-------	|-----------	|-----------	|
-| CRUKP7127  	| ../tutorial/test/CRUKP7127_peace.tsv 	| ../config/metadata_pvi-start.csv |
+| study	| sex | pyclone_vi | metadata |
+|-------|-------|-----------|-----------|
+| CRUKP7127  	| female | ../tutorial/test/CRUKP7127_peace.tsv 	| ../config/metadata_pvi-start.csv |
 
 
 
