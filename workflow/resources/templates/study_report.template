@@ -144,8 +144,8 @@
             margin: 20px auto;
             padding: 15px;
             background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 0 !important;
+            box-shadow: none !important;
             width: 95%;
             max-width: 1000px;
             overflow: visible;
@@ -364,6 +364,39 @@
             font-size: 16px;
             font-weight: bold;
         }
+.sphere-container {
+    width: 100%;
+    margin: 4px 0;
+    padding: 0;
+    overflow: visible;
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+}
+
+.sphere-row {
+    display: table;
+    width: 100%;
+    margin: 0 0 8px 0;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+}
+
+.sphere-cell {
+    display: table-cell;
+    width: 50%;
+    padding: 0 4px;
+    vertical-align: top;
+    text-align: center;
+}
+
+.sphere-image {
+    display: block;
+    width: 100%;
+    max-width: 320px;
+    height: auto;
+    margin: 0 auto;
+}
+
     </style>
 </head>
 <body>
@@ -441,10 +474,52 @@
         </div>
     </div>
     {% endfor %}
-</div>
+
+
+    <h3>Tumor Phylogeny</h3>
+
+    <div class="section-description">
+        <p>{{ subclonal_tree.description | safe }}</p>
+    </div>
+
+    {% if subclonal_tree.image %}
+    <div style="text-align: center; margin: 20px 0;">
+        <img src="file://{{ subclonal_tree.image }}"
+             alt="Subclonal Tree"
+             style="max-width:600px; margin: 0 auto;">
+    </div>
+    {% endif %}
+
+
+    <h3>Clonal composition</h3>
+
+    <div class="section-description">
+        {{ study_composition_description | safe }}
+    </div>
+
+    {% if study_clonal_composition %}
+    <div class="clonal-composition-figure">
+        <img
+            src="file://{{ study_clonal_composition }}"
+            alt="Study-level clonal composition"
+        >
+    </div>
+    {% else %}
+    <div class="no-data-message">
+        Study-level clonal composition image was not found.
+    </div>
+
+    <p style="font-size: 9px; color: #666;">
+        Expected path: {{ study_clonal_composition }}
+    </p>
+    {% endif %}
+
+
+
+
+
 
 {% if drug_summary is not none and not drug_summary.empty %}
-<div class="panel">
     <h3>Drug Summary</h3>
     {{ drug_summary_description | safe }}
     <table class="data-table drug-summary-table">
@@ -472,25 +547,15 @@
             {% endfor %}
         </tbody>
     </table>
-</div>
 {% endif %}
-
+</div>
 
 <div class="panel">
     <h2>{{ comparison_section.title }}</h2>
     <p>{{ comparison_section.description }}</p>
 
 <div>
-    <h3>{{ comparison_section.subclonal_tree.title }}</h3>
-    <p>{{ comparison_section.subclonal_tree.description }}</p>
 
-    {% if comparison_section.subclonal_tree.image %}
-    <div style="text-align: center; margin: 20px 0;">
-        <img src="file://{{ comparison_section.subclonal_tree.image }}"
-             alt="Subclonal Tree"
-             style="max-width:600px; margin: 0 auto;">
-    </div>
-    {% endif %}
 
     {% if clonal_histogram_images %}
     <div class="histogram-grid">
@@ -511,15 +576,29 @@
     <h3>{{ comparison_section.clonal_proportions.title }}</h3>
     <p>{{ comparison_section.clonal_proportions.description }}</p>
 
-    <div class="sphere-container">
-        {% for sample in samples_df.itertuples() %}
-        {% if sample.sample_id in clonal_proportions_images %}
-        <img src="file://{{ clonal_proportions_images[sample.sample_id] }}" 
-             class="sphere-image" 
-             alt="Clonal Proportions - {{ sample.sample_id }}">
+<div class="sphere-container">
+    {% for sample in samples_df.itertuples() %}
+        {% if loop.index0 % 2 == 0 %}
+        <div class="sphere-row">
         {% endif %}
-        {% endfor %}
-    </div>
+
+        {% if sample.sample_id in clonal_proportions_images %}
+        <div class="sphere-cell">
+            <img src="file://{{ clonal_proportions_images[sample.sample_id] }}"
+                 class="sphere-image"
+                 alt="Clonal Proportions - {{ sample.sample_id }}">
+        </div>
+        {% else %}
+        <div class="sphere-cell"></div>
+        {% endif %}
+
+        {% if loop.index0 % 2 == 1 or loop.last %}
+            {% if loop.last and loop.index0 % 2 == 0 %}
+            <div class="sphere-cell"></div>
+            {% endif %}
+        </div>
+        {% endif %}
+    {% endfor %}
 </div>
 
 
