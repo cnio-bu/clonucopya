@@ -74,9 +74,17 @@ def plot_study(df, clone_colors, output_file):
     # Set internal radius of the plot and width of bars
     r_inner = 0.35
     r_max_extra = 1.0
-    max_mut = df["n_mutations"].max()
-    heights = r_inner + (df["n_mutations"].to_numpy(dtype=float) / max_mut) * r_max_extra
+    # max_mut = df["n_mutations"].max()
+    # heights = r_inner + (df["n_mutations"].to_numpy(dtype=float) / max_mut) * r_max_extra
+    min_bar_height = 0.025
 
+    nmut = df["n_mutations"].to_numpy(dtype=float)
+    max_mut = nmut.max()
+    
+    heights = (nmut / max_mut) * r_max_extra
+    heights = np.maximum(heights, min_bar_height)
+
+    
     fig, ax = plt.subplots(
         figsize=(6.2, 5.4), dpi=300, facecolor=BG_COLOR,
         subplot_kw=dict(projection="polar"),
@@ -91,7 +99,7 @@ def plot_study(df, clone_colors, output_file):
 
     ax.bar(
         x=mids,
-        height=heights - r_inner,
+        height=heights,
         width=widths,
         bottom=r_inner,
         color=df["clone_color"],
@@ -112,17 +120,28 @@ def plot_study(df, clone_colors, output_file):
             rot += 180
         rot = rot % 360
 
-        r_label_in = r_inner + (h - r_inner) * 0.45
+        # height of the bar
+        r_outer = r_inner + h
+
+        # Clonal prevalence label
+        r_label_in = r_inner + h * 0.45
+
         ax.text(
             mid, r_label_in,
             f"c{int(cid)}\n{prev_value:.2f}",
             ha="center", va="center", linespacing=1.1,
             fontsize=5, color="black", fontfamily=FONT, fontweight="bold",
-            bbox=dict(boxstyle="round,pad=0.20", facecolor="white", edgecolor=color, linewidth=1.1),
+            bbox=dict(
+                boxstyle="round,pad=0.20",
+                facecolor="white",
+                edgecolor=color,
+                linewidth=1.1,
+            ),
         )
 
+        # Mutation number label
+        r_label_out = r_outer + 0.26
 
-        r_label_out = h + 0.26
         ax.text(
             mid, r_label_out,
             f"{int(nmut)} mut",
@@ -131,15 +150,27 @@ def plot_study(df, clone_colors, output_file):
             rotation=rot, rotation_mode="anchor",
         )
 
-    ax.set_ylim(0, r_inner + r_max_extra + 0.45)
+    # ax.set_ylim(0, r_inner + r_max_extra + 0.45)
+    label_gap = 0.26
+    extra_margin = 0.08
+    ax.set_ylim(0, r_inner + r_max_extra + label_gap + extra_margin)
+    
     ax.set_xticks([])
     ax.set_yticks([])
     ax.spines["polar"].set_visible(False)
     ax.grid(False)
 
 
-    plt.tight_layout(pad=1.2)
-    fig.savefig(output_file, bbox_inches="tight", facecolor=BG_COLOR)
+    # plt.tight_layout(pad=1.2)
+    # fig.savefig(output_file, bbox_inches="tight", facecolor=BG_COLOR)
+    fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
+
+    fig.savefig(
+        output_file,
+        bbox_inches="tight",
+        pad_inches=0.01,
+        facecolor=BG_COLOR,
+    )
     plt.close(fig)
 
 
