@@ -1,4 +1,4 @@
-study,pyclone_vi,metadata
-study_name_01,/path/to/pyclone-vi/input/file.tsv,/path/to/alias_metadata/input/study_name_01_file.csv
-study_name_02,/path/to/pyclone-vi/input/file.tsv,/path/to/alias_metadata/input/study_name_02_file.csv
-study_name_03,/path/to/pyclone-vi/input/file.tsv,/path/to/alias_detadata/input/study_name_03_file.csv
+study,sex,pyclone_vi,metadata
+study_name_01,female,/path/to/pyclone-vi/input/file.tsv,/path/to/alias_metadata/input/study_name_01_file.csv
+study_name_02,male,/path/to/pyclone-vi/input/file.tsv,/path/to/alias_metadata/input/study_name_02_file.csv
+study_name_03,female,/path/to/pyclone-vi/input/file.tsv,/path/to/alias_detadata/input/study_name_03_file.csv
