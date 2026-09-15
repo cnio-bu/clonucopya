@@ -69,6 +69,7 @@ def prepare_report_data(study_path, drug_filter):
         raise FileNotFoundError("No se encontraron report_panel*.tsv")
 
     samples_df = pd.read_csv(rp_path, sep='\t')
+    total_samples = len(samples_df)
 
     # Drug Summary
     drug_sum_path = components_path / "drug_summary.tsv"
@@ -222,6 +223,7 @@ def prepare_report_data(study_path, drug_filter):
     
     return {
         'samples_df': samples_df,
+        'total_samples': total_samples,
         'study_clonal_composition': study_clonal_composition,
         'drug_summary': drug_sum_top,
         'gene_alterations_df': gene_alterations_top,
@@ -297,9 +299,9 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
         'report_footer_line': f"Clonucopya v{clonucopya_version} | Generated: {report_timestamp}",
         'study_id': study_name,
         'study_description': f"""
-        <p>Overview of study {study_name}'s key statistics by sample, including the number of sample's name, sex, number of mutations such as Single Nucleotide Variation (SNVs) or small Indels, Copy Number Variations (CNVs), the number of intersections between mutations and CNVs, total number of drugs, and the Best Therapeutic Candidates (BTCs).</p>
+        <p>Overview of study {study_name}'s key statistics by sample (N = {data['total_samples']}). This section summarizes the core characteristics of each sample in the study and serves as the starting point for interpreting the rest of the report. The values reflect each sample's mutational burden, genomic alterations, and the number of therapeutic options identified (total drugs and Best Thereapeutic Candidates, BTC). The exact set of metrics shown may vary slightly depending on the analysis settings selected for this run. Refer to the table below for the specific indicators reported.</p>
         <p>This report was generated in {drug_filter} mode. In clinical mode, results are filtered more stringently, excluding drugs with experimental status and pathway member interaction type. In discovery mode, no filters are applied, and all drug hits identified are displayed regardless of their experimental status or interaction type.</p>
-
+        <p>All definitions are provided in the Glossary of Terms.</p>
         <p>The source files are available at: {panels_path}.</p>
 """,
         'logo_path': logo_data_uri,
@@ -315,9 +317,8 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
 
 
             'study_composition_description': f"""
-            <p> This is a rose of nightgale plot. It represents clonal and mutational composition at study level. Each bar represents a clone and its genetics features: the width of the bar is the clonal prevalence (weight of the clone in the clonal structure of the study), and the height is related to the number of mutations contributing to the clone identity.</p>
-            <p>It is important to remark that there is no direct correlation between the number of mutations and the clonal prevalence. The impact of each mutation leads to different grades of importance in the representacion at the clonal structure of the study.</p>
-            <p>Note that sometimes the total sum of the clonal prevalence proportions it not 1 (100%). This missing percentage of clonal prevelence represents the unknown or undetermined part of the clonal phylogeny due to diferent reasons: Contamination of the sample with normal (nontumor) cells, which PhyClone already correct for using the tumor purity parameter, statistical uncertainty or rounding in the estimate of prevalences, or other causes.</p>
+            <p> This is a rose (nightingale) chart showing the clonal and mutational composition at the study level. Each bar represents one clone: its width reflects clonal prevalence (the clone's weight within the tumor's overall clonal structure), and its height reflects the number of mutations that define that clone's identity. Note that prevalence and mutation count are not directly correlated. A clone can carry many mutations yet represent only a small fraction of the tumor, or vice versa, depending on each mutation's biological impact.</p>
+            <p>The prevalence values across clones may not sum to 100%. This gap represents the undetermined portion of the clonal structure, which can result from normal-cell contamination (already accounted for via the tumor purity estimate), statistical uncertainty in prevalence estimation, or rounding.</p>
             <ul>           
             <p>The source files are available at: {study_composition_path}.</p>
             """,
@@ -333,9 +334,8 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
             'image': data['clonal_tree_image'],
         },
          'drug_summary_description': f"""
-            <p>The Drug Summary provides a high-level overview of the therapeutic candidates identified across the entire study. For each drug, the table reports the number of genetic alterations supporting its prioritization, its regulatory approval status (APPROVED, CLINICAL_TRIALS, or EXPERIMENTAL), and the type of interaction with the affected genes (DIRECT TARGET, BIOMARKER, or PATHWAY_MEMBER).</p>
-            <p>This report was generated in {drug_filter} mode. In clinical mode, results are filtered more stringently, excluding drugs with experimental status and pathway member interaction type. In discovery mode, no filters are applied, and all drug hits identified are displayed regardless of their experimental status or interaction type.</p>
-            <p>This table summarizes up to 25 top-ranked drug candidates derived from the mutational landscape of all samples included in the study. A detailed per-clone breakdown is available in the Drug Prioritization section.</p>
+            <p>The Drug Summary provides a high-level overview of the therapeutic candidates identified across the entire study. For each drug, the table reports the number of genetic alterations supporting its prioritization, its regulatory approval status (APPROVED, CLINICAL_TRIALS, or EXPERIMENTAL), and the type of interaction with the affected genes (DIRECT TARGET, BIOMARKER, or PATHWAY_MEMBER). This table summarizes up to 50 top-ranked drug candidates (25 sensitive and 25 resistence when available) derived from the mutational landscape of all samples included in the study. A detailed per-clone breakdown is available in the Drug Prioritization section.</p>
+            <p>Analysis mode: Clinical (standard filtering applied — experimental-status drugs and pathway-member interactions excluded).</p>
             <p>The response of each drug is evaluated using the DScore (range -1 to +1):</p>
             <ul>
             <li>Sensitivity (DScore > 0): Positive values indicate that the mutations confer sensitivity to the drug (optimal candidates with a DScore > 0.7 are highlighted in bold).</li>
@@ -362,7 +362,7 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
             'clonal_proportions': {
                 'title': 'Clonal Proportions',
                 'description': f"""
-                    <p>Based on the phylogeny results obtained by PhyClone, the spheres representations show the distribution and percentage of each clone across the different biopsies or time points, allowing us to visualize which clones dominate the tumor tissue. </p>
+                    <p>Based on the inferred tumor phylogeny, the spheres representations show the distribution and percentage of each clone across the different biopsies or time points, allowing us to visualize which clones dominate the tumor tissue. </p>
                     <p>The source files are available at: {spheres_path}.</p>
                 """
             },
@@ -393,19 +393,10 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
                 'title': 'Drug Prioritization',
                 'description': f"""
                     <p>The small variant analysis performed by PanDrugs2 displays only mutations classified as clinically relevant.</p>
-                    <p>The vulnerability of each tumor clone to different drugs is assessed by considering only mutations with a relevant functional impact. Therapeutic options are prioritized by evaluating two fundamental dimensions:</p>
-                    <ul>
-                        <li>GScore (Biological Target): Quantifies the relevance of the mutated gene in cancer development and its viability as a pharmacological target (druggability).</li>
-                        <li>DScore (Clinical Evidence): Estimates the suitability of the drug based on the current level of evidence, the type of interaction, and the phase of clinical development.</li>
-                    </ul>
+                    <p>The vulnerability of each tumor clone to different drugs is assessed by considering only mutations with a relevant functional impact. Therapeutic options are prioritized by evaluating two fundamental dimensions: GScore (Biological Target) and DScore (Clinical Evidence). Check Drug Summary section to see how the scoring works.</p>
                     <p>We consider drugs with high clinical potential (DScore ≥ 0.7) that target key driver genes (GScore ≥ 0.6) to be Top Therapeutic Candidates (BTC), highlighted in bold.</p>
-                    <p>The table below provides a simplified overview of the drugs targeting the affected genes, with the top 3 drugs selected per genetic alteration and ranked by Status and dScore. Drugs are sorted using the following criteria:</p>
-                    <ul>
-                        <li>Clone.</li>
-                        <li>Mutation positon.</li>
-                        <li>Status: APPROVED, CLINICAL_TRIALS, and EXPERIMENTAL.</li>
-                        <li>Interaction type: DIRECT_TARGET, BIOMARKER, and PATHWAY_MEMBER.</li>
-                    </ul>
+                    <p>The table below provides a simplified overview of the drugs targeting the affected genes, with the top 3 drugs selected per genetic alteration and ranked by Status and dScore. Drugs are sorted using the following criteria: (1) clone, (2) mutation position, (3) status, and (4) interaction type.</p>
+                    <p>All definitions are provided in the Glossary of Terms.</p>
                     <p>The source files are available at: {gene_alterations_path}.</p>
 """
             }
@@ -414,7 +405,7 @@ def render_report_to_pdf(study_path, drug_filter, output_path, template_path="te
         'key_concepts': [
     {
         'term': 'Clone',
-        'definition': 'A population of tumor cells that all share a specific set of mutations inherited from a common ancestor cell. Ideally, each cluster of mutations identified by PyClone-VI would correspond to a biologically distinct clone.'
+        'definition': 'A population of tumor cells that all share a specific set of mutations inherited from a common ancestor cell. Ideally, each inferred mutation cluster would correspond to a biologically distinct clone.'
     },
     {
         'term': 'Cluster',
