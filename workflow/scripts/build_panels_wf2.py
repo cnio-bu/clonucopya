@@ -3,13 +3,14 @@ import argparse
 
 
 
-def get_study_panels(study, phy_out, pvi_input, drug_prior, drug_filter, out_file):
+def get_study_panels(study, samplesheet, phy_out, pvi_input, drug_prior, drug_filter, out_file):
 
     """
     Build Dataframe for sample panels of the study.
 
     Args:
         study (str): Name of the study of interest
+        samplesheet (str): Path to the samplesheet (CSV)
         phy_out (str): Path to the Phyclone of the study
         pvi_input (str): Path to the Pyclone-VI of the study
         drug_prior(str): Path to drug prioritization file
@@ -20,6 +21,16 @@ def get_study_panels(study, phy_out, pvi_input, drug_prior, drug_filter, out_fil
         DataFrame of the main statistic of the samples of the same study
         
     """
+
+    # Load Samplesheet
+    try:
+       sheet = pd.read_table(samplesheet, sep=',')
+    except Exception as e:
+        raise ValueError(f"Error reading samplesheet file: {e}")
+
+    study_sex = sheet.loc[sheet["study"] == study, "sex"].iloc[0]
+    
+    
 
    # Load PyClone-VI input to obtain tumour_content information
     try:
@@ -52,41 +63,6 @@ def get_study_panels(study, phy_out, pvi_input, drug_prior, drug_filter, out_fil
         )
         .reset_index()
     )
-
-    # Gathering sex information
-    phy_df["chrom"] = (
-        phy_df["mutation_id"]
-        .astype(str)
-        .str.split(":", n=1)
-        .str[0]
-    )
-
-    # Gathering sex information
-    phy_df["chrom"] = (
-    phy_df["mutation_id"]
-    .astype(str)
-    .str.split(":", n=1)
-    .str[0]
-    )
-    phy_df["chrom"] = phy_df["chrom"].str.replace("^chr", "", regex=True).str.upper()
-
-
-
-    sex_by_sample = (
-        phy_df
-        .groupby("sample_id")["chrom"]
-        .agg(
-            has_X=lambda s: (s == "X").any(),
-            has_Y=lambda s: (s == "Y").any(),
-        )
-        .reset_index()
-    )
-    
-    sex_by_sample["sex"] = "Unknown"
-    sex_by_sample.loc[sex_by_sample["has_X"], "sex"] = "female"
-    sex_by_sample.loc[sex_by_sample["has_Y"], "sex"] = "male"
-
-    sex_by_sample = sex_by_sample[["sample_id", "sex"]]
 
 
     # GET DRUG PRIORITIZATION: Total drugs and BTC
@@ -133,12 +109,12 @@ def get_study_panels(study, phy_out, pvi_input, drug_prior, drug_filter, out_fil
 
     # Merge sex and tumour content
     panel = (panel
-             .merge(sex_by_sample, on="sample_id", how="left")
              .merge(tumour_panel, on="sample_id", how="left")
              .merge(drug_stats, on='sample_id', how='inner'))
 
     # Add study column and reorder columns
     panel["study"] = study
+    panel["sex"] = study_sex
     panel = panel[["study", "sample_id", "sex",
                    "tumour_content", "num_mutations", "num_clones", "total_drugs", "BTCs"]]
 
@@ -151,6 +127,7 @@ def get_study_panels(study, phy_out, pvi_input, drug_prior, drug_filter, out_fil
 if __name__ == '__main__':
     input_parser = argparse.ArgumentParser()
     input_parser.add_argument("--study", action='store', required=True)
+    input_parser.add_argument("--samplesheet", action='store', required=True)
     input_parser.add_argument("--phy_out", action='store', required=True)
     input_parser.add_argument("--pvi_input", action='store', required=True)
     input_parser.add_argument("--drug_prioritization", action='store', required=True)
@@ -160,4 +137,4 @@ if __name__ == '__main__':
     args = input_parser.parse_args()
 
 
-    get_study_panels(args.study, args.phy_out, args.pvi_input, args.drug_prioritization, args.drug_filter, args.out_file)
+    get_study_panels(args.study, args.samplesheet, args.phy_out, args.pvi_input, args.drug_prioritization, args.drug_filter, args.out_file)
