@@ -224,6 +224,7 @@ rule study_composition:
 
 rule report_panels_wf2:
     input:
+        samplesheet = config["samplesheet"],
         phy_out = "results/{study}/phyclone/tree_table.tsv",
         pvi_input = "results/{study}/mutation_liftover/pvi_checked.tsv",
         drug_prior = "results/{study}/report/components/drug_prioritization.tsv"
@@ -246,6 +247,7 @@ rule report_panels_wf2:
     shell:
         """
         python scripts/build_panels_wf2.py --study {params.study} \\
+                                           --samplesheet {input.samplesheet} \\
                                            --phy_out {input.phy_out} \\
                                            --pvi_input {input.pvi_input} \\
                                            --drug_prioritization {input.drug_prior} \\
