@@ -144,8 +144,8 @@
             margin: 20px auto;
             padding: 15px;
             background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius:  0 !important;
+            box-shadow: none !important;
             width: 95%;
             max-width: 1000px;
             overflow: visible;
@@ -363,6 +363,39 @@
             color: #6c757d;
             font-size: 16px;
             font-weight: bold;
+        }
+
+        .sphere-container {
+            width: 100%;
+            margin: 4px 0;
+            padding: 0;
+            overflow: visible;
+            break-inside: auto !important;
+            page-break-inside: auto !important;
+        }
+        
+        .sphere-row {
+            display: table;
+            width: 100%;
+            margin: 0 0 8px 0;
+            break-inside: avoid !important;
+            page-break-inside: avoid !important;
+        }
+        
+        .sphere-cell {
+            display: table-cell;
+            width: 50%;
+            padding: 0 4px;
+            vertical-align: top;
+            text-align: center;
+        }
+        
+        .sphere-image {
+            display: block;
+            width: 100%;
+            max-width: 320px;
+            height: auto;
+            margin: 0 auto;
         }
     </style>
 </head>
