@@ -155,6 +155,7 @@ comparative analysis (read [Main applications](#main-applications) section for f
     ├── {study}_report.pdf
     └── components/
         ├── clonal_tree.png
+        ├── {study}_clonal_composition.png
         ├── drug_prioritization.tsv
         ├── drug_summary.tsv
         ├── gene_alterations.tsv
@@ -246,6 +247,7 @@ comparative analysis (read [Main applications](#main-applications) section for f
     ├── {study}_report_wf2.pdf
     └── components/
         ├── clonal_tree.png
+        ├── {study}_clonal_composition.png
         ├── drug_prioritization.tsv
         ├── drug_summary.tsv
         ├── gene_alterations.tsv
