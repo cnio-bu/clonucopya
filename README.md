@@ -1,4 +1,6 @@
-<img src="./.img/clonucopya_header.png" width="500">
+<p align="center">
+  <img src="./.img/clonucopya_header.png" width="500" alt="Clonucopya Header">
+</p>
 
 # Introduction
 
