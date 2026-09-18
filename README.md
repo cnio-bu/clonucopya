@@ -16,8 +16,9 @@ We present Clonucopya, a comprehensive snakemake workflow that bridges this gap 
 
 Clonucopya is a snakemake workflow that combines the clonal inference of Pyclone-VI with the power of drug priorization from Pandrugs2.
 
+<p align="center">
 <img src="./.img/clonucopya-wf.png" width="700">
-
+</p>
 
 # Main applications
 
