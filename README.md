@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./.img/clonucopya_header.png" width="500" alt="Clonucopya Header">
+  <img src="./.img/clonucopya_header.png" width="400" alt="Clonucopya Header">
 </p>
 
 # Introduction
