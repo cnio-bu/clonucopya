@@ -126,6 +126,7 @@ dream_P10/
     ├── dream_P10_report.pdf
     └── components/
         ├── clonal_tree.png
+        ├── dream_P10_clonal_composition.png
         ├── drug_prioritization.tsv
         ├── drug_summary.tsv
         ├── gene_alterations.tsv
@@ -257,6 +258,7 @@ CRUKP7127/
     ├── CRUKP7127_report_wf2.pdf
     └── components/
         ├── clonal_tree.png
+        ├── CRUKP7127_clonal_composition.png
         ├── drug_prioritization.tsv
         ├── drug_summary.tsv
         ├── gene_alterations.tsv
