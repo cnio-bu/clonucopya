@@ -273,6 +273,7 @@ comparative analysis (read [Main applications](#main-applications) section for f
 
 * Guillermo Sánchez-Cid
 * Carlos León-Ramos
+* Elena Piñeiro-Yáñez
 * Gonzalo Gómez-López
 * Fátima Al-Shahrour
 
