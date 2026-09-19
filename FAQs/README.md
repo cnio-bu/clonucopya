@@ -147,4 +147,4 @@ Clonucopya generates detailed log files for each analysis step, facilitating tro
 
 If you use Clonucopya in your research, please cite:
 
-Sánchez-Cid G, León-Ramos C, Elena Piñeiro-Yáñez, Gómez-López G, Al-Shahrour F. *Clonucopya: A computational workflow for drug prioritization based on clonal tumor heterogeneity.*
+Sánchez-Cid G, León-Ramos C, Piñeiro-Yáñez E, Gómez-López G, Al-Shahrour F. *Clonucopya: A computational workflow for drug prioritization based on clonal tumor heterogeneity.*
