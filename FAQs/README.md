@@ -109,9 +109,9 @@ Clonucopya can analyze single-sample, paired-wise, multi-region, and longitudina
 **What outputs does Clonucopya generate?**  
 Clonucopya produces three types of outputs:
 
-1. A **self-contained PDF report** with a comprehensive summary of the clonal and therapeutic landscape  
-2. **Tables** (TXT format) with clone- and drug-resolved results  
-3. **Figures** (PNG format) for use in reports and presentations  
+1. A **self-contained PDF report** with a comprehensive summary of the clonal and therapeutic landscape ([Example](https://github.com/cnio-bu/clonucopya/tree/main/tutorial/report_results/CRUKP7127_report_wf2.pdf)).
+2. **Tables** (TXT format) with clone- and drug-resolved results.
+3. **Figures** (PNG format) for use in reports and presentations. 
 
 **What does the PDF report contain?**  
 For each sample, the report includes:
@@ -147,4 +147,4 @@ Clonucopya generates detailed log files for each analysis step, facilitating tro
 
 If you use Clonucopya in your research, please cite:
 
-Sánchez-Cid G, León-Ramos C, Piñeiro-Yáñez E, Gómez-López G, Al-Shahrour F. *Clonucopya: A computational workflow for drug prioritization based on clonal tumor heterogeneity.*
+Sánchez-Cid G, León-Ramos C, Piñeiro-Yáñez E, Gómez-López G, Al-Shahrour F. Clonucopya: An end-to-end workflow bridging tumor clonal architecture and drug prioritization. *Under review.*
