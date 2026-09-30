@@ -143,7 +143,7 @@ dream_P10/
 ```
 
 > [!IMPORTANT]
-> In the directory report_results you have a file [dream_P10_report.pdf](https://github.com/cnio-bu/clonucopya/tree/main/tutorial/test/report_results/dream_P10_report.pdf) to check how would look like the results of the execution.
+> In the directory report_results you have a file [dream_P10_report.pdf](https://github.com/cnio-bu/clonucopya/tree/main/tutorial/report_results/dream_P10_report.pdf) to check how would look like the results of the execution.
 
 # Hands-on tutorial: PVI-Start Execution Mode
 In this tutorial, we present an step-by-step guide to run Clonucopya with PEACE cohort data data obtained from [Hessey, S. et al. Nature, 2026](https://doi.org/10.1038/s41586-026-10428-4) supplementary files, specifically from from a lung adenocarcinoma patient (woman, 71 years) (ID: CRUKP7127) in the PEACE/TRACERx cohort. The information regarding tumor content was obtained from [Al Bakir, M. et al. Nature, 2023](https://doi.org/10.1038/s41586-023-05729-x) supplementary files. To launch the analysis, there is a file ([CRUKP7127_peace.tsv](https://github.com/cnio-bu/clonucopya/tree/main/tutorial/test/CRUKP7127_peace.tsv)) containing all the information of the mutations required to start from Pyclone-VI. This file have the following features:
@@ -275,4 +275,4 @@ CRUKP7127/
 ```
 
 > [!IMPORTANT]
-> In the directory report_results you have a file [CRUKP7127_report_wf2.pdf](https://github.com/cnio-bu/clonucopya/tree/main/tutorial/test/report_results/CRUKP7127_report_wf2.pdf) to check how would look like the results of the execution.
+> In the directory report_results you have a file [CRUKP7127_report_wf2.pdf](https://github.com/cnio-bu/clonucopya/tree/main/tutorial/report_results/CRUKP7127_report_wf2.pdf) to check how would look like the results of the execution.
