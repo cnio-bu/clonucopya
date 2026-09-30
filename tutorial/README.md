@@ -4,7 +4,7 @@ In this tutorial, we present an step-by-step guide to run Clonucopya with sample
 **P10.vcf**
 - File type: Simulated VCF (Variant Call Format) file containing genomic variants generated for testing purposes.
 - Size: 883 Kb.
-- Reference genome: GRCh37/hg37.
+- Reference genome: GRCh37/hg19.
 - Samples included: One tumour sample.
 - Variant content: 8192 SNVs.
 - Available information: For each variant, the VCF provides genomic position, reference and alternative alleles, and sample-level metrics such as genotype, read depth, and variant allele - frequency, which are used in downstream analyses.
@@ -12,7 +12,7 @@ In this tutorial, we present an step-by-step guide to run Clonucopya with sample
 **P10.txt**
 - File type: Simulated CNA calling (Copy Number Aberration) file containing genomic variants generated for testing purposes.
 - Size: 37 Kb.
-- Reference genome: GRCh37/hg37.
+- Reference genome: GRCh37/hg19.
 - Samples included: One tumour sample.
 - Variant content: 75 CNAs.
 - Available information: For each variant, the VCF provides chromosome, start position, end position, major copy number, ninor Copy Number, and other calling-realted information.
@@ -151,7 +151,7 @@ In this tutorial, we present an step-by-step guide to run Clonucopya with PEACE 
 **CRUKP7127_peace.tsv**
 - File type: Pyclone-VI input file containing genomic variants generated for testing purposes.
 - Size: 120 Kb.
-- Reference genome: GRCh37/hg37.
+- Reference genome: GRCh37/hg19.
 - Samples included:
   - CRUKP7127_SU_T1-R1 - Primary (CRUKP7127_SU_T1-R1--df37093bhhy7)
   - CRUKP7127_SU_T1-R2 - Primary (CRUKP7127_SU_T1-R2--ff616f1ahhy7)
