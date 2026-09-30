@@ -132,6 +132,12 @@ Three tables are generated:
 **How long does a typical Clonucopya run take?**  
 On a simulated dataset of 10 samples from the DREAM Challenge (paired SNV and CNV calls, no BAM files), Clonucopya generates the final report in approximately 12 hours and 50 minutes using 8 CPU cores.
 
+**What HPC cluster resources were required to run the workflow?**
+Clonucopya can be run in a personal computer with at least 16 cores and 16Gb RAM
+
+**What cluster resources were used to run the workflow?**
+The CNIO HPC cluster currently consists of: two login nodes working in active/passive mode (2x 40 core/392Gb RAM); a total of 728 compute cores distributed in 9 "standard" compute nodes (6x 52 core/512Gb RAM and 3x 64core/768Gb RAM) and a high-memory node (1x 224 core/2Tb RAM); a dedicated GPU node featuring 3 x Nvidia A100 80Gb GPUs. Local storage is composed of 48 4TB disks in a dual-channel enclosure organized into a RAID-10 unit with an effective available storage of 54TB which host the home directories, and a high-performance lustre storage system with 512 TB of effective available storage for computation. The cluster runs a Slurm queuing system with fairshare priority management.
+
 ## Error Handling & Troubleshooting
 
 **Does Clonucopya validate input files before starting?**  
