@@ -143,12 +143,10 @@ The CNIO HPC cluster currently consists of: two login nodes working in active/pa
 **Does Clonucopya validate input files before starting?**  
 Yes. Prior to execution, Clonucopya performs pre-run validation checks including: sample-sheet consistency, BAM and VCF file integrity, and compliance of CNV inputs with documented format specifications.
 
-**What happens if a sample fails during the run?**  
-
+**What happens if a sample fails during the run?**
 Failed executions preserve all intermediate files and use controlled retries to recover from transient errors without restarting completed steps. In HPC environments, only incomplete tasks are resubmitted upon failure.
 
-**How can I debug a failed run?**  
-
+**How can I debug a failed run?**
 Clonucopya generates detailed log files for each analysis step, facilitating troubleshooting and debugging of individual tasks.
 
 ## Citation
