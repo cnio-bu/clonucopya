@@ -130,7 +130,7 @@ Three tables are generated:
 ## Performance & Benchmarking
 
 **How long does a typical Clonucopya run take?**  
-On a simulated dataset of 10 samples from the DREAM Challenge (paired SNV and CNV calls, no BAM files), Clonucopya generates the final report in approximately 12 hours and 50 minutes using 8 CPU cores on a 9-node HPC cluster totalling 728 CPU cores (Intel(R) Xeon(R) Gold 5218R CPU at 2.10GHz), 512Gb GB RAM per node 
+On a simulated dataset of 10 samples from the DREAM Challenge (paired SNV and CNV calls, no BAM files), Clonucopya generates the final report in approximately 12 hours and 50 minutes using 8 CPU cores on a 9-node HPC cluster totalling 728 CPU cores (Intel(R) Xeon(R) Gold 5218R CPU at 2.10GHz), 512Gb GB RAM per node.
 
 
 ## Error Handling & Troubleshooting
