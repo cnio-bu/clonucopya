@@ -1,6 +1,5 @@
 # Hands-on tutorial: Full-Set Execution Mode
-In this tutorial, we present an step-by-step guide to run Clonucopya with sample data obtained from [Pyclone_VI](https://zenodo.org/record/4268826) supplementary files, specifically from Dream Challenge dataset (ICGC-TCGA DREAM Somatic Mutation Calling – Tumor Heterogeneity (SMC-Het) Challenge). For this demonstration, we will perform an study we sample P10. To launch the analysis, there are a paired SNV 
-[(P10.vcf)](https://github.com/cnio-bu/clonucopya/tree/main/tutorial/test/P10.vcf) and CNA variant calling [(P10.txt)](https://github.com/cnio-bu/clonucopya/tree/main/tutorial/test/P10.txt) obtained from Mutec and Battemberg, repectively. These files have the following features:
+In this tutorial, we present an step-by-step guide to run Clonucopya with sample data obtained from [Pyclone_VI](https://zenodo.org/record/4268826) supplementary files, specifically from Dream Challenge dataset (ICGC-TCGA DREAM Somatic Mutation Calling – Tumor Heterogeneity (SMC-Het) Challenge). For this demonstration, we will perform an study we sample P10. To launch the analysis, there are a paired SNV ([P10.vcf](https://github.com/cnio-bu/clonucopya/tree/main/tutorial/test/P10.vcf)) and CNA variant calling ([P10.txt](https://github.com/cnio-bu/clonucopya/tree/main/tutorial/test/P10.txt)) obtained from Mutec and Battemberg, repectively. These files have the following features:
 
 **P10.vcf**
 - File type: Simulated VCF (Variant Call Format) file containing genomic variants generated for testing purposes.
